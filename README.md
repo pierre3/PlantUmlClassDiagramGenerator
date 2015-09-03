@@ -41,3 +41,10 @@ namespace Test
      }
 }
 ```
+/*** output..
+class A{
+    + PropA : int <<get>>
+    + PropB : string <<get>> <<set>>
+    + Method():int
+}
+***/
