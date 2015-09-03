@@ -1,6 +1,12 @@
 # PlantUmlClassDiagramGenerator
 This is a generator to create a class-diagram of PlantUML from the C# source code.
 
+## Usage
+
+```
+C:\> PlantUmlClassDiagramGenerator.exe "path\to\source\file\or\directory" "path\to\output\Directory"
+```
+
 ## Using Roslyn
 
 ```cs
@@ -30,7 +36,7 @@ namespace Test
 ";
       var tree = CSharpSyntaxTree.ParseText(code);
       var root = tree.GetRoot();
-      
+
       var output = new StringBuilder();
       using (var writer = new StringWriter(output))
       {
