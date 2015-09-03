@@ -40,7 +40,7 @@ namespace Test
      Console.WriteLine(output);
      }
 }
-```
+
 /*** output..
 class A{
     + PropA : int <<get>>
@@ -48,3 +48,5 @@ class A{
     + Method():int
 }
 ***/
+
+```
