@@ -16,7 +16,6 @@ namespace PlantUmlClassDiagramGenerator
             if (args.Length < 1)
             {
                 Console.WriteLine("Specify a source file name or directory name.");
-                Console.Read();
                 return;
             }
 
@@ -42,7 +41,6 @@ namespace PlantUmlClassDiagramGenerator
             else
             {
                 Console.WriteLine("Specify a source file name or directory name.");
-                Console.Read();
                 return;
             }
 
@@ -80,7 +78,6 @@ namespace PlantUmlClassDiagramGenerator
                 }
             }
             Console.WriteLine("Completed.");
-            Console.Read();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PlantUmlClassDiagramGeneratorTest
 {
@@ -7,10 +8,11 @@ namespace PlantUmlClassDiagramGeneratorTest
         private readonly int intField = 100;
         private static string strField;
         protected double X = 0, Y = 1, Z = 2;
+        private IList<int> list = new List<int>();
 
         protected int PropA { get; private set; }
-        public string PropB { get; protected set; }
-        public double PropC { get; } = 3.141592;
+        protected internal string PropB { get; protected set; }
+        internal double PropC { get; } = 3.141592;
 
         public ClassA() { }
         static ClassA() { strField = "static field"; }
