@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace PlantUmlClassDiagramGeneratorTest
 {
@@ -35,11 +36,16 @@ namespace PlantUmlClassDiagramGeneratorTest
         public abstract string AbstractMethod(int arg1, double arg2);
     }
 
-    internal sealed class ClassC : ClassB
+    internal sealed class ClassC : ClassB, INotifyPropertyChanged
     {
         private static readonly string readonlyField = "ReadOnly";
         public override int PropA { get; protected set; } = 100;
-        
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void RaisePropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
 
         public override string AbstractMethod(int arg1, double arg2)
         {
@@ -58,7 +64,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         public double Y { get; }
         public double Z { get; }
 
-        public Vector(double x,double y,double z)
+        public Vector(double x, double y, double z)
         {
             X = x;
             Y = y;
@@ -66,10 +72,10 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         public Vector(Vector source)
-            :this(source.X,source.Y,source.Z)
-        {}
+            : this(source.X, source.Y, source.Z)
+        { }
 
-        public static Vector operator +(Vector a,Vector b)
+        public static Vector operator +(Vector a, Vector b)
         {
             return new Vector(
                 a.X + b.X,

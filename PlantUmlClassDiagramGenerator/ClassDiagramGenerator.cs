@@ -8,45 +8,28 @@ using System.IO;
 
 namespace PlantUmlClassDiagramGenerator
 {
-    /// <summary>
-    /// C#のソースコードからPlantUMLのクラス図を生成するクラス
-    /// </summary>
     public class ClassDiagramGenerator : CSharpSyntaxWalker
     {
         private TextWriter writer;
         private string indent;
         private int nestingDepth = 0;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="writer">結果を出力するTextWriter</param>
-        /// <param name="indent">インデントとして使用する文字列</param>
         public ClassDiagramGenerator(TextWriter writer, string indent)
         {
             this.writer = writer;
             this.indent = indent;
         }
 
-        /// <summary>
-        /// インターフェースの定義をPlantUMLの書式で出力する
-        /// </summary>
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             VisitTypeDeclaration(node, () => base.VisitInterfaceDeclaration(node));
         }
 
-        /// <summary>
-        /// クラスの定義をPlantUMLの書式で出力する
-        /// </summary>        
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             VisitTypeDeclaration(node, () => base.VisitClassDeclaration(node));
         }
 
-        /// <summary>
-        /// 構造体の定義をPlantUMLの書式で出力する
-        /// </summary>
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
             var name = node.Identifier.ToString();
@@ -61,10 +44,6 @@ namespace PlantUmlClassDiagramGenerator
             WriteLine("}");
         }
 
-        /// <summary>
-        /// 列挙型の定義をPlantUMLの書式で出力する
-        /// </summary>
-        /// <param name="node"></param>
         public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
             WriteLine($"{node.EnumKeyword} {node.Identifier} {{");
@@ -75,11 +54,76 @@ namespace PlantUmlClassDiagramGenerator
 
             WriteLine("}");
         }
+
+        public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+        {
+            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var name = node.Identifier.ToString();
+            var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
+
+            WriteLine($"{modifiers}{name}({string.Join(", ", args)})");
+        }
+
+        public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+        {
+            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var typeName = node.Declaration.Type.ToString();
+            var variables = node.Declaration.Variables;
+            foreach (var field in variables)
+            {
+                var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+                var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
+
+                WriteLine($"{modifiers}{field.Identifier} : {typeName}{initValue}");
+            }
+        }
+
+        public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        {
+            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var name = node.Identifier.ToString();
+            var typeName = node.Type.ToString();
+            var accessor = node.AccessorList.Accessors
+                .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
+                .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
+
+            var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+            var initValue = useLiteralInit ? (" = " + node.Initializer.Value.ToString()) : "";
+
+            WriteLine($"{modifiers}{name} : {typeName} {string.Join(" ", accessor)}{initValue}");
+        }
+
+        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var name = node.Identifier.ToString();
+            var returnType = node.ReturnType.ToString();
+            var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
+
+            WriteLine($"{modifiers}{name}({string.Join(", ", args)}) : {returnType}");
+        }
+
+        public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+        {
+            WriteLine($"{node.Identifier}{node.EqualsValue},");
+        }
+
+        public override void VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
+        {
            
-        /// <summary>
-        /// 型（クラス、インターフェース、構造体)の定義をPlantUMLの書式で出力する
-        /// </summary>
-                     
+            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var name = string.Join(",", node.Declaration.Variables.Select(v=>v.Identifier));
+            var typeName = node.Declaration.Type.ToString();
+
+            WriteLine($"{modifiers} <<{node.EventKeyword}>> {name} : {typeName} ");
+        }
+        
+        private void WriteLine(string line)
+        {
+            var space = string.Concat(Enumerable.Repeat(indent, nestingDepth));
+            writer.WriteLine(space + line);
+        }
+
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
             var modifiers = GetTypeModifiersText(node.Modifiers);
@@ -97,86 +141,6 @@ namespace PlantUmlClassDiagramGenerator
             WriteLine("}");
         }
 
-        public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
-        {
-            var modifiers = GetMemberModifiersText(node.Modifiers);
-            var name = node.Identifier.ToString();
-            var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
-
-            WriteLine($"{modifiers}{name}({string.Join(", ", args)})");
-        }
-        /// <summary>
-        /// フィールドの定義を出力する
-        /// </summary>
-        public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
-        {
-            var modifiers = GetMemberModifiersText(node.Modifiers);
-            var typeName = node.Declaration.Type.ToString();
-            var variables = node.Declaration.Variables;
-            foreach(var field in variables)
-            {
-                var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-                var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
-                
-                WriteLine($"{modifiers}{field.Identifier} : {typeName}{initValue}");
-            }
-        }
-
-        /// <summary>
-        /// プロパティの定義を出力する
-        /// </summary>        
-        public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
-        {
-            var modifiers = GetMemberModifiersText(node.Modifiers);
-            var name = node.Identifier.ToString();
-            var typeName = node.Type.ToString();
-            var accessor = node.AccessorList.Accessors
-                .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
-                .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
-
-            var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-            var initValue = useLiteralInit ? (" = " + node.Initializer.Value.ToString()) : "";
-
-            WriteLine($"{modifiers}{name} : {typeName} {string.Join(" ", accessor)}{initValue}");
-        }
-
-        /// <summary>
-        /// メソッドの定義を出力する
-        /// </summary>
-        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
-        {
-            var modifiers = GetMemberModifiersText(node.Modifiers);
-            var name = node.Identifier.ToString();
-            var returnType = node.ReturnType.ToString();
-            var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
-            
-            WriteLine($"{modifiers}{name}({string.Join(", ", args )}) : {returnType}");
-        }
-
-        /// <summary>
-        /// 列挙型のメンバーを出力する
-        /// </summary>
-        /// <param name="node"></param>
-        public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
-        {
-            WriteLine($"{node.Identifier}{node.EqualsValue},");
-        }
-
-        /// <summary>
-        /// 結果出力用TextWriterに、1行書き込む。
-        /// </summary>
-        private void WriteLine(string line)
-        {
-            //行の先頭にネストの階層分だけインデントを付加する
-            var space = string.Concat(Enumerable.Repeat(indent, nestingDepth));
-            writer.WriteLine(space + line);
-        }
-
-        /// <summary>
-        /// 型(クラス、インターフェース、構造体)の修飾子を文字列に変換する
-        /// </summary>
-        /// <param name="modifiers">修飾子のTokenList</param>
-        /// <returns>変換後の文字列</returns>
         private string GetTypeModifiersText(SyntaxTokenList modifiers)
         {
             var tokens = modifiers.Select(token =>
@@ -202,11 +166,6 @@ namespace PlantUmlClassDiagramGenerator
             return result;
         }
 
-        /// <summary>
-        /// 型のメンバーの修飾子を文字列に変換する
-        /// </summary>
-        /// <param name="modifiers">修飾子のTokenList</param>
-        /// <returns></returns>
         private string GetMemberModifiersText(SyntaxTokenList modifiers)
         {
             var tokens = modifiers.Select(token =>
@@ -236,5 +195,5 @@ namespace PlantUmlClassDiagramGenerator
             return result;
         }
     }
-    
+
 }
