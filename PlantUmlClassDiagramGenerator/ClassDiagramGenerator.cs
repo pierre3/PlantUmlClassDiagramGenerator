@@ -5,94 +5,14 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.IO;
+using System.Collections.Generic;
 
 namespace PlantUmlClassDiagramGenerator
 {
-    public abstract class ClassDiagramConverter
-    {
-        public abstract string Convert();
-
-        protected string GetTypeModifiersText(SyntaxTokenList modifiers)
-        {
-            var tokens = modifiers.Select(token =>
-            {
-                switch (token.Kind())
-                {
-                    case SyntaxKind.PublicKeyword:
-                    case SyntaxKind.PrivateKeyword:
-                    case SyntaxKind.ProtectedKeyword:
-                    case SyntaxKind.InternalKeyword:
-                    case SyntaxKind.AbstractKeyword:
-                        return "";
-                    default:
-                        return $"<<{token.ValueText}>>";
-                }
-            }).Where(token => token != "");
-
-            var result = string.Join(" ", tokens);
-            if (result != string.Empty)
-            {
-                result += " ";
-            };
-            return result;
-        }
-
-        protected string GetMemberModifiersText(SyntaxTokenList modifiers)
-        {
-            var tokens = modifiers.Select(token =>
-            {
-                switch (token.Kind())
-                {
-                    case SyntaxKind.PublicKeyword:
-                        return "+";
-                    case SyntaxKind.PrivateKeyword:
-                        return "-";
-                    case SyntaxKind.ProtectedKeyword:
-                        return "#";
-                    case SyntaxKind.AbstractKeyword:
-                    case SyntaxKind.StaticKeyword:
-                        return $"{{{token.ValueText}}}";
-                    case SyntaxKind.InternalKeyword:
-                    default:
-                        return $"<<{token.ValueText}>>";
-                }
-            });
-
-            var result = string.Join(" ", tokens);
-            if (result != string.Empty)
-            {
-                result += " ";
-            };
-            return result;
-        }
-    }
-
-    public class ClassDeclarationConverter : ClassDiagramConverter
-    {
-        private TypeDeclarationSyntax _node;
-
-        public ClassDeclarationConverter(TypeDeclarationSyntax node)
-        {
-            _node = node;
-        }
-
-        public override string Convert()
-        {
-            var modifiers = GetTypeModifiersText(_node.Modifiers);
-            var keyword = (_node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
-                + _node.Keyword.ToString();
-            var name = _node.Identifier.ToString();
-            var typeParam = _node.TypeParameterList?.ToString() ?? "";
-
-            return $"{keyword} {name}{typeParam} {modifiers}";
-        }
-    }
-
-
-
-
     public class ClassDiagramGenerator : CSharpSyntaxWalker
     {
+        private IList<SyntaxNode> _innerTypeDeclarationNodes;
+
         private TextWriter writer;
         private string indent;
         private int nestingDepth = 0;
@@ -101,6 +21,13 @@ namespace PlantUmlClassDiagramGenerator
         {
             this.writer = writer;
             this.indent = indent;
+            _innerTypeDeclarationNodes = new List<SyntaxNode>();
+        }
+
+        public void Generate(SyntaxNode root)
+        {
+            Visit(root);
+            GenerateInnerTypeDeclarations();
         }
 
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
@@ -115,6 +42,8 @@ namespace PlantUmlClassDiagramGenerator
 
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
+            if (SkipInnerTypeDeclaration(node)) { return; }
+
             var name = node.Identifier.ToString();
             var typeParam = node.TypeParameterList?.ToString() ?? "";
 
@@ -129,6 +58,8 @@ namespace PlantUmlClassDiagramGenerator
 
         public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
+            if (SkipInnerTypeDeclaration(node)) { return; }
+
             WriteLine($"{node.EnumKeyword} {node.Identifier} {{");
 
             nestingDepth++;
@@ -207,8 +138,36 @@ namespace PlantUmlClassDiagramGenerator
             writer.WriteLine(space + line);
         }
 
+        private bool SkipInnerTypeDeclaration(SyntaxNode node)
+        {
+            if (nestingDepth > 0)
+            {
+                _innerTypeDeclarationNodes.Add(node);
+                return true;
+            }
+            return false;
+        }
+
+        private void GenerateInnerTypeDeclarations()
+        {
+            foreach (var node in _innerTypeDeclarationNodes)
+            {
+                var generator = new ClassDiagramGenerator(writer, indent);
+                generator.Generate(node);
+
+                var outerTypeNode = node.Parent as BaseTypeDeclarationSyntax;
+                var innerTypeNode = node as BaseTypeDeclarationSyntax;
+                if (outerTypeNode != null && innerTypeNode != null)
+                {
+                    WriteLine($"{outerTypeNode.Identifier} +- {innerTypeNode.Identifier}");
+                }
+            }
+        }
+
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
+            if (SkipInnerTypeDeclaration(node)) { return; }
+
             var modifiers = GetTypeModifiersText(node.Modifiers);
             var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
                 + node.Keyword.ToString();

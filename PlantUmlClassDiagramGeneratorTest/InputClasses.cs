@@ -110,6 +110,15 @@ namespace PlantUmlClassDiagramGeneratorTest
         {
             public string X { get; } = "xx";
             public void MethodX() { }
+
+            public struct InnerStruct
+            {
+                public int A { get; }
+                public InnerStruct(int a)
+                {
+                    A = 0;
+                }
+            }
         }
     }
 }
