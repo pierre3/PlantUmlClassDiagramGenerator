@@ -30,7 +30,7 @@ namespace PlantUmlClassDiagramGeneratorTest
     internal abstract class ClassB
     {
         private int field_1;
-        abstract public int PropA { get; protected set; }
+        public abstract int PropA { get; protected set; }
 
         protected virtual string VirtualMethod() { return "virtual"; }
         public abstract string AbstractMethod(int arg1, double arg2);

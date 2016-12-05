@@ -9,19 +9,31 @@ using System.Collections.Generic;
 
 namespace PlantUmlClassDiagramGenerator
 {
+    [Flags]
+    public enum Accessibilities
+    {
+        None = 0x0000,
+        Private = 0x0001,
+        Protected = 0x0002,
+        Internal = 0x0004,
+        ProtectedInternal = 0x0008,
+        Public = 0x0010,
+    }
+
     public class ClassDiagramGenerator : CSharpSyntaxWalker
     {
         private IList<SyntaxNode> _innerTypeDeclarationNodes;
-
+        private Accessibilities _ignoreMemberAccessibilities;
         private TextWriter writer;
         private string indent;
         private int nestingDepth = 0;
 
-        public ClassDiagramGenerator(TextWriter writer, string indent)
+        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None)
         {
             this.writer = writer;
             this.indent = indent;
             _innerTypeDeclarationNodes = new List<SyntaxNode>();
+            _ignoreMemberAccessibilities = ignoreMemberAccessibilities;
         }
 
         public void Generate(SyntaxNode root)
@@ -71,6 +83,8 @@ namespace PlantUmlClassDiagramGenerator
 
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
+            if (IsIgnoreMember(node.Modifiers)) { return; }
+
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = node.Identifier.ToString();
             var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
@@ -80,6 +94,8 @@ namespace PlantUmlClassDiagramGenerator
 
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
+            if (IsIgnoreMember(node.Modifiers)) { return; }
+
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var typeName = node.Declaration.Type.ToString();
             var variables = node.Declaration.Variables;
@@ -94,6 +110,8 @@ namespace PlantUmlClassDiagramGenerator
 
         public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
+            if (IsIgnoreMember(node.Modifiers)) { return; }
+
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = node.Identifier.ToString();
             var typeName = node.Type.ToString();
@@ -109,6 +127,8 @@ namespace PlantUmlClassDiagramGenerator
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            if (IsIgnoreMember(node.Modifiers)) { return; }
+
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = node.Identifier.ToString();
             var returnType = node.ReturnType.ToString();
@@ -124,6 +144,7 @@ namespace PlantUmlClassDiagramGenerator
 
         public override void VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
         {
+            if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = string.Join(",", node.Declaration.Variables.Select(v => v.Identifier));
@@ -206,6 +227,45 @@ namespace PlantUmlClassDiagramGenerator
                 result += " ";
             };
             return result;
+        }
+
+        private bool IsIgnoreMember(SyntaxTokenList modifiers)
+        {
+            if (_ignoreMemberAccessibilities == Accessibilities.None) { return false; }
+
+            var tokenKinds = modifiers.Select(x => x.Kind()).ToArray();
+
+            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.ProtectedInternal)
+                && tokenKinds.Contains(SyntaxKind.ProtectedKeyword)
+                && tokenKinds.Contains(SyntaxKind.InternalKeyword))
+            {
+                return true;
+            }
+
+            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Public)
+                && tokenKinds.Contains(SyntaxKind.PublicKeyword))
+            {
+                return true;
+            }
+
+            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Protected)
+                && tokenKinds.Contains(SyntaxKind.ProtectedKeyword))
+            {
+                return true;
+            }
+
+            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Internal)
+                && tokenKinds.Contains(SyntaxKind.InternalKeyword))
+            {
+                return true;
+            }
+
+            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Private)
+                && tokenKinds.Contains(SyntaxKind.PrivateKeyword))
+            {
+                return true;
+            }
+            return false;
         }
 
         private string GetMemberModifiersText(SyntaxTokenList modifiers)
