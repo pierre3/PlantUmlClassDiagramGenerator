@@ -3,9 +3,25 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 
 ## Usage
 
+```bat
+C:\> PlantUmlClassDiagramGenerator.exe InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
 ```
-C:\> PlantUmlClassDiagramGenerator.exe "path\to\source\file\or\directory" "path\to\output\Directory"
+
+- InputPath: (Required) Sets a input source file or directory name.    
+- OutputPath: (Optional) Sets a output file or directory name.
+- -dir: (Optional) Specify when InputPath and OutputPath are directory names.
+- -public: (Optional) If specified, only public accessibility members are output. 
+- -ignore: (Optional) Specify the accessibility of members to ignore, separated by commas.
+
+examples
+```bat
+C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1\ClassA.cs -public
 ```
+
+```bat
+C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected
+```
+
 
 ## Using Roslyn
 
