@@ -1,0 +1,58 @@
+﻿class ClassA {
+    - <<readonly>> intField : int = 100
+    - {static} strField : string
+    # X : double = 0
+    # Y : double = 1
+    # Z : double = 2
+    - list : IList<int>
+    # PropA : int <<get>>
+    # <<internal>> PropB : string <<get>> <<protected set>>
+    <<internal>> PropC : double <<get>> = 3.141592
+    + ClassA()
+    {static} ClassA()
+    # <<virtual>> VirtualMethod() : void
+    + <<override>> ToString() : string
+    + {static} StaticMethod() : string
+}
+abstract class ClassB {
+    - field_1 : int
+    + {abstract} PropA : int <<get>> <<protected set>>
+    # <<virtual>> VirtualMethod() : string
+    + {abstract} AbstractMethod(arg1:int, arg2:double) : string
+}
+class ClassC <<sealed>> {
+    - {static} <<readonly>> readonlyField : string = "ReadOnly"
+    + <<override>> PropA : int <<get>> <<protected set>> = 100
+    +  <<event>> PropertyChanged : PropertyChangedEventHandler 
+    - RaisePropertyChanged(propertyName:string) : void
+    + <<override>> AbstractMethod(arg1:int, arg2:double) : string
+    # <<override>> VirtualMethod() : string
+}
+class Vector <<struct>> {
+    + X : double <<get>>
+    + Y : double <<get>>
+    + Z : double <<get>>
+    + Vector(x:double, y:double, z:double)
+    + Vector(source:Vector)
+}
+enum EnumA {
+    AA= 0x0001,
+    BB= 0x0002,
+    CC= 0x0004,
+    DD= 0x0008,
+    EE= 0x0010,
+}
+class NestedClass {
+    + A : int <<get>>
+    + B : InnerClass <<get>>
+}
+class InnerClass {
+    + X : string <<get>> = "xx"
+    + MethodX() : void
+}
+class InnerStruct <<struct>> {
+    + A : int <<get>>
+    + InnerStruct(a:int)
+}
+InnerClass +- InnerStruct
+NestedClass +- InnerClass
