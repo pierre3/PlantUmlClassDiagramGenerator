@@ -9,75 +9,202 @@ namespace PlantUmlClassDiagramGenerator
 {
     class Program
     {
-        static void Main(string[] args)
+        enum OptionType
         {
-            Console.WriteLine("*** PlantUML Class-Diagram Generator ***");
+            Value,
+            Switch
+        }
 
-            if (args.Length < 1)
+        static readonly Dictionary<string, OptionType> options = new Dictionary<string, OptionType>()
+        {
+            ["-dir"] = OptionType.Switch,
+            ["-public"] = OptionType.Switch,
+            ["-ignore"] = OptionType.Value,
+        };
+
+        static int Main(string[] args)
+        {
+            Dictionary<string, string> parameters = MakeParameters(args);
+            if (!parameters.ContainsKey("in"))
             {
                 Console.WriteLine("Specify a source file name or directory name.");
-                return;
+                return -1;
             }
+            if (!parameters.ContainsKey("-dir"))
+            {
+                if (!GeneratePlantUmlFromDir(parameters)) { return -1; }
+            }
+            else
+            {
+                if (!GeneratePlantUmlFromFile(parameters)) { return -1; }
+            }
+            return 0;
+        }
 
-            var input = args[0];
-            IEnumerable<string> files;
-            if (Directory.Exists(input))
+        private static bool GeneratePlantUmlFromFile(Dictionary<string, string> parameters)
+        {
+            var inputFileName = parameters["in"];
+            if (!File.Exists(inputFileName))
             {
-                files = Directory.EnumerateFiles(Path.GetFullPath(input), "*.cs");
+                Console.WriteLine($"\"{inputFileName}\" does not exist.");
+                return false;
             }
-            else if (File.Exists(input))
+            var outputFileName = "";
+            if (parameters.ContainsKey("out"))
             {
+                outputFileName = parameters["out"];
                 try
                 {
-                    var fullname = Path.GetFullPath(input);
-                    files = new[] { fullname };
+                    var outdir = Path.GetDirectoryName(outputFileName);
+                    Directory.CreateDirectory(outdir);
                 }
-                catch
+                catch (Exception e)
                 {
-                    Console.WriteLine("Invalid file name.");
-                    return;
+                    Console.WriteLine(e);
+                    return false;
                 }
             }
             else
             {
-                Console.WriteLine("Specify a source file name or directory name.");
-                return;
+                outputFileName = Path.Combine(Path.GetDirectoryName(inputFileName),
+                    Path.GetFileNameWithoutExtension(inputFileName) + ".puml");
             }
 
-            var outputDir = "";
-            if (args.Length >= 2)
+            try
             {
-                if (Directory.Exists(args[1]))
-                {
-                    outputDir = args[1];
-                }
-            }
-
-            if (outputDir == "")
-            {
-                outputDir = Path.Combine(Path.GetDirectoryName(files.First()),"uml");
-                Directory.CreateDirectory(outputDir);
-            }
-
-            foreach (var file in files)
-            {
-                Console.WriteLine($"Generating PlantUML from {file}...");
-                var outputFile = Path.Combine( outputDir, 
-                    Path.GetFileNameWithoutExtension(file) + ".plantuml");
-
-                using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read))
+                using (var stream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read))
                 {
                     var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
                     var root = tree.GetRoot();
-                    
-                    using (var writer = new StreamWriter(outputFile))
+                    Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
+
+                    using (var writer = new StreamWriter(outputFileName))
                     {
-                        var gen = new ClassDiagramGenerator(writer, "    ");
-                        gen.Visit(root);
+                        var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
+                        gen.Generate(root);
                     }
                 }
             }
-            Console.WriteLine("Completed.");
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+            return true;
+        }
+
+        private static bool GeneratePlantUmlFromDir(Dictionary<string, string> parameters)
+        {
+            var inputRoot = parameters["in"];
+            if (!Directory.Exists(inputRoot))
+            {
+                Console.WriteLine($"Directory \"{inputRoot}\" does not exist.");
+                return false;
+            }
+            var outputRoot = inputRoot;
+            if (parameters.ContainsKey("out"))
+            {
+                outputRoot = parameters["out"];
+                try
+                {
+                    Directory.CreateDirectory(outputRoot);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return false;
+                }
+            }
+            var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
+            foreach (var inputFile in files)
+            {
+                try
+                {
+                    var outputDir = Path.GetDirectoryName(inputFile).Replace(inputRoot, inputRoot);
+                    Directory.CreateDirectory(outputDir);
+                    var outputFile = Path.Combine(outputDir,
+                        Path.GetFileNameWithoutExtension(inputFile) + ".puml");
+
+                    using (var stream = new FileStream(inputFile, FileMode.Open, FileAccess.Read))
+                    {
+                        var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
+                        var root = tree.GetRoot();
+                        Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
+
+                        using (var writer = new StreamWriter(outputFile))
+                        {
+                            var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
+                            gen.Generate(root);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        private static Accessibilities GetIgnoreAccessibilities(Dictionary<string, string> parameters)
+        {
+            var ignoreAcc = Accessibilities.None;
+            if (parameters.ContainsKey("-public"))
+            {
+                ignoreAcc = Accessibilities.Private | Accessibilities.Internal
+                    | Accessibilities.Protected | Accessibilities.ProtectedInternal;
+            }
+            else if (parameters.ContainsKey("-ignore"))
+            {
+                var ignoreItems = parameters["-ignore"].Split(',');
+                foreach (var item in ignoreItems)
+                {
+                    Accessibilities acc;
+                    if (Enum.TryParse(item, true, out acc))
+                    {
+                        ignoreAcc |= acc;
+                    }
+                }
+            }
+            return ignoreAcc;
+        }
+
+        private static Dictionary<string, string> MakeParameters(string[] args)
+        {
+            var currentKey = "";
+            var parameters = new Dictionary<string, string>();
+
+            foreach (var arg in args)
+            {
+                if (currentKey != string.Empty)
+                {
+                    parameters.Add(currentKey, arg);
+                    currentKey = "";
+                    continue;
+                }
+
+                if (options.ContainsKey(arg))
+                {
+                    if (options[arg] == OptionType.Value)
+                    {
+                        currentKey = arg;
+                    }
+                    else
+                    {
+                        parameters.Add(arg, string.Empty);
+                    }
+                }
+                else if (!parameters.ContainsKey("in"))
+                {
+                    parameters.Add("in", arg);
+                }
+                else if (!parameters.ContainsKey("out"))
+                {
+                    parameters.Add("out", arg);
+                }
+            }
+            return parameters;
         }
     }
 }
