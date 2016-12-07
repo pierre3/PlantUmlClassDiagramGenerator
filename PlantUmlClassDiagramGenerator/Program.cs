@@ -30,7 +30,7 @@ namespace PlantUmlClassDiagramGenerator
                 Console.WriteLine("Specify a source file name or directory name.");
                 return -1;
             }
-            if (!parameters.ContainsKey("-dir"))
+            if (parameters.ContainsKey("-dir"))
             {
                 if (!GeneratePlantUmlFromDir(parameters)) { return -1; }
             }
@@ -78,7 +78,8 @@ namespace PlantUmlClassDiagramGenerator
                     var root = tree.GetRoot();
                     Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
 
-                    using (var writer = new StreamWriter(outputFileName))
+                    using(var filestream = new FileStream(outputFileName,FileMode.Create,FileAccess.Write))
+                    using (var writer = new StreamWriter(filestream))
                     {
                         var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
                         gen.Generate(root);
@@ -120,7 +121,7 @@ namespace PlantUmlClassDiagramGenerator
             {
                 try
                 {
-                    var outputDir = Path.GetDirectoryName(inputFile).Replace(inputRoot, inputRoot);
+                    var outputDir = Path.GetDirectoryName(inputFile).Replace(inputRoot, outputRoot);
                     Directory.CreateDirectory(outputDir);
                     var outputFile = Path.Combine(outputDir,
                         Path.GetFileNameWithoutExtension(inputFile) + ".puml");
@@ -131,7 +132,8 @@ namespace PlantUmlClassDiagramGenerator
                         var root = tree.GetRoot();
                         Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
 
-                        using (var writer = new StreamWriter(outputFile))
+                        using(var filestream = new FileStream(outputFile,FileMode.Create,FileAccess.Write))
+                        using (var writer = new StreamWriter(filestream))
                         {
                             var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
                             gen.Generate(root);
