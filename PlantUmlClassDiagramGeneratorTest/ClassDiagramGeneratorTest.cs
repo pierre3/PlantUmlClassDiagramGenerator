@@ -24,7 +24,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = File.ReadAllText(@"uml\all.puml");
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\all.puml"),Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -46,7 +46,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = File.ReadAllText(@"uml\public.puml");
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\public.puml"),Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -66,10 +66,16 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = File.ReadAllText(@"uml\withoutPrivate.puml");
+            var expected = ConvertNewLineCode( File.ReadAllText(@"uml\withoutPrivate.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
+        }
+
+        private string ConvertNewLineCode(string text,string newline)
+        {
+            var reg = new System.Text.RegularExpressions.Regex("\r\n|\r|\n");
+            return reg.Replace(text, newline);
         }
     }
 }
