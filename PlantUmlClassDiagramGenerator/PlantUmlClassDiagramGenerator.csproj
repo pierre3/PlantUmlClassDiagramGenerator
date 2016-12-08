@@ -145,9 +145,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accessibilities.cs" />
     <Compile Include="ClassDiagramGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeNameText.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />

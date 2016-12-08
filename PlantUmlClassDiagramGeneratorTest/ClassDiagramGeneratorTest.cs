@@ -13,7 +13,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTest_All()
         {
-            var code = File.ReadAllText("inputClasses.cs");
+            var code = File.ReadAllText("testData\\inputClasses.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -33,7 +33,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTest_Public()
         {
-            var code = File.ReadAllText("inputClasses.cs");
+            var code = File.ReadAllText("testData\\inputClasses.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -55,7 +55,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTest_WithoutPrivate()
         {
-            var code = File.ReadAllText("inputClasses.cs");
+            var code = File.ReadAllText("testData\\inputClasses.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -67,6 +67,27 @@ namespace PlantUmlClassDiagramGeneratorTest
             }
 
             var expected = ConvertNewLineCode( File.ReadAllText(@"uml\withoutPrivate.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GenerateTest_GenericsTypes()
+        {
+            var code = File.ReadAllText("testData\\GenericsType.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private | Accessibilities.Internal
+                    | Accessibilities.Protected | Accessibilities.ProtectedInternal);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\genericsType.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);

@@ -135,9 +135,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="InputClasses.cs">
+    <Content Include="testData\GenericsType.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
+    </Content>
+    <None Include="testData\InputClasses.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="ClassDiagramGeneratorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -150,6 +153,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="uml\genericsType.puml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="uml\withoutPrivate.puml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

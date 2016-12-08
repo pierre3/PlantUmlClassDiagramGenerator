@@ -9,17 +9,6 @@ using System.Collections.Generic;
 
 namespace PlantUmlClassDiagramGenerator
 {
-    [Flags]
-    public enum Accessibilities
-    {
-        None = 0x0000,
-        Private = 0x0001,
-        Protected = 0x0002,
-        Internal = 0x0004,
-        ProtectedInternal = 0x0008,
-        Public = 0x0010,
-    }
-
     public class ClassDiagramGenerator : CSharpSyntaxWalker
     {
         private IList<SyntaxNode> _innerTypeDeclarationNodes;
@@ -56,8 +45,9 @@ namespace PlantUmlClassDiagramGenerator
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
-            var name = node.Identifier.ToString();
-            var typeParam = node.TypeParameterList?.ToString() ?? "";
+            var typeName = TypeNameText.From(node);
+            var name = typeName.Identifier;
+            var typeParam = typeName.TypeArguments;
 
             WriteLine($"class {name}{typeParam} <<struct>> {{");
 
@@ -192,8 +182,10 @@ namespace PlantUmlClassDiagramGenerator
             var modifiers = GetTypeModifiersText(node.Modifiers);
             var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
                 + node.Keyword.ToString();
-            var name = node.Identifier.ToString();
-            var typeParam = node.TypeParameterList?.ToString() ?? "";
+
+            var typeName = TypeNameText.From(node);
+            var name = typeName.Identifier;
+            var typeParam = typeName.TypeArguments;
 
             WriteLine($"{keyword} {name}{typeParam} {modifiers}{{");
 

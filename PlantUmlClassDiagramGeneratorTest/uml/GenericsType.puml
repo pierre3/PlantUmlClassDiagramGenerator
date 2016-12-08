@@ -1,0 +1,12 @@
+﻿class GenericsType {
+    + Value : object <<get>>
+}
+class "GenericsType`1"<T> {
+    + Value : T <<get>>
+}
+class "GenericsType`2"<T1,T2> {
+    + Value1 : T1 <<get>>
+    + Value2 : T2 <<get>>
+}
+class SubClass {
+}
