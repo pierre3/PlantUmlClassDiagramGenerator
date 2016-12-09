@@ -8,11 +8,13 @@
     # PropA : int <<get>>
     # <<internal>> PropB : string <<get>> <<protected set>>
     <<internal>> PropC : double <<get>> = 3.141592
+    + PropD : string <<get>>
     + ClassA()
     {static} ClassA()
     # <<virtual>> VirtualMethod() : void
     + <<override>> ToString() : string
     + {static} StaticMethod() : string
+    + ExpressonBodiedMethod(x:int) : void
 }
 abstract class ClassB {
     - field_1 : int

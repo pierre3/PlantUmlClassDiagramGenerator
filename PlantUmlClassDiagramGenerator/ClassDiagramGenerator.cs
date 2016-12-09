@@ -105,14 +105,20 @@ namespace PlantUmlClassDiagramGenerator
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = node.Identifier.ToString();
             var typeName = node.Type.ToString();
-            var accessor = node.AccessorList.Accessors
-                .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
-                .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
 
+            //Property does not have an accessor is an expression-bodied property. (get only)
+            var accessorStr = "<<get>>"; 
+            if (node.AccessorList != null)
+            {
+                var accessor = node.AccessorList.Accessors
+                    .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
+                    .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
+                accessorStr = string.Join(" ", accessor);
+            }
             var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
             var initValue = useLiteralInit ? (" = " + node.Initializer.Value.ToString()) : "";
 
-            WriteLine($"{modifiers}{name} : {typeName} {string.Join(" ", accessor)}{initValue}");
+            WriteLine($"{modifiers}{name} : {typeName} {accessorStr}{initValue}");
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)

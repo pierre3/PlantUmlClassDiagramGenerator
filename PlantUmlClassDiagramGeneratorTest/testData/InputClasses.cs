@@ -14,6 +14,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         protected int PropA { get; private set; }
         protected internal string PropB { get; protected set; }
         internal double PropC { get; } = 3.141592;
+        public string PropD => "expression-bodied property";
 
         public ClassA() { }
         static ClassA() { strField = "static field"; }
@@ -25,6 +26,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         public static string StaticMethod() { return strField; }
+        public void ExpressonBodiedMethod(int x) => x * x;
     }
 
     internal abstract class ClassB

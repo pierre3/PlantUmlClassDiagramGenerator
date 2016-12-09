@@ -1,8 +1,10 @@
 ﻿class ClassA {
+    + PropD : string <<get>>
     + ClassA()
     {static} ClassA()
     + <<override>> ToString() : string
     + {static} StaticMethod() : string
+    + ExpressonBodiedMethod(x:int) : void
 }
 abstract class ClassB {
     + {abstract} PropA : int <<get>> <<protected set>>
