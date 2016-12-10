@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace PlantUmlClassDiagramGenerator
 {
@@ -117,8 +118,11 @@ namespace PlantUmlClassDiagramGenerator
                 }
             }
             var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
+            var includeRefs = new StringBuilder();
+            var error = false;
             foreach (var inputFile in files)
             {
+                Console.WriteLine( $"Processing \"{inputFile}\"..." );
                 try
                 {
                     var outputDir = Path.GetDirectoryName(inputFile).Replace(inputRoot, outputRoot);
@@ -139,14 +143,22 @@ namespace PlantUmlClassDiagramGenerator
                             gen.Generate(root);
                         }
                     }
+
+                    includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @".\"));
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    return false;
+                    error = true;
                 }
             }
-            return false;
+            File.WriteAllText(Path.Combine(outputRoot, "include.puml"), includeRefs.ToString());
+            if (error)
+            {
+                Console.WriteLine("There were files that could not be processed.");
+                return false;
+            }
+            return true;
         }
 
         private static Accessibilities GetIgnoreAccessibilities(Dictionary<string, string> parameters)
