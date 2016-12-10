@@ -24,6 +24,13 @@ namespace PlantUmlClassDiagramGeneratorTest
 
     class SubClass : GenericsType<string, int>
     {
+        public string Value1 { get; }
+        public int Value2 { get; }
+    }
 
+    class SubClass<T>: GenericsType<GenericsType<int>, T>
+    {
+        public GenericsType<int> Value1 { get; }
+        public T Value2 { get; }
     }
 }

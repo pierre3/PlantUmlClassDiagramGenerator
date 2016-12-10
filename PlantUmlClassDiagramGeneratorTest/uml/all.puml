@@ -58,3 +58,5 @@ class InnerStruct <<struct>> {
 }
 InnerClass +- InnerStruct
 NestedClass +- InnerClass
+ClassB <|-- ClassC
+INotifyPropertyChanged <|-- ClassC

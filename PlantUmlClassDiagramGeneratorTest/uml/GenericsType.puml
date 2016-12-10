@@ -9,4 +9,12 @@ class "GenericsType`2"<T1,T2> {
     + Value2 : T2 <<get>>
 }
 class SubClass {
+    + Value1 : string <<get>>
+    + Value2 : int <<get>>
 }
+class "SubClass`1"<T> {
+    + Value1 : GenericsType<int> <<get>>
+    + Value2 : T <<get>>
+}
+"GenericsType`2" "<string,int>" <|-- SubClass
+"GenericsType`2" "<GenericsType<int>,T>" <|-- "SubClass`1"

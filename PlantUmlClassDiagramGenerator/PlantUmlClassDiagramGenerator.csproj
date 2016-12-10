@@ -147,6 +147,8 @@
   <ItemGroup>
     <Compile Include="Accessibilities.cs" />
     <Compile Include="ClassDiagramGenerator.cs" />
+    <Compile Include="InheritanceRelationshipCollection.cs" />
+    <Compile Include="InheritanceRelationsip.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeNameText.cs" />

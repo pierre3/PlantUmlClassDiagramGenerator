@@ -13,6 +13,8 @@ namespace PlantUmlClassDiagramGenerator
     {
         private IList<SyntaxNode> _innerTypeDeclarationNodes;
         private Accessibilities _ignoreMemberAccessibilities;
+        private InheritanceRelationshipCollection _inheritanceRelationsips
+            = new InheritanceRelationshipCollection();
         private TextWriter writer;
         private string indent;
         private int nestingDepth = 0;
@@ -29,6 +31,10 @@ namespace PlantUmlClassDiagramGenerator
         {
             Visit(root);
             GenerateInnerTypeDeclarations();
+            foreach(var inheritance in _inheritanceRelationsips)
+            {
+                WriteLine(inheritance.ToString());
+            }
         }
 
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
@@ -44,6 +50,8 @@ namespace PlantUmlClassDiagramGenerator
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
+
+            _inheritanceRelationsips.AddFrom(node);
 
             var typeName = TypeNameText.From(node);
             var name = typeName.Identifier;
@@ -176,7 +184,9 @@ namespace PlantUmlClassDiagramGenerator
                 var innerTypeNode = node as BaseTypeDeclarationSyntax;
                 if (outerTypeNode != null && innerTypeNode != null)
                 {
-                    WriteLine($"{outerTypeNode.Identifier} +- {innerTypeNode.Identifier}");
+                    var outerTypeName = TypeNameText.From(outerTypeNode);
+                    var innerTypeName = TypeNameText.From(innerTypeNode);
+                    WriteLine($"{outerTypeName.Identifier} +- {innerTypeName.Identifier}");
                 }
             }
         }
@@ -184,6 +194,8 @@ namespace PlantUmlClassDiagramGenerator
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
+
+            _inheritanceRelationsips.AddFrom(node);
 
             var modifiers = GetTypeModifiersText(node.Modifiers);
             var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")

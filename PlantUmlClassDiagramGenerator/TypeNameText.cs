@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.IO;
-using System.Collections.Generic;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator
 {
@@ -20,7 +13,7 @@ namespace PlantUmlClassDiagramGenerator
             var identifier = syntax.Identifier.Text;
             var typeArgs = string.Empty;
             var genericName = syntax as GenericNameSyntax;
-            if (genericName != null)
+            if (genericName != null && genericName.TypeArgumentList != null)
             {
                 var count = genericName.TypeArgumentList.Arguments.Count;
                 identifier = $"\"{identifier}`{count}\"";
