@@ -29,6 +29,13 @@ namespace PlantUmlClassDiagramGenerator
 
         public void Generate(SyntaxNode root)
         {
+            WriteLine("@startuml");
+            GenerateInternal(root);
+            WriteLine("@enduml");
+        }
+
+        public void GenerateInternal(SyntaxNode root)
+        {
             Visit(root);
             GenerateInnerTypeDeclarations();
             foreach(var inheritance in _inheritanceRelationsips)
@@ -178,7 +185,7 @@ namespace PlantUmlClassDiagramGenerator
             foreach (var node in _innerTypeDeclarationNodes)
             {
                 var generator = new ClassDiagramGenerator(writer, indent);
-                generator.Generate(node);
+                generator.GenerateInternal(node);
 
                 var outerTypeNode = node.Parent as BaseTypeDeclarationSyntax;
                 var innerTypeNode = node as BaseTypeDeclarationSyntax;

@@ -1,4 +1,5 @@
-﻿class ClassA {
+﻿@startuml
+class ClassA {
     + PropD : string <<get>>
     + ClassA()
     {static} ClassA()
@@ -45,3 +46,4 @@ InnerClass +- InnerStruct
 NestedClass +- InnerClass
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
+@enduml
