@@ -125,7 +125,7 @@ namespace PlantUmlClassDiagramGenerator
                 Console.WriteLine( $"Processing \"{inputFile}\"..." );
                 try
                 {
-                    var outputDir = Path.Combine(outputRoot, Path.GetDirectoryName(inputFile).Replace(inputRoot, ""));
+                    var outputDir = outputRoot + Path.DirectorySeparatorChar + Path.GetDirectoryName(inputFile).Replace(inputRoot, "");
                     Directory.CreateDirectory(outputDir);
                     var outputFile = Path.Combine(outputDir,
                         Path.GetFileNameWithoutExtension(inputFile) + ".puml");
