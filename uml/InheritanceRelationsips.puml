@@ -1,0 +1,21 @@
+@startuml
+abstract class BaseClass {
+    + {abstract} AbstractMethod() : void
+    # <<virtual>> VirtualMethod(s:string) : int
+}
+class SubClass {
+    + <<override>> AbstractMethod() : void
+    # <<override>> VirtualMethod(s:string) : int
+}
+interface IInterfaceA {
+}
+interface "IInterfaceA`1"<T> {
+    Value : T <<get>>
+}
+class ImplementClass {
+    + Value : int <<get>>
+}
+BaseClass <|-- SubClass
+IInterfaceA <|-- "IInterfaceA`1"
+"IInterfaceA`1" "<int>" <|-- ImplementClass
+@enduml

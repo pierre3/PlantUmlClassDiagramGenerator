@@ -1,0 +1,19 @@
+@startuml
+class ClassA {
+}
+class StructA <<struct>> {
+}
+interface InterfaceA {
+}
+abstract class AbstractClass {
+}
+class StaticClass <<static>> {
+}
+class ClassB <<sealed>> <<partial>> {
+}
+enum EnumType {
+    Apple,
+    Orange,
+    Grape,
+}
+@enduml

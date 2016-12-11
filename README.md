@@ -23,52 +23,234 @@ C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1 C:\PlantUml\App1 -dir -ign
 ```
 
 
-## Using Roslyn
+## Specification for conversion to PlantUML
+
+### Type Declaration
+
+#### Type Keywords
+
+|C#               | PlantUML           |
+|:----------------|-------------------:|
+| `class`         | `class`            |
+| `struct`        | `<<struct>> class` |
+| `interface`     | `interface`        |
+| `enum`          | `enum`             |
+
+#### Type Modifiers
+
+|C#               | PlantUML           |
+|:----------------|-------------------:|
+| `abstrct`       | `abstract`         |
+| `static`        | `<<static>>`       |
+| `partial`       | `<<partial>>`      |
+| `sealed`        | `<<sealed>>`       |
+
+#### exsamples
+
+- C#
 
 ```cs
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+class ClassA {  
+}
+struct StructA {
+}
+interface InterfaceA {
+}
+abstract class AbstractClass {
+}
+static class StaticClass {
+}
+sealed partial class ClassB{
+}
+enum EnumType{
+  Apple,
+  Orange,
+  Grape
+}
+```
+- PlantUML
 
-class Program
+```
+@startuml
+class ClassA {
+}
+class StructA <<struct>> {
+}
+interface InterfaceA {
+}
+abstract class AbstractClass {
+}
+class StaticClass <<static>> {
+}
+class ClassB <<sealed>> <<partial>> {
+}
+enum EnumType {
+    Apple,
+    Orange,
+    Grape,
+}
+enduml
+```
+
+#### Generics Type
+
+- C#
+
+```cs
+class GenericsType<T1>{
+}
+class GenericsType<T1,T2>{
+}
+```
+- PlantUML
+
+```
+class "GenericsType`1"<T1>{
+}
+class "GenericsType`2"<T1,T2>{
+}
+```
+
+### Member Declaration
+
+#### Accessibility Modifiers
+
+|C#                    | PlantUML           |
+|:---------------------|-------------------:|
+| `public`             | `+`                |
+| `internal`           | `<<internal>>`     |
+| `protected internal` | `# <<internal>>`   |
+| `protected`          | `#`                |
+| `private`            | `-`                |
+
+#### Modifiers
+
+|C#            | PlantUML         |
+|:-------------|-----------------:|
+| `abstract`   | `{abstract}`     |
+| `static`     | `{static}`       |
+| `virtual`    | `<<virtual>>`    |
+| `override`   | `<<override>>`   |
+| `new`        | `<<new>>`        |
+| `readonly`   | `<<readonly>>`   |
+| `event`      | `<<event>>`      |
+
+#### Property Accessors
+
+|C#                              | PlantUML                            |
+|:-------------------------------|------------------------------------:|
+| `int Prop {get; set;}`         | `Prop : int <<get>> <<set>>`        |
+| `int Prop {get;}`              | `Prop : int <get>`                  |
+| `int Prop {get; private set }` | `Prop : int <<get>><<private set>>` |
+| `int Prop => 100;`             | `Prop : int <<get>>`                |
+
+#### Field and Property Initializers
+
+Only __literal__ initializers are output.
+
+- C#
+
+```cs
+class ClassC
 {
-    static void Main(string[] args)
-    {
-      var code = @"
-namespace Test
+    private int fieldA = 123;
+    public double Pi {get;} = 3.14159;
+    protected List<string> Items = new List<string>(); 
+}
+```
+
+- PlantUML
+
+```
+class ClassC {
+  - fieldA : int = 123
+  + Pi : double = 3.14159
+  # Items : List<string>
+}
+```
+
+### Nested Class Declaration
+
+Nested classes are expanded and associated with "OuterClass + - InnerClass".
+
+- C#
+
+```cs
+class OuterClass 
 {
-  class ClassA
+  class InnerClass 
   {
-    public int PropA {get;}
-    public string PropB {get;set;}
-    publc int Method(){
-      return 0;
+    struct InnerStruct 
+    {
+
     }
   }
 }
-";
-      var tree = CSharpSyntaxTree.ParseText(code);
-      var root = tree.GetRoot();
+```
 
-      var output = new StringBuilder();
-      using (var writer = new StringWriter(output))
-      {
-          var gen = new ClassDiagramGenerator(writer, indent:"    ");
-          gen.Visit(root);
-      }
-     Console.WriteLine(output);
-     }
+- PlantUML
+
+```
+class OuterClass{
+
+}
+class InnerClass{
+
+}
+<<struct>> class InnerStruct {
+
+}
+OuterClass +- InnerClass
+InnerClass +- InnerStruct
+```
+
+### Inheritance Relationsips
+
+- C#
+
+```cs
+abstract class BaseClass
+{
+    public abstract void AbstractMethod();
+    protected virtual int VirtualMethod(string s) => 0;
+}
+class SubClass : BaseClass
+{
+    public override void AbstractMethod() { }
+    protected override int VirtualMethod(string s) => 1;
 }
 
-/*** output..
-class A{
-    + PropA : int <<get>>
-    + PropB : string <<get>> <<set>>
-    + Method():int
+interface IInterfaceA {}
+interface IInterfaceA<T>:IInterfaceA
+{
+    T Value { get; }
 }
-***/
+class ImplementClass : IInterfaceA<int>
+{
+    public int Value { get; }
+}
+```
 
+- PlantUML
+
+```
+abstract class BaseClass {
+    + {abstract} AbstractMethod() : void
+    # <<virtual>> VirtualMethod(s:string) : int
+}
+class SubClass {
+    + <<override>> AbstractMethod() : void
+    # <<override>> VirtualMethod(s:string) : int
+}
+interface IInterfaceA {
+}
+interface "IInterfaceA`1"<T> {
+    Value : T <<get>>
+}
+class ImplementClass {
+    + Value : int <<get>>
+}
+BaseClass <|-- SubClass
+IInterfaceA <|-- "IInterfaceA`1"
+"IInterfaceA`1" "<int>" <|-- ImplementClass
 ```

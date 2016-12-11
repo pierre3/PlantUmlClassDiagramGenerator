@@ -1,0 +1,7 @@
+@startuml
+class ClassC {
+    - fieldA : int = 123
+    + Pi : double <<get>> = 3.14159
+    # Items : List<string>
+}
+@enduml

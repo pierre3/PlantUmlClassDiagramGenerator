@@ -1,0 +1,10 @@
+@startuml
+class OuterClass {
+}
+class InnerClass {
+}
+class InnerStruct <<struct>> {
+}
+InnerClass +- InnerStruct
+OuterClass +- InnerClass
+@enduml
