@@ -45,8 +45,6 @@ C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1 C:\PlantUml\App1 -dir -ign
 | `partial`       | `<<partial>>`      |
 | `sealed`        | `<<sealed>>`       |
 
-#### exsamples
-
 - C#
 
 ```cs
@@ -92,6 +90,8 @@ enum EnumType {
 enduml
 ```
 
+![TypeDeclaration.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/TypeDeclaration.png)
+
 #### Generics Type
 
 - C#
@@ -110,6 +110,8 @@ class "GenericsType`1"<T1>{
 class "GenericsType`2"<T1,T2>{
 }
 ```
+
+![GenericsTypeDeclaration.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/GenericsTypeDeclaration.png)
 
 ### Member Declaration
 
@@ -169,6 +171,8 @@ class ClassC {
 }
 ```
 
+![Initializer.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/Initializer.png)
+
 ### Nested Class Declaration
 
 Nested classes are expanded and associated with "OuterClass + - InnerClass".
@@ -203,6 +207,8 @@ class InnerClass{
 OuterClass +- InnerClass
 InnerClass +- InnerStruct
 ```
+
+![NestedClass.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/NestedClass.png)
 
 ### Inheritance Relationsips
 
@@ -254,3 +260,5 @@ BaseClass <|-- SubClass
 IInterfaceA <|-- "IInterfaceA`1"
 "IInterfaceA`1" "<int>" <|-- ImplementClass
 ```
+
+![InheritanceRelationsips.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/InheritanceRelationsips.png)
