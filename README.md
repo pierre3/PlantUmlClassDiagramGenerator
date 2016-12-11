@@ -146,6 +146,71 @@ class "GenericsType`2"<T1,T2>{
 | `int Prop {get; private set }` | `Prop : int <<get>><<private set>>` |
 | `int Prop => 100;`             | `Prop : int <<get>>`                |
 
+- C#
+
+```cs
+abstract class AbstractClass
+{
+    protected int _x;
+    internal int _y;
+    protected internal int _z;
+    public abstract void AbstractMethod();
+    protected virtual void VirtualMethod(string s){
+
+    }
+    public string BaseMethod(int n){
+        return "";
+    }
+}
+class ClassM : AbstractClass
+{
+    public static readonly double PI =3.141592;
+    public int PropA { get; set; }
+    public int PropB { get; protected set; }
+    public event EventHandler SomeEvent;
+    public override void AbstractMethod(){
+        
+    }
+    protected override void VirtualMethod(string s)
+    {
+
+    }
+    public override string ToString()
+    {
+        return "override";
+    }
+    public new string BaseMethod(int n){
+        return "new";
+    }
+}
+```
+
+- PlantUML
+
+```
+abstract class AbstractClass {
+    # _x : int
+    <<internal>> _y : int
+    # <<internal>> _z : int
+    + {abstract} AbstractMethod() : void
+    # <<virtual>> VirtualMethod(s:string) : void
+    + BaseMethod(n:int) : string
+}
+class ClassM {
+    + {static} <<readonly>> PI : double = 3.141592
+    + PropA : int <<get>> <<set>>
+    + PropB : int <<get>> <<protected set>>
+    +  <<event>> SomeEvent : EventHandler 
+    + <<override>> AbstractMethod() : void
+    # <<override>> VirtualMethod(s:string) : void
+    + <<override>> ToString() : string
+    + <<new>> BaseMethod(n:int) : string
+}
+AbstractClass <|-- ClassM
+```
+
+![MemberDeclaration.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/MemberDeclaration.png)
+
 #### Field and Property Initializers
 
 Only __literal__ initializers are output.

@@ -1,0 +1,21 @@
+@startuml
+abstract class AbstractClass {
+    # _x : int
+    <<internal>> _y : int
+    # <<internal>> _z : int
+    + {abstract} AbstractMethod() : void
+    # <<virtual>> VirtualMethod(s:string) : void
+    + BaseMethod(n:int) : string
+}
+class ClassM {
+    + {static} <<readonly>> PI : double = 3.141592
+    + PropA : int <<get>> <<set>>
+    + PropB : int <<get>> <<protected set>>
+    +  <<event>> SomeEvent : EventHandler 
+    + <<override>> AbstractMethod() : void
+    # <<override>> VirtualMethod(s:string) : void
+    + <<override>> ToString() : string
+    + <<new>> BaseMethod(n:int) : string
+}
+AbstractClass <|-- ClassM
+@enduml
