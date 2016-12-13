@@ -21,6 +21,7 @@ namespace PlantUmlClassDiagramGenerator
             ["-dir"] = OptionType.Switch,
             ["-public"] = OptionType.Switch,
             ["-ignore"] = OptionType.Value,
+            ["-excludePaths"] = OptionType.Value,
         };
 
         static int Main(string[] args)
@@ -67,7 +68,7 @@ namespace PlantUmlClassDiagramGenerator
             }
             else
             {
-                outputFileName = Path.Combine(Path.GetDirectoryName(inputFileName),
+                outputFileName = CombinePath(Path.GetDirectoryName(inputFileName),
                     Path.GetFileNameWithoutExtension(inputFileName) + ".puml");
             }
 
@@ -79,7 +80,7 @@ namespace PlantUmlClassDiagramGenerator
                     var root = tree.GetRoot();
                     Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
 
-                    using(var filestream = new FileStream(outputFileName,FileMode.Create,FileAccess.Write))
+                    using (var filestream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write))
                     using (var writer = new StreamWriter(filestream))
                     {
                         var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
@@ -117,17 +118,37 @@ namespace PlantUmlClassDiagramGenerator
                     return false;
                 }
             }
+
+            var excludePaths = new List<string>();
+            var pumlexclude = CombinePath(inputRoot, ".pumlexclude");
+            if (File.Exists(pumlexclude))
+            {
+                excludePaths = File.ReadAllLines(pumlexclude).ToList();
+            }
+            if (parameters.ContainsKey("-excludePaths"))
+            {
+                excludePaths.AddRange(parameters["-excludePaths"].Split(','));
+            }
+
             var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
             var includeRefs = new StringBuilder();
+            includeRefs.AppendLine("@startuml");
             var error = false;
             foreach (var inputFile in files)
             {
-                Console.WriteLine( $"Processing \"{inputFile}\"..." );
+                if (excludePaths
+                    .Select(p => CombinePath(inputRoot,p))
+                    .Any(p => inputFile.StartsWith(p,StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    Console.WriteLine($"Skipped \"{inputFile}\"...");
+                    continue;
+                }
+                Console.WriteLine($"Processing \"{inputFile}\"...");
                 try
                 {
-                    var outputDir = outputRoot + Path.DirectorySeparatorChar + Path.GetDirectoryName(inputFile).Replace(inputRoot, "");
+                    var outputDir = CombinePath(outputRoot, Path.GetDirectoryName(inputFile).Replace(inputRoot, ""));
                     Directory.CreateDirectory(outputDir);
-                    var outputFile = Path.Combine(outputDir,
+                    var outputFile = CombinePath(outputDir,
                         Path.GetFileNameWithoutExtension(inputFile) + ".puml");
 
                     using (var stream = new FileStream(inputFile, FileMode.Open, FileAccess.Read))
@@ -136,7 +157,7 @@ namespace PlantUmlClassDiagramGenerator
                         var root = tree.GetRoot();
                         Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
 
-                        using(var filestream = new FileStream(outputFile,FileMode.Create,FileAccess.Write))
+                        using (var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
                         using (var writer = new StreamWriter(filestream))
                         {
                             var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
@@ -152,7 +173,8 @@ namespace PlantUmlClassDiagramGenerator
                     error = true;
                 }
             }
-            File.WriteAllText(Path.Combine(outputRoot, "include.puml"), includeRefs.ToString());
+            includeRefs.AppendLine("@enduml");
+            File.WriteAllText(CombinePath(outputRoot, "include.puml"), includeRefs.ToString());
             if (error)
             {
                 Console.WriteLine("There were files that could not be processed.");
@@ -219,6 +241,13 @@ namespace PlantUmlClassDiagramGenerator
                 }
             }
             return parameters;
+        }
+
+        private static string CombinePath(string first, string second)
+        {
+            return first.TrimEnd(Path.DirectorySeparatorChar)
+                + Path.DirectorySeparatorChar
+                + second.TrimStart(Path.DirectorySeparatorChar);
         }
     }
 }

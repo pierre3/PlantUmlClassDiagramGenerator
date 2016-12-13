@@ -193,7 +193,7 @@ namespace PlantUmlClassDiagramGenerator
                 {
                     var outerTypeName = TypeNameText.From(outerTypeNode);
                     var innerTypeName = TypeNameText.From(innerTypeNode);
-                    WriteLine($"{outerTypeName.Identifier} +- {innerTypeName.Identifier}");
+                    WriteLine($"{outerTypeName.Identifier} +-- {innerTypeName.Identifier}");
                 }
             }
         }
