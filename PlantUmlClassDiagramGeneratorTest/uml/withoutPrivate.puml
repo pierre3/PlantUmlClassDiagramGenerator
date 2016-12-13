@@ -51,8 +51,8 @@ class InnerStruct <<struct>> {
     + A : int <<get>>
     + InnerStruct(a:int)
 }
-InnerClass +- InnerStruct
-NestedClass +- InnerClass
+InnerClass +-- InnerStruct
+NestedClass +-- InnerClass
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
 @enduml
