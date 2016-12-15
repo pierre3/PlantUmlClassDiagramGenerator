@@ -4,7 +4,7 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 ## Usage
 
 ```bat
-C:\> PlantUmlClassDiagramGenerator.exe InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
+C:\> PlantUmlClassDiagramGenerator.exe InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList]
 ```
 
 - InputPath: (Required) Sets a input source file or directory name.
