@@ -2,9 +2,9 @@
 This is a generator to create a class-diagram of PlantUML from the C# source code.
 
 ## Usage
-
+Navigate to the `src/PlantUmlClassDiagramGenerator` project folder and run
 ```bat
-C:\> PlantUmlClassDiagramGenerator.exe InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList]
+dotnet run InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList]
 ```
 
 - InputPath: (Required) Sets a input source file or directory name.
@@ -18,15 +18,15 @@ C:\> PlantUmlClassDiagramGenerator.exe InputPath [OutputPath] [-dir] [-public | 
 
 examples
 ```bat
-C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1\ClassA.cs -public
+dotnet run C:\Source\App1\ClassA.cs -public
 ```
 
 ```bat
-C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected
+dotnet run C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected
 ```
 
 ```bat
-C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
+dotnet run C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 ```
 
 ## Specification for conversion to PlantUML
