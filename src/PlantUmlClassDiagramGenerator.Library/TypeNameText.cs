@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace PlantUmlClassDiagramGenerator
+namespace PlantUmlClassDiagramGenerator.Library
 {
     public class TypeNameText
     {

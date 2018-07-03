@@ -1,10 +1,11 @@
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using PlantUmlClassDiagramGenerator.Library;
 
 namespace PlantUmlClassDiagramGenerator
 {
@@ -137,8 +138,8 @@ namespace PlantUmlClassDiagramGenerator
             foreach (var inputFile in files)
             {
                 if (excludePaths
-                    .Select(p => CombinePath(inputRoot,p))
-                    .Any(p => inputFile.StartsWith(p,StringComparison.InvariantCultureIgnoreCase)))
+                    .Select(p => CombinePath(inputRoot, p))
+                    .Any(p => inputFile.StartsWith(p, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     Console.WriteLine($"Skipped \"{inputFile}\"...");
                     continue;
