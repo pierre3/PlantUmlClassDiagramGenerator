@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PlantUmlClassDiagramGenerator;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Text;
 using System.IO;
+using PlantUmlClassDiagramGenerator.Library;
 
 namespace PlantUmlClassDiagramGeneratorTest
 {
@@ -24,7 +24,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\all.puml"),Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\all.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -41,12 +41,12 @@ namespace PlantUmlClassDiagramGeneratorTest
             using (var writer = new StringWriter(output))
             {
                 var gen = new ClassDiagramGenerator(writer, "    ",
-                    Accessibilities.Private | Accessibilities.Internal 
+                    Accessibilities.Private | Accessibilities.Internal
                     | Accessibilities.Protected | Accessibilities.ProtectedInternal);
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\public.puml"),Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\public.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -62,11 +62,11 @@ namespace PlantUmlClassDiagramGeneratorTest
             var output = new StringBuilder();
             using (var writer = new StringWriter(output))
             {
-                var gen = new ClassDiagramGenerator(writer, "    ",Accessibilities.Private);
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private);
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode( File.ReadAllText(@"uml\withoutPrivate.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\withoutPrivate.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -93,7 +93,7 @@ namespace PlantUmlClassDiagramGeneratorTest
             Assert.AreEqual(expected, actual);
         }
 
-        private string ConvertNewLineCode(string text,string newline)
+        private string ConvertNewLineCode(string text, string newline)
         {
             var reg = new System.Text.RegularExpressions.Regex("\r\n|\r|\n");
             return reg.Replace(text, newline);
