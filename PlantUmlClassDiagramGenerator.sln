@@ -1,38 +1,46 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGenerator", "PlantUmlClassDiagramGenerator\PlantUmlClassDiagramGenerator.csproj", "{CAA58B88-9EA4-4C70-8163-997708AD6004}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BA69B69C-C802-4077-B693-8845A154AD13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGeneratorTest", "PlantUmlClassDiagramGeneratorTest\PlantUmlClassDiagramGeneratorTest.csproj", "{AAC55521-C146-4190-863E-28AE460826EA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D0EC41DE-8A29-463D-8915-CB623E02CDA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGenerator.Library", "src\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj", "{F6D73496-8660-4A4C-B88A-470990897D7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGenerator", "src\PlantUmlClassDiagramGenerator\PlantUmlClassDiagramGenerator.csproj", "{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGeneratorTest", "test\PlantUmlClassDiagramGeneratorTest\PlantUmlClassDiagramGeneratorTest.csproj", "{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Debug|x86.ActiveCfg = Debug|x86
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Debug|x86.Build.0 = Debug|x86
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Release|x86.ActiveCfg = Release|x86
-		{CAA58B88-9EA4-4C70-8163-997708AD6004}.Release|x86.Build.0 = Release|x86
-		{AAC55521-C146-4190-863E-28AE460826EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAC55521-C146-4190-863E-28AE460826EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAC55521-C146-4190-863E-28AE460826EA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AAC55521-C146-4190-863E-28AE460826EA}.Debug|x86.Build.0 = Debug|Any CPU
-		{AAC55521-C146-4190-863E-28AE460826EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAC55521-C146-4190-863E-28AE460826EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AAC55521-C146-4190-863E-28AE460826EA}.Release|x86.ActiveCfg = Release|Any CPU
-		{AAC55521-C146-4190-863E-28AE460826EA}.Release|x86.Build.0 = Release|Any CPU
+		{F6D73496-8660-4A4C-B88A-470990897D7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6D73496-8660-4A4C-B88A-470990897D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6D73496-8660-4A4C-B88A-470990897D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6D73496-8660-4A4C-B88A-470990897D7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F6D73496-8660-4A4C-B88A-470990897D7E} = {BA69B69C-C802-4077-B693-8845A154AD13}
+		{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C} = {BA69B69C-C802-4077-B693-8845A154AD13}
+		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A} = {D0EC41DE-8A29-463D-8915-CB623E02CDA0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8F6C51C-3BD1-44B3-803A-176BCC69458E}
 	EndGlobalSection
 EndGlobal

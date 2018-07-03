@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.IO;
-using System.Collections.Generic;
 
-namespace PlantUmlClassDiagramGenerator
+namespace PlantUmlClassDiagramGenerator.Library
 {
     public class ClassDiagramGenerator : CSharpSyntaxWalker
     {
@@ -38,7 +37,7 @@ namespace PlantUmlClassDiagramGenerator
         {
             Visit(root);
             GenerateInnerTypeDeclarations();
-            foreach(var inheritance in _inheritanceRelationsips)
+            foreach (var inheritance in _inheritanceRelationsips)
             {
                 WriteLine(inheritance.ToString());
             }
@@ -122,7 +121,7 @@ namespace PlantUmlClassDiagramGenerator
             var typeName = node.Type.ToString();
 
             //Property does not have an accessor is an expression-bodied property. (get only)
-            var accessorStr = "<<get>>"; 
+            var accessorStr = "<<get>>";
             if (node.AccessorList != null)
             {
                 var accessor = node.AccessorList.Accessors
