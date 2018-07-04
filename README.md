@@ -4,14 +4,17 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 ## Usage
 
 ```bat
-C:\> PlantUmlClassDiagramGenerator.exe InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
+C:\> PlantUmlClassDiagramGenerator.exe InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList]
 ```
 
-- InputPath: (Required) Sets a input source file or directory name.    
-- OutputPath: (Optional) Sets a output file or directory name.
+- InputPath: (Required) Sets a input source file or directory name.
+- OutputPath: (Optional) Sets a output file or directory name.  
+  If you omit this option, plantuml files are outputted to same directory as the input files.
 - -dir: (Optional) Specify when InputPath and OutputPath are directory names.
 - -public: (Optional) If specified, only public accessibility members are output. 
-- -ignore: (Optional) Specify the accessibility of members to ignore, separated by commas.
+- -ignore: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
+- -excludePaths: (Optional) Specify the exclude file and directory.   
+  Specifies a relative path from the "InputPath", with a comma separated list.
 
 examples
 ```bat
@@ -22,6 +25,9 @@ C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1\ClassA.cs -public
 C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected
 ```
 
+```bat
+C:\> PlantUmlClassDiagramGenerator.exe C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
+```
 
 ## Specification for conversion to PlantUML
 
