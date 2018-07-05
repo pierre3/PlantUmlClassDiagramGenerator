@@ -1,10 +1,18 @@
 # PlantUmlClassDiagramGenerator
 This is a generator to create a class-diagram of PlantUML from the C# source code.
 
-## Usage
-Navigate to the `src/PlantUmlClassDiagramGenerator` project folder and run
+## Installation
+Download and install the [.NET Core 2.1 SDK](https://www.microsoft.com/net/download/windows) or newer. Once installed, run the following command.
+
 ```bat
-dotnet run InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList]
+dotnet tool install --global PlantUmlClassDiagramGenerator --version 1.0.0.1
+```
+
+## Usage
+Run the "puml-gen" command.
+
+```bat
+puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList]
 ```
 
 - InputPath: (Required) Sets a input source file or directory name.
@@ -18,15 +26,15 @@ dotnet run InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilitie
 
 examples
 ```bat
-dotnet run C:\Source\App1\ClassA.cs -public
+puml-gen C:\Source\App1\ClassA.cs -public
 ```
 
 ```bat
-dotnet run C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected
+puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected
 ```
 
 ```bat
-dotnet run C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
+puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 ```
 
 ## Specification for conversion to PlantUML
