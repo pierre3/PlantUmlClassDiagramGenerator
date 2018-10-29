@@ -105,7 +105,9 @@ namespace PlantUmlClassDiagramGenerator
                 Console.WriteLine($"Directory \"{inputRoot}\" does not exist.");
                 return false;
             }
-            var outputRoot = inputRoot;
+
+            // Use GetFullPath to fully support relative paths.
+            var outputRoot = Path.GetFullPath(inputRoot);
             if (parameters.ContainsKey("out"))
             {
                 outputRoot = parameters["out"];
