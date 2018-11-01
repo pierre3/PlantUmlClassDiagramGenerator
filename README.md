@@ -1,13 +1,14 @@
 # PlantUmlClassDiagramGenerator
 This is a generator to create a class-diagram of PlantUML from the C# source code.
 
+Nuget Gallery: https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
+
 ## Installation
 Download and install the [.NET Core 2.1 SDK](https://www.microsoft.com/net/download/windows) or newer. Once installed, run the following command.
 
 ```bat
-dotnet tool install --global PlantUmlClassDiagramGenerator --version 1.0.0.1
+dotnet tool install --global PlantUmlClassDiagramGenerator --version 1.0.0.2
 ```
-
 ## Usage
 Run the "puml-gen" command.
 
