@@ -14,16 +14,21 @@ namespace PlantUmlClassDiagramGenerator.Library
         private Accessibilities _ignoreMemberAccessibilities;
         private InheritanceRelationshipCollection _inheritanceRelationsips
             = new InheritanceRelationshipCollection();
+
+        private List<string> _classRelationships = new List<string>();
+        
         private TextWriter writer;
         private string indent;
         private int nestingDepth = 0;
+        private bool _drawObjectDeps = false;
 
-        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None)
+        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, bool drawObjectDependencies = false)
         {
             this.writer = writer;
             this.indent = indent;
             _innerTypeDeclarationNodes = new List<SyntaxNode>();
             _ignoreMemberAccessibilities = ignoreMemberAccessibilities;
+            _drawObjectDeps = drawObjectDependencies;
         }
 
         public void Generate(SyntaxNode root)
@@ -118,8 +123,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = node.Identifier.ToString();
-            var typeName = node.Type.ToString();
-
+            var typeName = node.Type.ToString();            
             //Property does not have an accessor is an expression-bodied property. (get only)
             var accessorStr = "<<get>>";
             if (node.AccessorList != null)
@@ -131,8 +135,26 @@ namespace PlantUmlClassDiagramGenerator.Library
             }
             var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
             var initValue = useLiteralInit ? (" = " + node.Initializer.Value.ToString()) : "";
-
+            
             WriteLine($"{modifiers}{name} : {typeName} {accessorStr}{initValue}");
+            
+            var classNode = node.Parent as ClassDeclarationSyntax;
+
+            string[] lstBlacklistTypes = new string[] { 
+                "dictionary<",
+                "list<",
+                "string",
+                "bool",
+                "int",
+                "datetime"
+            };
+
+            if(!lstBlacklistTypes.Any(s => typeName.ToLower().Contains(s))) 
+            {
+                if(classNode != null){
+                    _classRelationships.Add($"{classNode.Identifier.ToString()} .. {typeName.Replace("[]", "").Replace("?", "")}");
+                }                
+            }
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
@@ -218,6 +240,13 @@ namespace PlantUmlClassDiagramGenerator.Library
             nestingDepth--;
 
             WriteLine("}");
+
+            if(_drawObjectDeps)
+            {
+                _classRelationships.ForEach((relationship) => {
+                    WriteLine(relationship);
+                });
+            }            
         }
 
         private string GetTypeModifiersText(SyntaxTokenList modifiers)

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+  <PropertyGroup>      
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
@@ -8,14 +8,15 @@
     <NETCorePlatformsImplicitPackageVersion>2.0.1</NETCorePlatformsImplicitPackageVersion>
     <Description>This is a generator to create a class-diagram of PlantUML from the C# source code.</Description>
     <Copyright>© 2018 pierre3</Copyright>
-    <PackageLicenseUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/bigbangtheorem/PlantUmlClassDiagramGenerator/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/bigbangtheorem/PlantUmlClassDiagramGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bigbangtheorem/PlantUmlClassDiagramGenerator</RepositoryUrl>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
     <RepositoryType></RepositoryType>
     <PackageTags>plantuml</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.1</Version>
-    <Authors>pierre3</Authors>
+    <Version>1.0.0.7</Version>
+    <Authors>pierre3, bigbangtheorem</Authors>
     <Company />
     <Product />
   </PropertyGroup>

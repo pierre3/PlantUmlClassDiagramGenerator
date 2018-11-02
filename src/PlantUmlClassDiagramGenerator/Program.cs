@@ -21,6 +21,7 @@ namespace PlantUmlClassDiagramGenerator
         {
             ["-dir"] = OptionType.Switch,
             ["-public"] = OptionType.Switch,
+            ["-drawObjectDeps"] = OptionType.Switch,
             ["-ignore"] = OptionType.Value,
             ["-excludePaths"] = OptionType.Value,
         };
@@ -83,8 +84,8 @@ namespace PlantUmlClassDiagramGenerator
 
                     using (var filestream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write))
                     using (var writer = new StreamWriter(filestream))
-                    {
-                        var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
+                    {                        
+                        var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-drawObjectDeps"));
                         gen.Generate(root);
                     }
                 }
@@ -163,12 +164,16 @@ namespace PlantUmlClassDiagramGenerator
                         using (var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
                         using (var writer = new StreamWriter(filestream))
                         {
-                            var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
+                            var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-drawObjectDeps"));
                             gen.Generate(root);
                         }
                     }
 
-                    includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @".\"));
+                    if(Environment.OSVersion.Platform == System.PlatformID.Win32NT){
+                        includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @".\"));
+                    } else {
+                        includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @"."));
+                    }                    
                 }
                 catch (Exception e)
                 {
