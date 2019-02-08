@@ -4,11 +4,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.Library
 {
-    public class InheritanceRelationshipCollection : IEnumerable<InheritanceRelationsip>
+    public class RelationshipCollection : IEnumerable<Relationship>
     {
-        private IList<InheritanceRelationsip> _items = new List<InheritanceRelationsip>();
+        private IList<Relationship> _items = new List<Relationship>();
 
-        public void AddFrom(TypeDeclarationSyntax syntax)
+        public void AddInheritanceFrom(TypeDeclarationSyntax syntax)
         {
             if (syntax.BaseList == null) { return; }
 
@@ -22,12 +22,12 @@ namespace PlantUmlClassDiagramGenerator.Library
                     continue;
                 }
                 var baseTypeName = TypeNameText.From(typeNameSyntax);
-                _items.Add(new InheritanceRelationsip(baseTypeName, subTypeName));
+                _items.Add(new InheritanceRelationship(baseTypeName, subTypeName));
             }
 
         }
 
-        public IEnumerator<InheritanceRelationsip> GetEnumerator()
+        public IEnumerator<Relationship> GetEnumerator()
         {
             return _items.GetEnumerator();
         }

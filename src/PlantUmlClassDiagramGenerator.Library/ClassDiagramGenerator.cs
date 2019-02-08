@@ -12,8 +12,8 @@ namespace PlantUmlClassDiagramGenerator.Library
     {
         private IList<SyntaxNode> _innerTypeDeclarationNodes;
         private Accessibilities _ignoreMemberAccessibilities;
-        private InheritanceRelationshipCollection _inheritanceRelationsips
-            = new InheritanceRelationshipCollection();
+        private RelationshipCollection _relationships
+            = new RelationshipCollection();
         private TextWriter writer;
         private string indent;
         private int nestingDepth = 0;
@@ -37,9 +37,9 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             Visit(root);
             GenerateInnerTypeDeclarations();
-            foreach (var inheritance in _inheritanceRelationsips)
+            foreach (var relationship in _relationships)
             {
-                WriteLine(inheritance.ToString());
+                WriteLine(relationship.ToString());
             }
         }
 
@@ -57,7 +57,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
-            _inheritanceRelationsips.AddFrom(node);
+            _relationships.AddInheritanceFrom(node);
 
             var typeName = TypeNameText.From(node);
             var name = typeName.Identifier;
@@ -201,7 +201,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
-            _inheritanceRelationsips.AddFrom(node);
+            _relationships.AddInheritanceFrom(node);
 
             var modifiers = GetTypeModifiersText(node.Modifiers);
             var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
