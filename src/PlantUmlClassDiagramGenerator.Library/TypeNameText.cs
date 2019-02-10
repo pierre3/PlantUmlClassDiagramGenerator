@@ -26,6 +26,15 @@ namespace PlantUmlClassDiagramGenerator.Library
             };
         }
 
+        public static TypeNameText From(VariableDeclarationSyntax syntax)
+        {
+            return new TypeNameText
+            {
+                Identifier = syntax.Type.ToString(),
+                TypeArguments = string.Empty
+            };
+        }
+
         public static TypeNameText From(BaseTypeDeclarationSyntax syntax)
         {
             var identifier = syntax.Identifier.Text;

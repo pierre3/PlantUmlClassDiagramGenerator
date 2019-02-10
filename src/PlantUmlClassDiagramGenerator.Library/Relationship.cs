@@ -1,6 +1,6 @@
 ﻿namespace PlantUmlClassDiagramGenerator.Library
 {
-    public abstract class Relationship
+    public class Relationship
     {
         protected TypeNameText _baseTypeName;
         protected TypeNameText _subTypeName;
@@ -8,7 +8,7 @@
         protected string _subLabel;
         private string _symbol;
 
-        public Relationship(TypeNameText baseTypeName, TypeNameText subTypeName, string symbol, string baseLabel, string subLabel)
+        public Relationship(TypeNameText baseTypeName, TypeNameText subTypeName, string symbol, string baseLabel = "", string subLabel = "")
         {
             _baseTypeName = baseTypeName;
             _subTypeName = subTypeName;

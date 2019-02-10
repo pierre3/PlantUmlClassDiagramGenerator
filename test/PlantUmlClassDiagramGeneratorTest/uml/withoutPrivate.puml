@@ -52,7 +52,8 @@ class InnerStruct <<struct>> {
     + InnerStruct(a:int)
 }
 InnerClass +-- InnerStruct
-NestedClass +-- InnerClass
+ClassA "publicA" <-- ClassB
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
+NestedClass +-- InnerClass
 @enduml

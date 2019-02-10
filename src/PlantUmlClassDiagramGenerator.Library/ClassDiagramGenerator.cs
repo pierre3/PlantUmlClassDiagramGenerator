@@ -101,14 +101,20 @@ namespace PlantUmlClassDiagramGenerator.Library
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var modifiers = GetMemberModifiersText(node.Modifiers);
-            var typeName = node.Declaration.Type.ToString();
+            var type = node.Declaration.Type;
             var variables = node.Declaration.Variables;
             foreach (var field in variables)
             {
-                var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-                var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
-
-                WriteLine($"{modifiers}{field.Identifier} : {typeName}{initValue}");
+                if (type.GetType() == typeof(PredefinedTypeSyntax))
+                {
+                    var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+                    var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
+                    WriteLine($"{modifiers}{field.Identifier} : {type.ToString()}{initValue}");
+                }
+                else
+                {
+                    _relationships.AddAssociationFrom(node, field);
+                }
             }
         }
 
@@ -185,15 +191,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             {
                 var generator = new ClassDiagramGenerator(writer, indent);
                 generator.GenerateInternal(node);
-
-                var outerTypeNode = node.Parent as BaseTypeDeclarationSyntax;
-                var innerTypeNode = node as BaseTypeDeclarationSyntax;
-                if (outerTypeNode != null && innerTypeNode != null)
-                {
-                    var outerTypeName = TypeNameText.From(outerTypeNode);
-                    var innerTypeName = TypeNameText.From(innerTypeNode);
-                    WriteLine($"{outerTypeName.Identifier} +-- {innerTypeName.Identifier}");
-                }
+                _relationships.AddInnerclassRelationFrom(node);
             }
         }
 

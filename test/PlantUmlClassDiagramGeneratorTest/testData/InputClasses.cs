@@ -31,7 +31,7 @@ namespace PlantUmlClassDiagramGeneratorTest
 
     internal abstract class ClassB
     {
-        //public ClassA publicA;
+        public ClassA publicA;
         private int field_1;
         public abstract int PropA { get; protected set; }
 

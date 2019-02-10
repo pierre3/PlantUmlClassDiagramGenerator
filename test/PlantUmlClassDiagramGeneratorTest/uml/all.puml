@@ -5,7 +5,6 @@ class ClassA {
     # X : double = 0
     # Y : double = 1
     # Z : double = 2
-    - list : IList<int>
     # PropA : int <<get>>
     # <<internal>> PropB : string <<get>> <<protected set>>
     <<internal>> PropC : double <<get>> = 3.141592
@@ -58,7 +57,9 @@ class InnerStruct <<struct>> {
     + InnerStruct(a:int)
 }
 InnerClass +-- InnerStruct
-NestedClass +-- InnerClass
+IList<int> "list" <-- ClassA
+ClassA "publicA" <-- ClassB
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
+NestedClass +-- InnerClass
 @enduml
