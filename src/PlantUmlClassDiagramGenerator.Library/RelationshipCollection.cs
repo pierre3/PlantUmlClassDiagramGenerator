@@ -45,7 +45,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             var baseName = TypeNameText.From(baseNode);
             var subName = TypeNameText.From(subNode);
-            _items.Add(new Relationship(baseName, subName, "<--", field.Identifier.ToString()));
+            _items.Add(new Relationship(subName, baseName, "-->", field.Identifier.ToString()));
         }
 
         public IEnumerator<Relationship> GetEnumerator()
