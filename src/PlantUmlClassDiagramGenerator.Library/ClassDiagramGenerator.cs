@@ -15,7 +15,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         private RelationshipCollection _relationships
             = new RelationshipCollection();
         private TextWriter writer;
-        private string indent;
+        private readonly string indent;
         private int nestingDepth = 0;
 
         public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None)

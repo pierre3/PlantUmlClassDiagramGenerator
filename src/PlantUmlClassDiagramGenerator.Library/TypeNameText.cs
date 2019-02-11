@@ -28,10 +28,15 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public static TypeNameText From(VariableDeclarationSyntax syntax)
         {
+            var typeArgs = string.Empty;
+            if (syntax.Type.GetType() == typeof(GenericNameSyntax))
+            {
+
+            }
             return new TypeNameText
             {
                 Identifier = syntax.Type.ToString(),
-                TypeArguments = string.Empty
+                TypeArguments = typeArgs
             };
         }
 

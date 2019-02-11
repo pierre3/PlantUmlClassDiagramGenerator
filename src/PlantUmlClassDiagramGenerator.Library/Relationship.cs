@@ -6,7 +6,7 @@
         protected TypeNameText _subTypeName;
         protected string _baseLabel;
         protected string _subLabel;
-        private string _symbol;
+        private readonly string _symbol;
 
         public Relationship(TypeNameText baseTypeName, TypeNameText subTypeName, string symbol, string baseLabel = "", string subLabel = "")
         {
@@ -19,7 +19,7 @@
 
         public override string ToString()
         {
-            return $"{_baseTypeName.Identifier}{_baseLabel} {_symbol} {_subTypeName.Identifier}";
+            return $"{_baseTypeName.Identifier}{_baseLabel} {_symbol}{_subLabel} {_subTypeName.Identifier}";
         }
     }
 }
