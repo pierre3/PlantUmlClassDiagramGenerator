@@ -10,7 +10,8 @@ namespace PlantUmlClassDiagramGenerator.Library
 {
     public class ClassDiagramGenerator : CSharpSyntaxWalker
     {
-        private IList<SyntaxNode> _innerTypeDeclarationNodes;
+        private HashSet<string> types = new HashSet<string>();
+        private IList<SyntaxNode> _additionalTypeDeclarationNodes;
         private Accessibilities _ignoreMemberAccessibilities;
         private RelationshipCollection _relationships
             = new RelationshipCollection();
@@ -22,7 +23,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             this.writer = writer;
             this.indent = indent;
-            _innerTypeDeclarationNodes = new List<SyntaxNode>();
+            _additionalTypeDeclarationNodes = new List<SyntaxNode>();
             _ignoreMemberAccessibilities = ignoreMemberAccessibilities;
         }
 
@@ -36,13 +37,10 @@ namespace PlantUmlClassDiagramGenerator.Library
         public void GenerateInternal(SyntaxNode root)
         {
             Visit(root);
-            GenerateInnerTypeDeclarations();
-            foreach (var relationship in _relationships)
-            {
-                WriteLine(relationship.ToString());
-            }
+            GenerateAdditionalTypeDeclarations();
+            GenerateRelationships();
         }
-
+  
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             VisitTypeDeclaration(node, () => base.VisitInterfaceDeclaration(node));
@@ -57,13 +55,17 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
+            _relationships.AddInnerclassRelationFrom(node);
             _relationships.AddInheritanceFrom(node);
 
             var typeName = TypeNameText.From(node);
             var name = typeName.Identifier;
             var typeParam = typeName.TypeArguments;
+            var type = $"{name}{typeParam}";
 
-            WriteLine($"class {name}{typeParam} <<struct>> {{");
+            if (types.Contains(type)) return; else types.Add(type);
+
+            WriteLine($"class {type} <<struct>> {{");
 
             nestingDepth++;
             base.VisitStructDeclaration(node);
@@ -76,7 +78,13 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
-            WriteLine($"{node.EnumKeyword} {node.Identifier} {{");
+            _relationships.AddInnerclassRelationFrom(node);
+
+            var type = $"{node.Identifier}";
+
+            if (types.Contains(type)) return; else types.Add(type);
+
+            WriteLine($"{node.EnumKeyword} {type} {{");
 
             nestingDepth++;
             base.VisitEnumDeclaration(node);
@@ -113,6 +121,10 @@ namespace PlantUmlClassDiagramGenerator.Library
                 }
                 else
                 {
+                    if (type.GetType() == typeof(GenericNameSyntax))
+                    {
+                        _additionalTypeDeclarationNodes.Add(type);
+                    }
                     _relationships.AddAssociationFrom(node, field);
                 }
             }
@@ -169,6 +181,17 @@ namespace PlantUmlClassDiagramGenerator.Library
             WriteLine($"{modifiers} <<{node.EventKeyword}>> {name} : {typeName} ");
         }
 
+        public override void VisitGenericName(GenericNameSyntax node)
+        {
+            var typename = TypeNameText.From(node);
+            var type = $"{typename.Identifier}{typename.TypeArguments}";
+
+            if (types.Contains(type)) return; else types.Add(type);
+
+            WriteLine($"class {type} {{");
+            WriteLine("}");
+        }
+
         private void WriteLine(string line)
         {
             var space = string.Concat(Enumerable.Repeat(indent, nestingDepth));
@@ -177,28 +200,34 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         private bool SkipInnerTypeDeclaration(SyntaxNode node)
         {
-            if (nestingDepth > 0)
-            {
-                _innerTypeDeclarationNodes.Add(node);
-                return true;
-            }
-            return false;
+            if (nestingDepth <= 0) return false;
+
+            _additionalTypeDeclarationNodes.Add(node);
+            return true;
         }
 
-        private void GenerateInnerTypeDeclarations()
+        private void GenerateAdditionalTypeDeclarations()
         {
-            foreach (var node in _innerTypeDeclarationNodes)
+            for (int i = 0; i < _additionalTypeDeclarationNodes.Count; i++)
+            {                
+                SyntaxNode node = _additionalTypeDeclarationNodes[i];
+                Visit(node);
+            }
+        }
+
+        private void GenerateRelationships()
+        {
+            foreach (var relationship in _relationships)
             {
-                var generator = new ClassDiagramGenerator(writer, indent);
-                generator.GenerateInternal(node);
-                _relationships.AddInnerclassRelationFrom(node);
+                WriteLine(relationship.ToString());
             }
         }
 
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
-
+            
+            _relationships.AddInnerclassRelationFrom(node);
             _relationships.AddInheritanceFrom(node);
 
             var modifiers = GetTypeModifiersText(node.Modifiers);
@@ -208,8 +237,11 @@ namespace PlantUmlClassDiagramGenerator.Library
             var typeName = TypeNameText.From(node);
             var name = typeName.Identifier;
             var typeParam = typeName.TypeArguments;
+            var type = $"{name}{typeParam}";
 
-            WriteLine($"{keyword} {name}{typeParam} {modifiers}{{");
+            if (types.Contains(type)) return; else types.Add(type);
+
+            WriteLine($"{keyword} {type} {modifiers}{{");
 
             nestingDepth++;
             visitBase();

@@ -26,17 +26,26 @@ namespace PlantUmlClassDiagramGenerator.Library
             };
         }
 
-        public static TypeNameText From(VariableDeclarationSyntax syntax)
+        public static TypeNameText From(GenericNameSyntax syntax)
         {
-            var typeArgs = string.Empty;
-            if (syntax.Type.GetType() == typeof(GenericNameSyntax))
+            int paramCount = syntax.TypeArgumentList.Arguments.Count;
+            string[] parameters = new string[paramCount];
+            if (paramCount > 1)
             {
+                for (int i = 0; i < paramCount; i++)
+                {
+                    parameters[i] = $"T{i + 1}";
+                }
 
+            }
+            else
+            {
+                parameters[0] = "T";
             }
             return new TypeNameText
             {
-                Identifier = syntax.Type.ToString(),
-                TypeArguments = typeArgs
+                Identifier = $"\"{syntax.Identifier.Text}`{paramCount}\"",
+                TypeArguments = "<" + string.Join(",", parameters) + ">"
             };
         }
 
