@@ -38,14 +38,14 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public void AddAssociationFrom(FieldDeclarationSyntax node, VariableDeclaratorSyntax field)
         {
-            var baseNode = node.Declaration;
+            var baseNode = node.Declaration.Type as SimpleNameSyntax;
             var subNode = node.Parent as BaseTypeDeclarationSyntax;
 
             if (baseNode == null || subNode == null) return;
 
             var baseName = TypeNameText.From(baseNode);
             var subName = TypeNameText.From(subNode);
-            _items.Add(new Relationship(subName, baseName, "-->", field.Identifier.ToString()));
+            _items.Add(new Relationship(subName, baseName, "-->", "", field.Identifier.ToString() + baseName.TypeArguments));
         }
 
         public IEnumerator<Relationship> GetEnumerator()
