@@ -134,23 +134,38 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
-            var modifiers = GetMemberModifiersText(node.Modifiers);
-            var name = node.Identifier.ToString();
-            var typeName = node.Type.ToString();
+            var type = node.Type;
 
-            //Property does not have an accessor is an expression-bodied property. (get only)
-            var accessorStr = "<<get>>";
-            if (node.AccessorList != null)
+            if (type.GetType() == typeof(PredefinedTypeSyntax))
             {
-                var accessor = node.AccessorList.Accessors
-                    .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
-                    .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
-                accessorStr = string.Join(" ", accessor);
-            }
-            var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-            var initValue = useLiteralInit ? (" = " + node.Initializer.Value.ToString()) : "";
+                var modifiers = GetMemberModifiersText(node.Modifiers);
+                var name = node.Identifier.ToString();
 
-            WriteLine($"{modifiers}{name} : {typeName} {accessorStr}{initValue}");
+                //Property does not have an accessor is an expression-bodied property. (get only)
+                var accessorStr = "<<get>>";
+                if (node.AccessorList != null)
+                {
+                    var accessor = node.AccessorList.Accessors
+                        .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
+                        .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
+                    accessorStr = string.Join(" ", accessor);
+                }
+                var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+                var initValue = useLiteralInit ? (" = " + node.Initializer.Value.ToString()) : "";
+
+                WriteLine($"{modifiers}{name} : {type.ToString()} {accessorStr}{initValue}");
+            }
+            else
+            {
+                if (type.GetType() == typeof(GenericNameSyntax))
+                {
+                    _additionalTypeDeclarationNodes.Add(type);
+                }
+                _relationships.AddAssociationFrom(node);
+            }
+
+
+
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
