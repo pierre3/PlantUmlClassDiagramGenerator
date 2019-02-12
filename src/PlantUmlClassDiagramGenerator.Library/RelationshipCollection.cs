@@ -43,9 +43,11 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             if (baseNode == null || subNode == null) return;
 
+            var symbol = field.Initializer == null ? "-->" : "o->";
+
             var baseName = TypeNameText.From(baseNode);
             var subName = TypeNameText.From(subNode);
-            _items.Add(new Relationship(subName, baseName, "-->", "", field.Identifier.ToString() + baseName.TypeArguments));
+            _items.Add(new Relationship(subName, baseName, symbol, "", field.Identifier.ToString() + baseName.TypeArguments));
         }
 
         public IEnumerator<Relationship> GetEnumerator()

@@ -58,9 +58,9 @@ class InnerStruct <<struct>> {
     + A : int <<get>>
     + InnerStruct(a:int)
 }
-ClassA --> "list<int>" "IList`1"
+ClassA o-> "list<int>" "IList`1"
 ClassB --> "publicA" ClassA
-ClassB --> "listOfA<ClassA>" "IList`1"
+ClassB o-> "listOfA<ClassA>" "IList`1"
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
 NestedClass +-- InnerClass
