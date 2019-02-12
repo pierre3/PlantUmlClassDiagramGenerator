@@ -32,7 +32,6 @@ enum EnumA {
 }
 class NestedClass {
     + A : int <<get>>
-    + B : InnerClass <<get>>
 }
 class "IList`1"<T> {
 }
@@ -48,6 +47,8 @@ ClassB --> "publicA" ClassA
 ClassB o-> "listOfA<ClassA>" "IList`1"
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
+ClassC --> "PropB" ClassB
+NestedClass --> "B" InnerClass
 NestedClass +-- InnerClass
 InnerClass +-- InnerStruct
 @enduml

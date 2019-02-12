@@ -44,6 +44,7 @@ namespace PlantUmlClassDiagramGeneratorTest
     {
         private static readonly string readonlyField = "ReadOnly";
         public override int PropA { get; protected set; } = 100;
+        public ClassB PropB { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

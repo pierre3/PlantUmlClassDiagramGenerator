@@ -50,6 +50,20 @@ namespace PlantUmlClassDiagramGenerator.Library
             _items.Add(new Relationship(subName, baseName, symbol, "", field.Identifier.ToString() + baseName.TypeArguments));
         }
 
+        public void AddAssociationFrom(PropertyDeclarationSyntax node)
+        {
+            var baseNode = node.Type as SimpleNameSyntax;
+            var subNode = node.Parent as BaseTypeDeclarationSyntax;
+
+            if (baseNode == null || subNode == null) return;
+
+            var symbol = node.Initializer == null ? "-->" : "o->";
+
+            var baseName = TypeNameText.From(baseNode);
+            var subName = TypeNameText.From(subNode);
+            _items.Add(new Relationship(subName, baseName, symbol, "", node.Identifier.ToString() + baseName.TypeArguments));
+        }
+
         public IEnumerator<Relationship> GetEnumerator()
         {
             return _items.GetEnumerator();
