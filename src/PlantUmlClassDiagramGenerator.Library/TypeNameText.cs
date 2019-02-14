@@ -7,7 +7,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         public string Identifier { get; set; }
 
         public string TypeArguments { get; set; }
-
+        
         public static TypeNameText From(SimpleNameSyntax syntax)
         {
             var identifier = syntax.Identifier.Text;
@@ -45,7 +45,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             return new TypeNameText
             {
                 Identifier = $"\"{syntax.Identifier.Text}`{paramCount}\"",
-                TypeArguments = "<" + string.Join(",", parameters) + ">"
+                TypeArguments = "<" + string.Join(",", parameters) + ">",
             };
         }
 

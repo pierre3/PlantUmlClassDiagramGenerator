@@ -40,7 +40,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             GenerateAdditionalTypeDeclarations();
             GenerateRelationships();
         }
-  
+
         public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
         {
             VisitTypeDeclaration(node, () => base.VisitInterfaceDeclaration(node));
@@ -63,7 +63,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             var typeParam = typeName.TypeArguments;
             var type = $"{name}{typeParam}";
 
-            if (types.Contains(type)) return; else types.Add(type);
+            types.Add(name);
 
             WriteLine($"class {type} <<struct>> {{");
 
@@ -82,7 +82,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             var type = $"{node.Identifier}";
 
-            if (types.Contains(type)) return; else types.Add(type);
+            types.Add(type);
 
             WriteLine($"{node.EnumKeyword} {type} {{");
 
@@ -111,9 +111,14 @@ namespace PlantUmlClassDiagramGenerator.Library
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var type = node.Declaration.Type;
             var variables = node.Declaration.Variables;
+            var parentClass = (node.Parent as TypeDeclarationSyntax);
+            var isTypeParameterField = parentClass?.TypeParameterList?.Parameters
+                .Any(t => t.Identifier.Text == type.ToString()) ?? false;
+
             foreach (var field in variables)
             {
-                if (type.GetType() == typeof(PredefinedTypeSyntax))
+
+                if (type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterField)
                 {
                     var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                     var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
@@ -136,7 +141,11 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             var type = node.Type;
 
-            if (type.GetType() == typeof(PredefinedTypeSyntax))
+            var parentClass = (node.Parent as TypeDeclarationSyntax);
+            var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
+                .Any(t => t.Identifier.Text == type.ToString()) ?? false;
+
+            if (type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterProp)
             {
                 var modifiers = GetMemberModifiersText(node.Modifiers);
                 var name = node.Identifier.ToString();
@@ -163,9 +172,6 @@ namespace PlantUmlClassDiagramGenerator.Library
                 }
                 _relationships.AddAssociationFrom(node);
             }
-
-
-
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
@@ -198,13 +204,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitGenericName(GenericNameSyntax node)
         {
-            var typename = TypeNameText.From(node);
-            var type = $"{typename.Identifier}{typename.TypeArguments}";
-
-            if (types.Contains(type)) return; else types.Add(type);
-
-            WriteLine($"class {type} {{");
-            WriteLine("}");
+            _additionalTypeDeclarationNodes.Add(node);
         }
 
         private void WriteLine(string line)
@@ -224,9 +224,25 @@ namespace PlantUmlClassDiagramGenerator.Library
         private void GenerateAdditionalTypeDeclarations()
         {
             for (int i = 0; i < _additionalTypeDeclarationNodes.Count; i++)
-            {                
+            {
                 SyntaxNode node = _additionalTypeDeclarationNodes[i];
+                if (node is GenericNameSyntax genericNode)
+                {
+                    GenerateAdditionalGenericTypeDeclaration(genericNode);
+                    continue;
+                }
                 Visit(node);
+            }
+        }
+
+        private void GenerateAdditionalGenericTypeDeclaration(GenericNameSyntax genericNode)
+        {
+            var typename = TypeNameText.From(genericNode);
+            if (!types.Contains(typename.Identifier))
+            {
+                WriteLine($"class {typename.Identifier}{typename.TypeArguments} {{");
+                WriteLine("}");
+                types.Add(typename.Identifier);
             }
         }
 
@@ -241,7 +257,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
-            
+
             _relationships.AddInnerclassRelationFrom(node);
             _relationships.AddInheritanceFrom(node);
 
@@ -254,7 +270,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             var typeParam = typeName.TypeArguments;
             var type = $"{name}{typeParam}";
 
-            if (types.Contains(type)) return; else types.Add(type);
+            types.Add(name);
 
             WriteLine($"{keyword} {type} {modifiers}{{");
 
