@@ -1,6 +1,6 @@
 {
 	"name": "csharp-to-plantuml",
-	"displayName": "csharp-to-plantuml",
+	"displayName": "CSharp to PlantUML",
 	"description": "Generator to create class-diagram of PlantUML from C# source code.",
 	"version": "0.0.1",
 	"engines": {
@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onCommand:csharp2plantuml.classDiagram"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "csharp2plantuml.classDiagram",
+				"title": "CS to PlantUML: Class-diagram"
 			}
 		]
 	},

@@ -24,4 +24,8 @@
     <ProjectReference Include="..\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(OutDir)publish\*&quot; &quot;$(SolutionDir)tools\csharp-to-plantuml\lib\PlantUmlClassDiagramGenerator&quot; /I /Y /E" />
+  </Target>
+
 </Project>
