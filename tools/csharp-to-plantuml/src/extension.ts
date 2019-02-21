@@ -3,7 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { exec } from 'child_process';
-import { join } from 'path';
+import { join as pathJoin } from 'path';
 import { isUndefined } from 'util';
 
 // this method is called when your extension is activated
@@ -18,18 +18,39 @@ export function activate(context: vscode.ExtensionContext) {
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('csharp2plantuml.classDiagram', () => {
-		// The code you place here will be executed every time your command is executed
-		const outputchannel = vscode.window.createOutputChannel("CSharp to PlantUML");
 
-		const tool = join(context.extensionPath, 'lib', 'PlantumlClassDiagramGenerator', 'PlantUmlClassDiagramGenerator.dll');
-
-		const input = vscode.workspace.rootPath as string;
-		if(isUndefined(input)){
+		const wsroot = vscode.workspace.rootPath as string;
+		if (isUndefined(wsroot)) {
 			console.log("Open folder or workspace.");
 			return;
 		}
-		const output = join(input, 'diagram');
-		exec(`dotnet "${tool}" "${input}" "${output}" -dir -public`, (error, stdout, stderror) => {
+
+		const outputchannel = vscode.window.createOutputChannel("CSharp to PlantUML");
+
+		const tool = pathJoin(context.extensionPath, 'lib', 'PlantumlClassDiagramGenerator', 'PlantUmlClassDiagramGenerator.dll');
+		const conf = vscode.workspace.getConfiguration();
+		const inputPath = conf.get('csharp2plantuml.inputPath') as string;
+		const outputPath = conf.get('csharp2plantuml.outputPath') as string;
+		const publicOnly = conf.get('csharp2plantuml.public') as boolean;
+		const ignoreAccessibility = conf.get('csharp2plantuml.ignoreAccessibility') as string;
+		const excludePath = conf.get('csharp2plantuml.excludePath') as string;
+		const input = pathJoin(wsroot, inputPath);
+
+		var command = `dotnet "${tool}" "${input}"`;
+		if (outputPath !== "") {
+			command += ` "${pathJoin(input, outputPath)}"`;
+		}
+		command += " -dir";
+		if (publicOnly) {
+			command += " -public";
+		} else if (ignoreAccessibility !== "") {
+			command += ` -ignore "${ignoreAccessibility}"`;
+		}
+		if(excludePath !==""){
+			command += ` "${pathJoin(input, excludePath)}"`;
+		}
+
+		exec(command, (error, stdout, stderror) => {
 			outputchannel.appendLine(stdout);
 			outputchannel.appendLine(stderror);
 			if (error) {

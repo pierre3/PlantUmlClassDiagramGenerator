@@ -19,7 +19,43 @@
 				"command": "csharp2plantuml.classDiagram",
 				"title": "CS to PlantUML: Class-diagram"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "C# to PlantUML configuration",
+			"properties": {
+				"csharp2plantuml.inputPath": {
+					"type": "string",
+					"scope": "resource",
+					"default": "",
+					"description": "Specify a input folder (relative to workspace folder)."
+				},
+				"csharp2plantuml.outputPath": {
+					"type": "string",
+					"scope": "resource",
+					"default": "uml",
+					"description": "Specify a output folder (relative to workspace folder)."
+				},
+				"csharp2plantuml.public": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "Only public accessibility members are output."
+				},
+				"csharp2plantuml.ignoreAccessibility": {
+					"type": "string",
+					"scope": "resource",
+					"default": "private,protected,internal,protected internal",
+					"description": "Specify accessibiliies of members to ignore, with a comma separated list. (ex. 'private,protected,protected internal')"
+				},
+				"csharp2plantuml.excludePath": {
+					"type": "string",
+					"scope": "resource",
+					"default": "",
+					"description": "Specify exclude file or directory paths (relative to the \"InputPath\"), with a comma separated list. (ex. 'obj,Properties\\AssemblyInfo.cs')"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
