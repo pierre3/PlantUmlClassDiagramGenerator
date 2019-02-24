@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BA69B69C-C80
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D0EC41DE-8A29-463D-8915-CB623E02CDA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGenerator.Library", "src\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj", "{F6D73496-8660-4A4C-B88A-470990897D7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantUmlClassDiagramGenerator.Library", "src\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj", "{F6D73496-8660-4A4C-B88A-470990897D7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGenerator", "src\PlantUmlClassDiagramGenerator\PlantUmlClassDiagramGenerator.csproj", "{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantUmlClassDiagramGenerator", "src\PlantUmlClassDiagramGenerator\PlantUmlClassDiagramGenerator.csproj", "{1575B814-EAF9-4DD2-9AB4-E8ECFDD58B2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGeneratorTest", "test\PlantUmlClassDiagramGeneratorTest\PlantUmlClassDiagramGeneratorTest.csproj", "{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantUmlClassDiagramGeneratorTest", "test\PlantUmlClassDiagramGeneratorTest\PlantUmlClassDiagramGeneratorTest.csproj", "{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
