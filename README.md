@@ -1,13 +1,14 @@
 # PlantUmlClassDiagramGenerator
 This is a generator to create a class-diagram of PlantUML from the C# source code.
 
-Nuget Gallery: https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
-
 ## Visual Studio Code Extension
 
 - [C# to PlantUML v0.0.1 (preview)](https://marketplace.visualstudio.com/items?itemName=pierre3.csharp-to-plantuml)
 
 ## .Net Core global tools
+
+Nuget Gallery: https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
+
 ### Installation
 Download and install the [.NET Core 2.1 SDK](https://www.microsoft.com/net/download/windows) or newer. Once installed, run the following command.
 
