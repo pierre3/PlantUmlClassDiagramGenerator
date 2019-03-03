@@ -14,10 +14,12 @@
     <RepositoryType></RepositoryType>
     <PackageTags>plantuml</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.1</Version>
+    <Version>1.1.0.0</Version>
     <Authors>pierre3</Authors>
     <Company />
     <Product />
+    <PackageReleaseNotes>[V1.1.0.0] 
+- Add Feature that create object associations from references of fields and properties.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +27,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet pack -c $(ConfigurationName)"/>
+    <Exec Command="dotnet pack -c $(ConfigurationName)" />
     <Exec Command="xcopy &quot;$(OutDir)publish\*&quot; &quot;$(SolutionDir)tools\csharp-to-plantuml\lib\PlantUmlClassDiagramGenerator&quot; /I /Y /E" />
   </Target>
 

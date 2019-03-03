@@ -18,13 +18,15 @@ namespace PlantUmlClassDiagramGenerator.Library
         private TextWriter writer;
         private readonly string indent;
         private int nestingDepth = 0;
+        private bool _createAssociation;
 
-        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None)
+        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, bool createAssociation = true)
         {
             this.writer = writer;
             this.indent = indent;
             _additionalTypeDeclarationNodes = new List<SyntaxNode>();
             _ignoreMemberAccessibilities = ignoreMemberAccessibilities;
+            _createAssociation = createAssociation;
         }
 
         public void Generate(SyntaxNode root)
@@ -118,7 +120,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             foreach (var field in variables)
             {
 
-                if (type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterField)
+                if (!_createAssociation || type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterField)
                 {
                     var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                     var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
@@ -145,7 +147,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
                 .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
-            if (type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterProp)
+            if (!_createAssociation || type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterProp)
             {
                 var modifiers = GetMemberModifiersText(node.Modifiers);
                 var name = node.Identifier.ToString();
@@ -204,7 +206,10 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitGenericName(GenericNameSyntax node)
         {
-            _additionalTypeDeclarationNodes.Add(node);
+            if (_createAssociation)
+            {
+                _additionalTypeDeclarationNodes.Add(node);
+            }
         }
 
         private void WriteLine(string line)
@@ -228,7 +233,10 @@ namespace PlantUmlClassDiagramGenerator.Library
                 SyntaxNode node = _additionalTypeDeclarationNodes[i];
                 if (node is GenericNameSyntax genericNode)
                 {
-                    GenerateAdditionalGenericTypeDeclaration(genericNode);
+                    if (_createAssociation)
+                    {
+                        GenerateAdditionalGenericTypeDeclaration(genericNode);
+                    }
                     continue;
                 }
                 Visit(node);
@@ -365,7 +373,6 @@ namespace PlantUmlClassDiagramGenerator.Library
                         return $"<<{token.ValueText}>>";
                 }
             });
-
             var result = string.Join(" ", tokens);
             if (result != string.Empty)
             {

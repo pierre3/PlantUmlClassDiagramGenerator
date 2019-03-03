@@ -2,11 +2,15 @@
 	"name": "csharp-to-plantuml",
 	"displayName": "CSharp to PlantUML",
 	"description": "Generator to create class-diagram of PlantUML from C# source code.",
-	"version": "0.0.1",
-	"preview": true,
+	"version": "1.0.0",
+	"preview": false,
 	"publisher": "pierre3",
 	"license": "MIT",
-	"keywords": ["PlantUML","class diagram","C#"],
+	"keywords": [
+		"PlantUML",
+		"class diagram",
+		"C#"
+	],
 	"engines": {
 		"vscode": "^1.31.0"
 	},
@@ -21,7 +25,7 @@
 		"commands": [
 			{
 				"command": "csharp2plantuml.classDiagram",
-				"title": "CS to PlantUML: Class-diagram"
+				"title": "C# to PlantUML: Class-diagram"
 			}
 		],
 		"configuration": {
@@ -57,6 +61,12 @@
 					"scope": "resource",
 					"default": "",
 					"description": "Specify exclude file or directory paths (relative to the \"InputPath\"), with a comma separated list. (ex. 'obj,Properties\\AssemblyInfo.cs')"
+				},
+				"csharp2plantuml.createAssociation": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": true,
+					"description": "Create object associations from field and property references."
 				}
 			}
 		}

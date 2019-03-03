@@ -23,6 +23,7 @@ namespace PlantUmlClassDiagramGenerator
             ["-public"] = OptionType.Switch,
             ["-ignore"] = OptionType.Value,
             ["-excludePaths"] = OptionType.Value,
+            ["-createAssociation"] = OptionType.Switch
         };
 
         static int Main(string[] args)
@@ -84,7 +85,7 @@ namespace PlantUmlClassDiagramGenerator
                     using (var filestream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write))
                     using (var writer = new StreamWriter(filestream))
                     {
-                        var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
+                        var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-createAssociation"));
                         gen.Generate(root);
                     }
                 }
@@ -163,7 +164,7 @@ namespace PlantUmlClassDiagramGenerator
                         using (var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
                         using (var writer = new StreamWriter(filestream))
                         {
-                            var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc);
+                            var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-createAssociation"));
                             gen.Generate(root);
                         }
                     }

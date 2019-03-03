@@ -18,12 +18,16 @@ Create class diagrams of PlantUML from C# source code.
   Specify accessibiliies of members to ignore, with a comma separated list. (ex. 'private,protected,protected internal')
 - __csharp2plantuml.excludePath__  
   Specify exclude file or directory paths (relative to the \"InputPath\"), with a comma separated list. (ex. 'obj,Properties\\AssemblyInfo.cs')
-				}
+- __csharp2plantuml.createAssociation__
+  Create object associations from references of fields and properites.
 
 
 ## Known Issues
 
 
 ## Release Notes
+### 1.0.0
+Add Feature that create object associations from references of fields and properties. 
+
 ### 0.0.1 preview
 Beta release.

@@ -3,7 +3,7 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 
 ## Visual Studio Code Extension
 
-- [C# to PlantUML v0.0.1 (preview)](https://marketplace.visualstudio.com/items?itemName=pierre3.csharp-to-plantuml)
+- [C# to PlantUML](https://marketplace.visualstudio.com/items?itemName=pierre3.csharp-to-plantuml)
 
 ## .Net Core global tools
 
@@ -19,7 +19,7 @@ dotnet tool install --global PlantUmlClassDiagramGenerator --version 1.0.0.2
 Run the "puml-gen" command.
 
 ```bat
-puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList]
+puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList] [-createAssociation]
 ```
 
 - InputPath: (Required) Sets a input source file or directory name.
@@ -30,6 +30,8 @@ puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
 - -ignore: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
 - -excludePaths: (Optional) Specify the exclude file and directory.   
   Specifies a relative path from the "InputPath", with a comma separated list.
+- -createAssociation: (Optional) Create object associations from references of fields and properites.
+
 
 examples
 ```bat
@@ -37,7 +39,7 @@ puml-gen C:\Source\App1\ClassA.cs -public
 ```
 
 ```bat
-puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected
+puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected -createAssociation
 ```
 
 ```bat
@@ -348,3 +350,49 @@ IInterfaceA <|-- "IInterfaceA`1"
 ```
 
 ![InheritanceRelationsips.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/InheritanceRelationsips.png)
+
+### Associations (from references of fields and properties)
+
+If you specify the "createAssociation" option, object associations is created from field and property references.
+
+- C#
+
+```cs
+class ClassA{
+    public IList<string> Strings{get;} = new List<string>();
+    public Type1 Prop1{get;set;}
+    public Type2 field1;
+}
+
+class Type1 {
+    public int value1{get;set;}
+}
+
+class Type2{
+    public string string1{get;set;}
+    public ExternalType Prop2 {get;set;}
+}
+```
+
+- PlantUML
+
+```
+@startuml
+class ClassA {
+}
+class Type1 {
+    + value1 : int <<get>> <<set>>
+}
+class Type2 {
+    + string1 : string <<get>> <<set>>
+}
+class "IList`1"<T> {
+}
+ClassA o-> "Strings<string>" "IList`1"
+ClassA --> "Prop1" Type1
+ClassA --> "field1" Type2
+Type2 --> "Prop2" ExternalType
+@enduml
+```
+
+![InheritanceRelationsips.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/Associations.png)

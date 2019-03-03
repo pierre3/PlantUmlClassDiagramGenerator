@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "csharp-to-plantuml"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off"
+	}
+}

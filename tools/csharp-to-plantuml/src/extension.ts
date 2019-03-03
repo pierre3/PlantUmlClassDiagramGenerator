@@ -34,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const publicOnly = conf.get('csharp2plantuml.public') as boolean;
 		const ignoreAccessibility = conf.get('csharp2plantuml.ignoreAccessibility') as string;
 		const excludePath = conf.get('csharp2plantuml.excludePath') as string;
+		const createAssociation = conf.get('csharp2plantuml.createAssociation') as boolean;
 		const input = pathJoin(wsroot, inputPath);
 
 		var command = `dotnet "${tool}" "${input}"`;
@@ -49,7 +50,11 @@ export function activate(context: vscode.ExtensionContext) {
 		if(excludePath !==""){
 			command += ` "${pathJoin(input, excludePath)}"`;
 		}
+		if(createAssociation){
+			command += " -createAssociation";
+		}
 
+		outputchannel.appendLine("[exec] " + command);
 		exec(command, (error, stdout, stderror) => {
 			outputchannel.appendLine(stdout);
 			outputchannel.appendLine(stderror);
