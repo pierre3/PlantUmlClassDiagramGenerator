@@ -119,8 +119,8 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             foreach (var field in variables)
             {
-
-                if (!_createAssociation || type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterField)
+                Type fieldType = type.GetType();
+                if (!_createAssociation || fieldType == typeof(PredefinedTypeSyntax) || fieldType == typeof(NullableTypeSyntax) || isTypeParameterField)
                 {
                     var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                     var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
@@ -128,7 +128,7 @@ namespace PlantUmlClassDiagramGenerator.Library
                 }
                 else
                 {
-                    if (type.GetType() == typeof(GenericNameSyntax))
+                    if (fieldType == typeof(GenericNameSyntax))
                     {
                         _additionalTypeDeclarationNodes.Add(type);
                     }
@@ -147,7 +147,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
                 .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
-            if (!_createAssociation || type.GetType() == typeof(PredefinedTypeSyntax) || isTypeParameterProp)
+            if (!_createAssociation || type.GetType() == typeof(PredefinedTypeSyntax)  || type.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
             {
                 var modifiers = GetMemberModifiersText(node.Modifiers);
                 var name = node.Identifier.ToString();
