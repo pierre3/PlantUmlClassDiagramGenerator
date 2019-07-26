@@ -14,12 +14,12 @@
     <RepositoryType></RepositoryType>
     <PackageTags>plantuml</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0.0</Version>
+    <Version>1.2.0.0</Version>
     <Authors>pierre3</Authors>
     <Company />
     <Product />
-    <PackageReleaseNotes>[V1.1.0.0] 
-- Add Feature that create object associations from references of fields and properties.</PackageReleaseNotes>
+    <PackageReleaseNotes>[V1.2.0.0]
+      - Add Feature that allows for Nullable (?) type syntax.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
