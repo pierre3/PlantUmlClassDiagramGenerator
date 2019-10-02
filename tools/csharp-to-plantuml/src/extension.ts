@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const outputchannel = vscode.window.createOutputChannel("CSharp to PlantUML");
 
-		const tool = pathJoin(context.extensionPath, 'lib', 'PlantumlClassDiagramGenerator', 'PlantUmlClassDiagramGenerator.dll');
+		const tool = pathJoin(context.extensionPath, 'lib', 'PlantUmlClassDiagramGenerator', 'PlantUmlClassDiagramGenerator.dll');
 		const conf = vscode.workspace.getConfiguration();
 		const inputPath = conf.get('csharp2plantuml.inputPath') as string;
 		const outputPath = conf.get('csharp2plantuml.outputPath') as string;
