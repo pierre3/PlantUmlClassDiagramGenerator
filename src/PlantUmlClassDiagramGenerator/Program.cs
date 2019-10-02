@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PlantUmlClassDiagramGenerator.Library;
+using System.Runtime.InteropServices;
 
 namespace PlantUmlClassDiagramGenerator
 {
@@ -168,8 +169,8 @@ namespace PlantUmlClassDiagramGenerator
                             gen.Generate(root);
                         }
                     }
-
-                    includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @".\"));
+                    var newRoot = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @".\" : @".";
+                    includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, newRoot));
                 }
                 catch (Exception e)
                 {
