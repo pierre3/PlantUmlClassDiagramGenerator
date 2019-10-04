@@ -23,7 +23,8 @@ namespace PlantUmlClassDiagramGenerator
             ["-public"] = OptionType.Switch,
             ["-ignore"] = OptionType.Value,
             ["-excludePaths"] = OptionType.Value,
-            ["-createAssociation"] = OptionType.Switch
+            ["-createAssociation"] = OptionType.Switch,
+            ["-allInOne"] = OptionType.Switch
         };
 
         static int Main(string[] args)
@@ -135,8 +136,15 @@ namespace PlantUmlClassDiagramGenerator
             }
 
             var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
+
+
+
+
             var includeRefs = new StringBuilder();
             includeRefs.AppendLine("@startuml");
+
+
+
             var error = false;
             foreach (var inputFile in files)
             {
@@ -169,7 +177,18 @@ namespace PlantUmlClassDiagramGenerator
                         }
                     }
 
-                    includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @".\"));
+                    if (parameters.ContainsKey("-allInOne"))
+                    {
+                        var lines = File.ReadAllLines(outputFile);
+                        foreach (string line in lines.Skip(1).SkipLast(1))
+                        {
+                            includeRefs.AppendLine(line);
+                        }
+                    }
+                    else
+                    {
+                        includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @".\"));
+                    }
                 }
                 catch (Exception e)
                 {
@@ -179,6 +198,7 @@ namespace PlantUmlClassDiagramGenerator
             }
             includeRefs.AppendLine("@enduml");
             File.WriteAllText(CombinePath(outputRoot, "include.puml"), includeRefs.ToString());
+
             if (error)
             {
                 Console.WriteLine("There were files that could not be processed.");
