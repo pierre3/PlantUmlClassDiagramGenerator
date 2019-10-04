@@ -31,6 +31,7 @@ puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
 - -excludePaths: (Optional) Specify the exclude file and directory.   
   Specifies a relative path from the "InputPath", with a comma separated list.
 - -createAssociation: (Optional) Create object associations from references of fields and properites.
+- -allInOne: (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
 
 
 examples
@@ -39,7 +40,7 @@ puml-gen C:\Source\App1\ClassA.cs -public
 ```
 
 ```bat
-puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected -createAssociation
+puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected -createAssociation -allInOne
 ```
 
 ```bat
