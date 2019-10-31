@@ -137,13 +137,8 @@ namespace PlantUmlClassDiagramGenerator
 
             var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
 
-
-
-
             var includeRefs = new StringBuilder();
             includeRefs.AppendLine("@startuml");
-
-
 
             var error = false;
             foreach (var inputFile in files)
