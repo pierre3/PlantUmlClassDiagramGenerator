@@ -17,7 +17,9 @@
     <Authors>pierre3</Authors>
     <Company />
     <Product />
-    <PackageReleaseNotes>[V1.2.0.0]
+    <PackageReleaseNotes>
+      [V1.2.0.0]
+      - Updated to .Net Core 3.0.
       - Add Feature that allows for Nullable (?) type syntax.
       - Add all-in-one option.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
