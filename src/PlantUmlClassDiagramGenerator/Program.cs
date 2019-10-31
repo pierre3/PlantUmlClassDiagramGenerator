@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PlantUmlClassDiagramGenerator.Library;
+using System.Runtime.InteropServices;
 
 namespace PlantUmlClassDiagramGenerator
 {
@@ -137,13 +138,8 @@ namespace PlantUmlClassDiagramGenerator
 
             var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
 
-
-
-
             var includeRefs = new StringBuilder();
             includeRefs.AppendLine("@startuml");
-
-
 
             var error = false;
             foreach (var inputFile in files)
@@ -187,7 +183,8 @@ namespace PlantUmlClassDiagramGenerator
                     }
                     else
                     {
-                        includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, @".\"));
+                        var newRoot = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @".\" : @".";
+                        includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, newRoot));
                     }
                 }
                 catch (Exception e)
