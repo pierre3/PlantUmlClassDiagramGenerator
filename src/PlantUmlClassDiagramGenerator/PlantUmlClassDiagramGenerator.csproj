@@ -6,8 +6,8 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>puml-gen</ToolCommandName>
     <Description>This is a generator to create a class-diagram of PlantUML from the C# source code.</Description>
-    <Copyright>© 2018 pierre3</Copyright>
-    <PackageLicenseUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>© 2019 pierre3</Copyright>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</RepositoryUrl>
     <RepositoryType></RepositoryType>
@@ -18,7 +18,9 @@
     <Company />
     <Product />
     <PackageReleaseNotes>[V1.2.0.0]
-      - Add Feature that allows for Nullable (?) type syntax.</PackageReleaseNotes>
+      - Add Feature that allows for Nullable (?) type syntax.
+      - Add all-in-one option.</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
