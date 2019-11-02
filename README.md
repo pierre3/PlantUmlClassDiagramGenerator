@@ -13,7 +13,7 @@ Nuget Gallery: https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
 Download and install the [.NET Core 2.1 SDK](https://www.microsoft.com/net/download/windows) or newer. Once installed, run the following command.
 
 ```bat
-dotnet tool install --global PlantUmlClassDiagramGenerator --version 1.1.0
+dotnet tool install --global PlantUmlClassDiagramGenerator --version 1.2.0
 ```
 ### Usage
 Run the "puml-gen" command.
