@@ -92,7 +92,7 @@ enum EnumType{
 ```
 - PlantUML
 
-```
+```uml
 @startuml
 class ClassA {
 }
@@ -111,7 +111,7 @@ enum EnumType {
     Orange,
     Grape,
 }
-enduml
+@enduml
 ```
 
 ![TypeDeclaration.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/TypeDeclaration.png)
