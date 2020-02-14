@@ -92,7 +92,7 @@ enum EnumType{
 ```
 - PlantUML
 
-```uml
+```
 @startuml
 class ClassA {
 }
