@@ -39,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		var command = `dotnet "${tool}" "${input}"`;
 		if (outputPath !== "") {
-			command += ` "${pathJoin(input, outputPath)}"`;
+			command += ` "${pathJoin(wsroot, outputPath)}"`;
 		}
 		command += " -dir";
 		if (publicOnly) {
@@ -47,10 +47,10 @@ export function activate(context: vscode.ExtensionContext) {
 		} else if (ignoreAccessibility !== "") {
 			command += ` -ignore "${ignoreAccessibility}"`;
 		}
-		if(excludePath !==""){
+		if (excludePath !== "") {
 			command += ` "${pathJoin(input, excludePath)}"`;
 		}
-		if(createAssociation){
+		if (createAssociation) {
 			command += " -createAssociation";
 		}
 
