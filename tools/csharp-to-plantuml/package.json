@@ -67,6 +67,12 @@
 					"scope": "resource",
 					"default": true,
 					"description": "Create object associations from field and property references."
+				},
+				"csharp2plantuml.allInOne": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": false,
+					"description": "Copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it)."
 				}
 			}
 		}
