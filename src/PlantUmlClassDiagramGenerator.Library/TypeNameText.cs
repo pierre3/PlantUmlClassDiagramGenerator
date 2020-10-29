@@ -19,6 +19,10 @@ namespace PlantUmlClassDiagramGenerator.Library
                 identifier = $"\"{identifier}`{count}\"";
                 typeArgs = "<" + string.Join(",", genericName.TypeArgumentList.Arguments) + ">";
             }
+            else
+            {
+                identifier = $"\"{identifier}\"";
+            }
             return new TypeNameText
             {
                 Identifier = identifier,
@@ -59,6 +63,10 @@ namespace PlantUmlClassDiagramGenerator.Library
                 var count = typeDeclaration.TypeParameterList.Parameters.Count;
                 identifier = $"\"{identifier}`{count}\"";
                 typeArgs = "<" + string.Join(",", typeDeclaration.TypeParameterList.Parameters) + ">";
+            }
+            else
+            {
+                identifier = $"\"{identifier}\"";
             }
             return new TypeNameText
             {
