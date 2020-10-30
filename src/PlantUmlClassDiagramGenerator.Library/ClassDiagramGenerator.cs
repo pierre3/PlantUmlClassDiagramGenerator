@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,6 +20,12 @@ namespace PlantUmlClassDiagramGenerator.Library
         private readonly string indent;
         private int nestingDepth = 0;
         private bool _createAssociation;
+
+        private readonly Dictionary<string, string> _escapeDictionary = new Dictionary<string, string>
+        {
+            {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
+            {@"(?<before>[^}])}(?<after>[^}])", "${before}&#125;${after}"},
+        };
 
         public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, bool createAssociation = true)
         {
@@ -123,7 +130,10 @@ namespace PlantUmlClassDiagramGenerator.Library
                 if (!_createAssociation || fieldType == typeof(PredefinedTypeSyntax) || fieldType == typeof(NullableTypeSyntax) || isTypeParameterField)
                 {
                     var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-                    var initValue = useLiteralInit ? (" = " + field.Initializer.Value.ToString()) : "";
+                    var initValue = useLiteralInit
+                        ? (" = " + _escapeDictionary.Aggregate(field.Initializer.Value.ToString(),
+                            (f, e) => Regex.Replace(f, e.Key, e.Value)))
+                        : "";
                     WriteLine($"{modifiers}{field.Identifier} : {type.ToString()}{initValue}");
                 }
                 else
@@ -162,7 +172,10 @@ namespace PlantUmlClassDiagramGenerator.Library
                     accessorStr = string.Join(" ", accessor);
                 }
                 var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-                var initValue = useLiteralInit ? (" = " + node.Initializer.Value.ToString()) : "";
+                var initValue = useLiteralInit
+                    ? (" = " + _escapeDictionary.Aggregate(node.Initializer.Value.ToString(),
+                        (n, e) => Regex.Replace(n, e.Key, e.Value)))
+                    : "";
 
                 WriteLine($"{modifiers}{name} : {type.ToString()} {accessorStr}{initValue}");
             }
