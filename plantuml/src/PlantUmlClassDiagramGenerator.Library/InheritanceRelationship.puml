@@ -1,0 +1,6 @@
+@startuml
+class InheritanceRelationship {
+    + InheritanceRelationship(baseTypeName:TypeNameText, subTypeName:TypeNameText)
+}
+Relationship <|-- InheritanceRelationship
+@enduml

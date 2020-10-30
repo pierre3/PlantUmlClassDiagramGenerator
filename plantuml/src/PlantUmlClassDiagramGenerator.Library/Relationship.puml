@@ -1,0 +1,6 @@
+@startuml
+class Relationship {
+    + Relationship(baseTypeName:TypeNameText, subTypeName:TypeNameText, symbol:string, baseLabel:string, subLabel:string)
+    + <<override>> ToString() : string
+}
+@enduml

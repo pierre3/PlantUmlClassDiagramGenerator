@@ -1,0 +1,9 @@
+@startuml
+class TypeNameText {
+    + Identifier : string <<get>> <<set>>
+    + TypeArguments : string <<get>> <<set>>
+    + {static} From(syntax:SimpleNameSyntax) : TypeNameText
+    + {static} From(syntax:GenericNameSyntax) : TypeNameText
+    + {static} From(syntax:BaseTypeDeclarationSyntax) : TypeNameText
+}
+@enduml

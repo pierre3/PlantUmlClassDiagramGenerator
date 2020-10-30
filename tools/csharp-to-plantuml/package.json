@@ -2,7 +2,7 @@
 	"name": "csharp-to-plantuml",
 	"displayName": "CSharp to PlantUML",
 	"description": "Generator to create class-diagram of PlantUML from C# source code.",
-	"version": "1.0.0",
+	"version": "1.2.1",
 	"preview": false,
 	"publisher": "pierre3",
 	"license": "MIT",
@@ -67,6 +67,12 @@
 					"scope": "resource",
 					"default": true,
 					"description": "Create object associations from field and property references."
+				},
+				"cshap2plantuml.allInOne": {
+					"type": "boolean",
+					"scope": "resource",
+					"default": false,
+					"description": "Copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it)."
 				}
 			}
 		}
