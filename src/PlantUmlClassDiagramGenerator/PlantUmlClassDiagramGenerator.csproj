@@ -2,26 +2,24 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>puml-gen</ToolCommandName>
     <Description>This is a generator to create a class-diagram of PlantUML from the C# source code.</Description>
-    <Copyright>© 2019 pierre3</Copyright>
+    <Copyright>© 2019-2020 pierre3</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</RepositoryUrl>
     <RepositoryType></RepositoryType>
     <PackageTags>plantuml</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.0.0</Version>
+    <Version>1.2.1.0</Version>
     <Authors>pierre3</Authors>
     <Company />
     <Product />
-    <PackageReleaseNotes>
-      [V1.2.0.0]
-      - Updated to .Net Core 3.0.
-      - Add Feature that allows for Nullable (?) type syntax.
-      - Add all-in-one option.</PackageReleaseNotes>
+    <PackageReleaseNotes>[V1.2.1.0]
+  - Updated to .Net Core 3.1.
+  - Fixed type names with "@" prefix to be enclosed in double quotes.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
