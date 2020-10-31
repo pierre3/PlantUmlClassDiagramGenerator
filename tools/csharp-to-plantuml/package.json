@@ -68,7 +68,8 @@
 					"default": true,
 					"description": "Create object associations from field and property references."
 				},
-				"cshap2plantuml.allInOne": {
+
+				"csharp2plantuml.allInOne": {
 					"type": "boolean",
 					"scope": "resource",
 					"default": false,

@@ -35,12 +35,12 @@ export function activate(context: vscode.ExtensionContext) {
 		const ignoreAccessibility = conf.get('csharp2plantuml.ignoreAccessibility') as string;
 		const excludePath = conf.get('csharp2plantuml.excludePath') as string;
 		const createAssociation = conf.get('csharp2plantuml.createAssociation') as boolean;
-		const allInOne = conf.get('csharp2plantuml.createAssociation') as boolean;
+		const allInOne = conf.get('csharp2plantuml.allInOne') as boolean;
 		const input = pathJoin(wsroot, inputPath);
 
 		var command = `dotnet "${tool}" "${input}"`;
 		if (outputPath !== "") {
-			command += ` "${pathJoin(input, outputPath)}"`;
+			command += ` "${pathJoin(wsroot, outputPath)}"`;
 		}
 		command += " -dir";
 		if (publicOnly) {
@@ -48,13 +48,13 @@ export function activate(context: vscode.ExtensionContext) {
 		} else if (ignoreAccessibility !== "") {
 			command += ` -ignore "${ignoreAccessibility}"`;
 		}
-		if(excludePath !==""){
+		if (excludePath !== "") {
 			command += ` "${pathJoin(input, excludePath)}"`;
 		}
-		if(createAssociation){
+		if (createAssociation) {
 			command += " -createAssociation";
 		}
-		if(allInOne){
+		if (allInOne) {
 			command += " -allInOne";
 		}
 
