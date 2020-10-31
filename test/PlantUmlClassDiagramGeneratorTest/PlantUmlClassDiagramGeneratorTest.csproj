@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -16,12 +16,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="testData\AtPrefixType.cs" />
     <Compile Remove="testData\GenericsType.cs" />
     <Compile Remove="testData\InputClasses.cs" />
     <Compile Remove="testData\NullableType.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="testData\AtPrefixType.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="testData\GenericsType.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -38,6 +42,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="uml\GenericsType.puml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="uml\AtPrefixType.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="uml\public.puml">

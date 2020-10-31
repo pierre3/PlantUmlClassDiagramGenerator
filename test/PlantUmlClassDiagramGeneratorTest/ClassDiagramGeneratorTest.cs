@@ -114,6 +114,27 @@ namespace PlantUmlClassDiagramGeneratorTest
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        public void GenerateTest_AtPrefixType()
+        {
+            var code = File.ReadAllText("testData\\AtPrefixType.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private | Accessibilities.Internal
+                                                                                            | Accessibilities.Protected | Accessibilities.ProtectedInternal, true);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\AtPrefixType.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
         private string ConvertNewLineCode(string text, string newline)
         {
             var reg = new System.Text.RegularExpressions.Regex("\r\n|\r|\n");
