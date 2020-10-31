@@ -13,11 +13,11 @@
     <RepositoryType></RepositoryType>
     <PackageTags>plantuml</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.1.0</Version>
+    <Version>1.2.2.0</Version>
     <Authors>pierre3</Authors>
     <Company />
     <Product />
-    <PackageReleaseNotes>[V1.2.1.0]
+    <PackageReleaseNotes>[V1.2.2.0]
   - Updated to .Net Core 3.1.
   - Fixed type names with "@" prefix to be enclosed in double quotes.</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

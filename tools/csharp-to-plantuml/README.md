@@ -5,14 +5,14 @@ Create class diagrams of PlantUML from C# source code.
 ## Requirements
 
 - .NET Core SDK 2.1 or newer.
-- [.NET Core 3.0 Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.0/runtime) 
+- [.NET Core 3.1 Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1/runtime) 
 
 ## Extension Settings
 
 - __csharp2plantuml.inputPath__  
   Specify a input folder (relative to workspace folder)
 - __csharp2plantuml.outputPath__  
-  Specify a output folder (relative to workspace folder
+  Specify a output folder (relative to workspace folder)
 - __csharp2plantuml.public__  
   Only public accessibility members are output.
 - __csharp2plantuml.ignoreAccessibility__    
@@ -28,6 +28,12 @@ Create class diagrams of PlantUML from C# source code.
 
 
 ## Release Notes
+### 1.2.2
+- Updated to .Net Core 3.1.
+- Fixed Issue: 
+    - https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/32
+    - https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/26
+
 ### 1.2.1  
 - Updated to .Net Core 3.0.
 - Add Feature that allows for Nullable (?) type syntax.

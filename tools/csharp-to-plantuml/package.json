@@ -2,7 +2,7 @@
 	"name": "csharp-to-plantuml",
 	"displayName": "CSharp to PlantUML",
 	"description": "Generator to create class-diagram of PlantUML from C# source code.",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"preview": false,
 	"publisher": "pierre3",
 	"license": "MIT",
