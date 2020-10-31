@@ -19,7 +19,7 @@ namespace PlantUmlClassDiagramGenerator.Library
                 identifier = $"\"{identifier}`{count}\"";
                 typeArgs = "<" + string.Join(",", genericName.TypeArgumentList.Arguments) + ">";
             }
-            else
+            else if (identifier.StartsWith("@"))
             {
                 identifier = $"\"{identifier}\"";
             }
@@ -64,7 +64,7 @@ namespace PlantUmlClassDiagramGenerator.Library
                 identifier = $"\"{identifier}`{count}\"";
                 typeArgs = "<" + string.Join(",", typeDeclaration.TypeParameterList.Parameters) + ">";
             }
-            else
+            else if (identifier.StartsWith("@"))
             {
                 identifier = $"\"{identifier}\"";
             }
