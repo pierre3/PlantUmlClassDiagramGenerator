@@ -19,6 +19,7 @@
     <Compile Remove="testData\AtPrefixType.cs" />
     <Compile Remove="testData\GenericsType.cs" />
     <Compile Remove="testData\InputClasses.cs" />
+    <Compile Remove="testData\CurlyBrackets.cs" />
     <Compile Remove="testData\NullableType.cs" />
   </ItemGroup>
 
@@ -30,6 +31,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="testData\InputClasses.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="testData\CurlyBrackets.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="testData\NullableType.cs">
@@ -45,6 +49,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="uml\AtPrefixType.puml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="uml\CurlyBrackets.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="uml\public.puml">

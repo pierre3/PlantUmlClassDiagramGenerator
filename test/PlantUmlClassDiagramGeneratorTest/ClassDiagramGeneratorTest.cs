@@ -135,6 +135,27 @@ namespace PlantUmlClassDiagramGeneratorTest
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        public void GenerateTest_CurlyBrackets()
+        {
+            var code = File.ReadAllText("testData\\CurlyBrackets.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private | Accessibilities.Internal
+                                                                                            | Accessibilities.Protected | Accessibilities.ProtectedInternal, true);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\CurlyBrackets.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
         private string ConvertNewLineCode(string text, string newline)
         {
             var reg = new System.Text.RegularExpressions.Regex("\r\n|\r|\n");
