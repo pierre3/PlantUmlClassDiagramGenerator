@@ -5,6 +5,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.3]
+### Fixed
+- https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/34
+
 ## [1.2.2]
 ### Changed
 - Updated to .Net Core 3.1.

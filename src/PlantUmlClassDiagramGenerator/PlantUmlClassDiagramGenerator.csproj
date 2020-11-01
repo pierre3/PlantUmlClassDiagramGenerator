@@ -6,20 +6,19 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>puml-gen</ToolCommandName>
     <Description>This is a generator to create a class-diagram of PlantUML from the C# source code.</Description>
-    <Copyright>© 2019-2020 pierre3</Copyright>
+    <Copyright>© 2015-2020 pierre3</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</RepositoryUrl>
     <RepositoryType></RepositoryType>
     <PackageTags>plantuml</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.2.0</Version>
+    <Version>1.2.3.0</Version>
     <Authors>pierre3</Authors>
     <Company />
     <Product />
-    <PackageReleaseNotes>[V1.2.2.0]
-  - Updated to .Net Core 3.1.
-  - Fixed type names with "@" prefix to be enclosed in double quotes.</PackageReleaseNotes>
+    <PackageReleaseNotes>[V1.2.3.0]
+  - Fixed Issue: https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/34</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
