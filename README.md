@@ -114,7 +114,7 @@ enum EnumType {
 @enduml
 ```
 
-![TypeDeclaration.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/TypeDeclaration.png)
+![TypeDeclaration.png](uml/TypeDeclaration.png)
 
 #### Generics Type
 
@@ -135,7 +135,7 @@ class "GenericsType`2"<T1,T2>{
 }
 ```
 
-![GenericsTypeDeclaration.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/GenericsTypeDeclaration.png)
+![GenericsTypeDeclaration.png](uml/GenericsTypeDeclaration.png)
 
 ### Member Declaration
 
@@ -233,7 +233,7 @@ class ClassM {
 AbstractClass <|-- ClassM
 ```
 
-![MemberDeclaration.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/MemberDeclaration.png)
+![MemberDeclaration.png](uml/MemberDeclaration.png)
 
 #### Field and Property Initializers
 
@@ -260,7 +260,7 @@ class ClassC {
 }
 ```
 
-![Initializer.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/Initializer.png)
+![Initializer.png](uml/Initializer.png)
 
 ### Nested Class Declaration
 
@@ -297,7 +297,7 @@ OuterClass +- InnerClass
 InnerClass +- InnerStruct
 ```
 
-![NestedClass.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/NestedClass.png)
+![NestedClass.png](uml/NestedClass.png)
 
 ### Inheritance Relationsips
 
@@ -350,7 +350,7 @@ IInterfaceA <|-- "IInterfaceA`1"
 "IInterfaceA`1" "<int>" <|-- ImplementClass
 ```
 
-![InheritanceRelationsips.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/InheritanceRelationsips.png)
+![InheritanceRelationsips.png](uml/InheritanceRelationsips.png)
 
 ### Associations (from references of fields and properties)
 
@@ -396,4 +396,4 @@ Type2 --> "Prop2" ExternalType
 @enduml
 ```
 
-![InheritanceRelationsips.png](https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/uml/Associations.png)
+![InheritanceRelationsips.png](uml/Associations.png)

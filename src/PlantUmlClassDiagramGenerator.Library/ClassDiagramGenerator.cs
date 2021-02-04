@@ -14,8 +14,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         private readonly HashSet<string> types = new HashSet<string>();
         private readonly IList<SyntaxNode> additionalTypeDeclarationNodes;
         private readonly Accessibilities ignoreMemberAccessibilities;
-        private readonly RelationshipCollection relationships
-            = new RelationshipCollection();
+        private readonly RelationshipCollection relationships = new RelationshipCollection();
         private readonly TextWriter writer;
         private readonly string indent;
         private int nestingDepth = 0;
@@ -157,7 +156,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
                 .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
-            if (!createAssociation || type.GetType() == typeof(PredefinedTypeSyntax)  || type.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
+            if (!createAssociation || type.GetType() == typeof(PredefinedTypeSyntax) || type.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
             {
                 var modifiers = GetMemberModifiersText(node.Modifiers);
                 var name = node.Identifier.ToString();
