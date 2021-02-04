@@ -17,7 +17,7 @@ class ClassA {
     + ExpressonBodiedMethod(x:int) : void
 }
 abstract class ClassB {
-    - field_1 : int
+    - field1 : int
     + {abstract} PropA : int <<get>> <<protected set>>
     # <<virtual>> VirtualMethod() : string
     + {abstract} AbstractMethod(arg1:int, arg2:double) : string

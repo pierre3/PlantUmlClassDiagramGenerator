@@ -33,7 +33,7 @@ namespace PlantUmlClassDiagramGeneratorTest
     {
         public ClassA publicA;
         public IList<ClassA> listOfA = new IList<ClassA>();
-        private int field_1;
+        private int field1;
         public abstract int PropA { get; protected set; }
 
         protected virtual string VirtualMethod() { return "virtual"; }

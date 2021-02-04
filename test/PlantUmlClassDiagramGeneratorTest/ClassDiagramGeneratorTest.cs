@@ -11,7 +11,7 @@ namespace PlantUmlClassDiagramGeneratorTest
     public class ClassDiagramGeneratorTest
     {
         [TestMethod]
-        public void GenerateTest_All()
+        public void GenerateTestAll()
         {
             var code = File.ReadAllText("testData\\inputClasses.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -31,7 +31,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         [TestMethod]
-        public void GenerateTest_Public()
+        public void GenerateTestPublic()
         {
             var code = File.ReadAllText("testData\\inputClasses.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -53,7 +53,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         [TestMethod]
-        public void GenerateTest_WithoutPrivate()
+        public void GenerateTestWithoutPrivate()
         {
             var code = File.ReadAllText("testData\\inputClasses.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -73,7 +73,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         [TestMethod]
-        public void GenerateTest_GenericsTypes()
+        public void GenerateTestGenericsTypes()
         {
             var code = File.ReadAllText("testData\\GenericsType.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -94,7 +94,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
         
         [TestMethod]
-        public void NullableTest_NullableTypes()
+        public void NullableTestNullableTypes()
         {
             var code = File.ReadAllText(Path.Combine("testData", "NullableType.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -115,7 +115,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         [TestMethod]
-        public void GenerateTest_AtPrefixType()
+        public void GenerateTestAtPrefixType()
         {
             var code = File.ReadAllText("testData\\AtPrefixType.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -136,7 +136,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         [TestMethod]
-        public void GenerateTest_CurlyBrackets()
+        public void GenerateTestCurlyBrackets()
         {
             var code = File.ReadAllText("testData\\CurlyBrackets.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
@@ -156,7 +156,7 @@ namespace PlantUmlClassDiagramGeneratorTest
             Assert.AreEqual(expected, actual);
         }
 
-        private string ConvertNewLineCode(string text, string newline)
+        private static string ConvertNewLineCode(string text, string newline)
         {
             var reg = new System.Text.RegularExpressions.Regex("\r\n|\r|\n");
             return reg.Replace(text, newline);

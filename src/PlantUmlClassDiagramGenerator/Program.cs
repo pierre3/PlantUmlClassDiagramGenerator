@@ -55,7 +55,7 @@ namespace PlantUmlClassDiagramGenerator
                 Console.WriteLine($"\"{inputFileName}\" does not exist.");
                 return false;
             }
-            var outputFileName = "";
+            string outputFileName;
             if (parameters.ContainsKey("out"))
             {
                 outputFileName = parameters["out"];
@@ -78,19 +78,15 @@ namespace PlantUmlClassDiagramGenerator
 
             try
             {
-                using (var stream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read))
-                {
-                    var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
-                    var root = tree.GetRoot();
-                    Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
+                using var stream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read);
+                var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
+                var root = tree.GetRoot();
+                Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
 
-                    using (var filestream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write))
-                    using (var writer = new StreamWriter(filestream))
-                    {
-                        var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-createAssociation"));
-                        gen.Generate(root);
-                    }
-                }
+                using var filestream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write);
+                using var writer = new StreamWriter(filestream);
+                var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-createAssociation"));
+                gen.Generate(root);
             }
             catch (Exception e)
             {
@@ -165,12 +161,10 @@ namespace PlantUmlClassDiagramGenerator
                         var root = tree.GetRoot();
                         Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
 
-                        using (var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
-                        using (var writer = new StreamWriter(filestream))
-                        {
-                            var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-createAssociation"));
-                            gen.Generate(root);
-                        }
+                        using var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
+                        using var writer = new StreamWriter(filestream);
+                        var gen = new ClassDiagramGenerator(writer, "    ", ignoreAcc, parameters.ContainsKey("-createAssociation"));
+                        gen.Generate(root);
                     }
 
                     if (parameters.ContainsKey("-allInOne"))
@@ -217,8 +211,7 @@ namespace PlantUmlClassDiagramGenerator
                 var ignoreItems = parameters["-ignore"].Split(',');
                 foreach (var item in ignoreItems)
                 {
-                    Accessibilities acc;
-                    if (Enum.TryParse(item, true, out acc))
+                    if (Enum.TryParse(item, true, out Accessibilities acc))
                     {
                         ignoreAcc |= acc;
                     }

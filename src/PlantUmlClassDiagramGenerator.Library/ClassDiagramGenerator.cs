@@ -11,17 +11,17 @@ namespace PlantUmlClassDiagramGenerator.Library
 {
     public class ClassDiagramGenerator : CSharpSyntaxWalker
     {
-        private HashSet<string> types = new HashSet<string>();
-        private IList<SyntaxNode> _additionalTypeDeclarationNodes;
-        private Accessibilities _ignoreMemberAccessibilities;
-        private RelationshipCollection _relationships
+        private readonly HashSet<string> types = new HashSet<string>();
+        private readonly IList<SyntaxNode> additionalTypeDeclarationNodes;
+        private readonly Accessibilities ignoreMemberAccessibilities;
+        private readonly RelationshipCollection relationships
             = new RelationshipCollection();
-        private TextWriter writer;
+        private readonly TextWriter writer;
         private readonly string indent;
         private int nestingDepth = 0;
-        private bool _createAssociation;
+        private readonly bool createAssociation;
 
-        private readonly Dictionary<string, string> _escapeDictionary = new Dictionary<string, string>
+        private readonly Dictionary<string, string> escapeDictionary = new Dictionary<string, string>
         {
             {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
             {@"(?<before>[^}])}(?<after>[^}])", "${before}&#125;${after}"},
@@ -31,9 +31,9 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             this.writer = writer;
             this.indent = indent;
-            _additionalTypeDeclarationNodes = new List<SyntaxNode>();
-            _ignoreMemberAccessibilities = ignoreMemberAccessibilities;
-            _createAssociation = createAssociation;
+            additionalTypeDeclarationNodes = new List<SyntaxNode>();
+            this.ignoreMemberAccessibilities = ignoreMemberAccessibilities;
+            this.createAssociation = createAssociation;
         }
 
         public void Generate(SyntaxNode root)
@@ -64,8 +64,8 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
-            _relationships.AddInnerclassRelationFrom(node);
-            _relationships.AddInheritanceFrom(node);
+            relationships.AddInnerclassRelationFrom(node);
+            relationships.AddInheritanceFrom(node);
 
             var typeName = TypeNameText.From(node);
             var name = typeName.Identifier;
@@ -87,7 +87,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
-            _relationships.AddInnerclassRelationFrom(node);
+            relationships.AddInnerclassRelationFrom(node);
 
             var type = $"{node.Identifier}";
 
@@ -127,22 +127,22 @@ namespace PlantUmlClassDiagramGenerator.Library
             foreach (var field in variables)
             {
                 Type fieldType = type.GetType();
-                if (!_createAssociation || fieldType == typeof(PredefinedTypeSyntax) || fieldType == typeof(NullableTypeSyntax) || isTypeParameterField)
+                if (!createAssociation || fieldType == typeof(PredefinedTypeSyntax) || fieldType == typeof(NullableTypeSyntax) || isTypeParameterField)
                 {
                     var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                     var initValue = useLiteralInit
-                        ? (" = " + _escapeDictionary.Aggregate(field.Initializer.Value.ToString(),
+                        ? (" = " + escapeDictionary.Aggregate(field.Initializer.Value.ToString(),
                             (f, e) => Regex.Replace(f, e.Key, e.Value)))
                         : "";
-                    WriteLine($"{modifiers}{field.Identifier} : {type.ToString()}{initValue}");
+                    WriteLine($"{modifiers}{field.Identifier} : {type}{initValue}");
                 }
                 else
                 {
                     if (fieldType == typeof(GenericNameSyntax))
                     {
-                        _additionalTypeDeclarationNodes.Add(type);
+                        additionalTypeDeclarationNodes.Add(type);
                     }
-                    _relationships.AddAssociationFrom(node, field);
+                    relationships.AddAssociationFrom(node, field);
                 }
             }
         }
@@ -157,7 +157,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
                 .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
-            if (!_createAssociation || type.GetType() == typeof(PredefinedTypeSyntax)  || type.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
+            if (!createAssociation || type.GetType() == typeof(PredefinedTypeSyntax)  || type.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
             {
                 var modifiers = GetMemberModifiersText(node.Modifiers);
                 var name = node.Identifier.ToString();
@@ -173,19 +173,19 @@ namespace PlantUmlClassDiagramGenerator.Library
                 }
                 var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                 var initValue = useLiteralInit
-                    ? (" = " + _escapeDictionary.Aggregate(node.Initializer.Value.ToString(),
+                    ? (" = " + escapeDictionary.Aggregate(node.Initializer.Value.ToString(),
                         (n, e) => Regex.Replace(n, e.Key, e.Value)))
                     : "";
 
-                WriteLine($"{modifiers}{name} : {type.ToString()} {accessorStr}{initValue}");
+                WriteLine($"{modifiers}{name} : {type} {accessorStr}{initValue}");
             }
             else
             {
                 if (type.GetType() == typeof(GenericNameSyntax))
                 {
-                    _additionalTypeDeclarationNodes.Add(type);
+                    additionalTypeDeclarationNodes.Add(type);
                 }
-                _relationships.AddAssociationFrom(node);
+                relationships.AddAssociationFrom(node);
             }
         }
 
@@ -219,9 +219,9 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitGenericName(GenericNameSyntax node)
         {
-            if (_createAssociation)
+            if (createAssociation)
             {
-                _additionalTypeDeclarationNodes.Add(node);
+                additionalTypeDeclarationNodes.Add(node);
             }
         }
 
@@ -235,18 +235,18 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (nestingDepth <= 0) return false;
 
-            _additionalTypeDeclarationNodes.Add(node);
+            additionalTypeDeclarationNodes.Add(node);
             return true;
         }
 
         private void GenerateAdditionalTypeDeclarations()
         {
-            for (int i = 0; i < _additionalTypeDeclarationNodes.Count; i++)
+            for (int i = 0; i < additionalTypeDeclarationNodes.Count; i++)
             {
-                SyntaxNode node = _additionalTypeDeclarationNodes[i];
+                SyntaxNode node = additionalTypeDeclarationNodes[i];
                 if (node is GenericNameSyntax genericNode)
                 {
-                    if (_createAssociation)
+                    if (createAssociation)
                     {
                         GenerateAdditionalGenericTypeDeclaration(genericNode);
                     }
@@ -269,7 +269,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         private void GenerateRelationships()
         {
-            foreach (var relationship in _relationships)
+            foreach (var relationship in relationships)
             {
                 WriteLine(relationship.ToString());
             }
@@ -279,8 +279,8 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
 
-            _relationships.AddInnerclassRelationFrom(node);
-            _relationships.AddInheritanceFrom(node);
+            relationships.AddInnerclassRelationFrom(node);
+            relationships.AddInheritanceFrom(node);
 
             var modifiers = GetTypeModifiersText(node.Modifiers);
             var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
@@ -329,36 +329,36 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         private bool IsIgnoreMember(SyntaxTokenList modifiers)
         {
-            if (_ignoreMemberAccessibilities == Accessibilities.None) { return false; }
+            if (ignoreMemberAccessibilities == Accessibilities.None) { return false; }
 
             var tokenKinds = modifiers.Select(x => x.Kind()).ToArray();
 
-            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.ProtectedInternal)
+            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.ProtectedInternal)
                 && tokenKinds.Contains(SyntaxKind.ProtectedKeyword)
                 && tokenKinds.Contains(SyntaxKind.InternalKeyword))
             {
                 return true;
             }
 
-            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Public)
+            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Public)
                 && tokenKinds.Contains(SyntaxKind.PublicKeyword))
             {
                 return true;
             }
 
-            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Protected)
+            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Protected)
                 && tokenKinds.Contains(SyntaxKind.ProtectedKeyword))
             {
                 return true;
             }
 
-            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Internal)
+            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Internal)
                 && tokenKinds.Contains(SyntaxKind.InternalKeyword))
             {
                 return true;
             }
 
-            if (_ignoreMemberAccessibilities.HasFlag(Accessibilities.Private)
+            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Private)
                 && tokenKinds.Contains(SyntaxKind.PrivateKeyword))
             {
                 return true;
