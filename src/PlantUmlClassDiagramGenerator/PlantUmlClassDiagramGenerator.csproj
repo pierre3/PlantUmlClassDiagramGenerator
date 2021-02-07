@@ -13,12 +13,12 @@
     <RepositoryType></RepositoryType>
     <PackageTags>plantuml</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.3.0</Version>
+    <Version>1.2.4.0</Version>
     <Authors>pierre3</Authors>
     <Company />
     <Product />
-    <PackageReleaseNotes>[V1.2.3.0]
-  - Fixed Issue: https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/34</PackageReleaseNotes>
+    <PackageReleaseNotes>[V1.2.4.0]
+  - Update to .NET5.0</PackageReleaseNotes>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
