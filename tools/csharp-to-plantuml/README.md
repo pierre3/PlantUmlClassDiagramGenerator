@@ -28,6 +28,9 @@ Create class diagrams of PlantUML from C# source code.
 
 
 ## Release Notes
+### 1.2.4
+- Updated to .NET5.0
+
 ### 1.2.3
 - Fixed Issue: 
     - https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/34

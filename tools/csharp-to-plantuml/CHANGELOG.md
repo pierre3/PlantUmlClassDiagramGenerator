@@ -4,6 +4,9 @@ All notable changes to the "csharp-to-plantuml" extension will be documented in 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Unreleased]
+## [1.2.4]
+### Changed
+- Updated to .NET5.0
 
 ## [1.2.3]
 ### Fixed
