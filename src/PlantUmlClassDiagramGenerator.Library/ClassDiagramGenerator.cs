@@ -59,6 +59,36 @@ namespace PlantUmlClassDiagramGenerator.Library
             VisitTypeDeclaration(node, () => base.VisitClassDeclaration(node));
         }
 
+        public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
+        {
+            // Code copied from: VisitTypeDeclaration
+            
+            if (SkipInnerTypeDeclaration(node)) { return; }
+
+            relationships.AddInnerclassRelationFrom(node);
+            relationships.AddInheritanceFrom(node);
+
+            var modifiers = GetTypeModifiersText(node.Modifiers);
+            var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
+                + node.Keyword.ToString();
+
+            var typeName = TypeNameText.From(node);
+            var name = typeName.Identifier;
+            var typeParam = typeName.TypeArguments;
+            var type = $"{name}{typeParam}";
+
+            types.Add(name);
+
+            // Write records as: "class <<record>>"
+            WriteLine($"class {type} {modifiers}<<record>> {{");
+
+            nestingDepth++;
+            base.VisitRecordDeclaration(node);
+            nestingDepth--;
+
+            WriteLine("}");
+        }
+
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
