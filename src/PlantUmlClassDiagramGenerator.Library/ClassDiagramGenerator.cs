@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -83,6 +83,47 @@ namespace PlantUmlClassDiagramGenerator.Library
             WriteLine($"class {type} {modifiers}<<record>> {{");
 
             nestingDepth++;
+
+            foreach(var parameter in node.ParameterList.Parameters)
+            {
+                // Code copied from "VisitPropertyDeclaration":
+
+                var parameterType = parameter.Type;
+
+                var parentClass = (parameter.Parent as TypeDeclarationSyntax);
+                var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
+                    .Any(t => t.Identifier.Text == type.ToString()) ?? false;
+
+                if (!createAssociation || parameterType.GetType() == typeof(PredefinedTypeSyntax) || parameterType.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
+                {
+                    // ParameterList-Property: always public
+                    var parameterModifiers = "+ ";
+                    var parameterName = parameter.Identifier.ToString();
+
+                    // ParameterList-Property always have get and init accessor
+                    var accessorStr = "<<get>> <<init>>";
+
+                    
+                    var useLiteralInit = 
+                        //node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+                        parameter.Default?.Value is not null;
+                    var initValue = useLiteralInit
+                        ? (" = " + escapeDictionary.Aggregate(parameter.Default.Value.ToString(),
+                            (n, e) => Regex.Replace(n, e.Key, e.Value)))
+                        : "";
+
+                    WriteLine($"{parameterModifiers}{parameterName} : {parameterType} {accessorStr}{initValue}");
+                }
+                else
+                {
+                    throw new NotSupportedException("-createAssciation is not supported with record types yet!");
+                    // if (type.GetType() == typeof(GenericNameSyntax))
+                    // {
+                    //     additionalTypeDeclarationNodes.Add(parameterType);
+                    // }
+                    // relationships.AddAssociationFrom(parameter);
+                }
+            }
             base.VisitRecordDeclaration(node);
             nestingDepth--;
 
