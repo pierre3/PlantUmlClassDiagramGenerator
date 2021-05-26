@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -116,12 +116,11 @@ namespace PlantUmlClassDiagramGenerator.Library
                 }
                 else
                 {
-                    throw new NotSupportedException("-createAssciation is not supported with record types yet!");
-                    // if (type.GetType() == typeof(GenericNameSyntax))
-                    // {
-                    //     additionalTypeDeclarationNodes.Add(parameterType);
-                    // }
-                    // relationships.AddAssociationFrom(parameter);
+                    if (type.GetType() == typeof(GenericNameSyntax))
+                    {
+                        additionalTypeDeclarationNodes.Add(parameterType);
+                    }
+                    relationships.AddAssociationFrom(parameter, node);
                 }
             }
             base.VisitRecordDeclaration(node);
