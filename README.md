@@ -59,6 +59,7 @@ puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 | `struct`        | `<<struct>> class` |
 | `interface`     | `interface`        |
 | `enum`          | `enum`             |
+| `record`        | `<<record>> class` |
 
 #### Type Modifiers
 
@@ -77,6 +78,8 @@ class ClassA {
 struct StructA {
 }
 interface InterfaceA {
+}
+record RecordA {
 }
 abstract class AbstractClass {
 }
@@ -99,6 +102,8 @@ class ClassA {
 class StructA <<struct>> {
 }
 interface InterfaceA {
+}
+class RecordA <<record>> {
 }
 abstract class AbstractClass {
 }
@@ -397,3 +402,38 @@ Type2 --> "Prop2" ExternalType
 ```
 
 ![InheritanceRelationsips.png](uml/Associations.png)
+
+
+### Record types (with parameter list)
+
+Record types in C# 9 can have a parameter list. In these cases these parameters
+are added as properties to the class.
+
+
+- C#
+
+```cs
+record Person(string Name, int Age);
+
+record Group(string GroupName) {
+    public Person[] Members { get; init; }
+}
+```
+
+- PlantUML
+
+```
+@startuml
+class Person <<record>> {
+    + Name : string <<get>> <<init>>
+    + Age : int <<get>> <<init>>
+}
+class Group <<record>> {
+    + GroupName : string <<get>> <<init>>
+    + Members : Person[] <<get>> <<init>>
+}
+@enduml
+```
+
+![InheritanceRelationsips.png](uml/RecordParameterList.png)
+
