@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const outputPath = conf.get('csharp2plantuml.outputPath') as string;
 		const publicOnly = conf.get('csharp2plantuml.public') as boolean;
 		const ignoreAccessibility = conf.get('csharp2plantuml.ignoreAccessibility') as string;
-		const excludePath = conf.get('csharp2plantuml.excludePath') as string;
+		const excludePaths = conf.get('csharp2plantuml.excludePath') as string;
 		const createAssociation = conf.get('csharp2plantuml.createAssociation') as boolean;
 		const allInOne = conf.get('csharp2plantuml.allInOne') as boolean;
 		const input = pathJoin(wsroot, inputPath);
@@ -49,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
 			command += ` -ignore "${ignoreAccessibility}"`;
 		}
 		if (excludePath !== "") {
-			command += ` "${pathJoin(input, excludePath)}"`;
+			command += ` -excludePaths "${excludePaths}"`;
 		}
 		if (createAssociation) {
 			command += " -createAssociation";
