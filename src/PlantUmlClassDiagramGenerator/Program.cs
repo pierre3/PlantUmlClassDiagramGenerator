@@ -125,11 +125,16 @@ namespace PlantUmlClassDiagramGenerator
             var pumlexclude = CombinePath(inputRoot, ".pumlexclude");
             if (File.Exists(pumlexclude))
             {
-                excludePaths = File.ReadAllLines(pumlexclude).ToList();
+                excludePaths = File
+                    .ReadAllLines(pumlexclude)
+                    .Where(path => !string.IsNullOrWhiteSpace(path))
+                    .Select(path => path.Trim())
+                    .ToList();
             }
             if (parameters.ContainsKey("-excludePaths"))
             {
-                excludePaths.AddRange(parameters["-excludePaths"].Split(','));
+                var splitOptions = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
+                excludePaths.AddRange(parameters["-excludePaths"].Split(',', splitOptions));
             }
 
             var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
