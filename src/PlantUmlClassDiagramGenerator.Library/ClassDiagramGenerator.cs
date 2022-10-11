@@ -59,6 +59,76 @@ namespace PlantUmlClassDiagramGenerator.Library
             VisitTypeDeclaration(node, () => base.VisitClassDeclaration(node));
         }
 
+        public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
+        {
+            // Code copied from: VisitTypeDeclaration
+            
+            if (SkipInnerTypeDeclaration(node)) { return; }
+
+            relationships.AddInnerclassRelationFrom(node);
+            relationships.AddInheritanceFrom(node);
+
+            var modifiers = GetTypeModifiersText(node.Modifiers);
+            var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
+                + node.Keyword.ToString();
+
+            var typeName = TypeNameText.From(node);
+            var name = typeName.Identifier;
+            var typeParam = typeName.TypeArguments;
+            var type = $"{name}{typeParam}";
+
+            types.Add(name);
+
+            // Write records as: "class <<record>>"
+            WriteLine($"class {type} {modifiers}<<record>> {{");
+
+            nestingDepth++;
+
+            foreach(var parameter in node.ParameterList.Parameters)
+            {
+                // Code copied from "VisitPropertyDeclaration":
+
+                var parameterType = parameter.Type;
+
+                var parentClass = (parameter.Parent as TypeDeclarationSyntax);
+                var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
+                    .Any(t => t.Identifier.Text == type.ToString()) ?? false;
+
+                if (!createAssociation || parameterType.GetType() == typeof(PredefinedTypeSyntax) || parameterType.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
+                {
+                    // ParameterList-Property: always public
+                    var parameterModifiers = "+ ";
+                    var parameterName = parameter.Identifier.ToString();
+
+                    // ParameterList-Property always have get and init accessor
+                    var accessorStr = "<<get>> <<init>>";
+
+                    
+                    var useLiteralInit = 
+                        //node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+                        parameter.Default?.Value is not null;
+                    var initValue = useLiteralInit
+                        ? (" = " + escapeDictionary.Aggregate(parameter.Default.Value.ToString(),
+                            (n, e) => Regex.Replace(n, e.Key, e.Value)))
+                        : "";
+
+                    WriteLine($"{parameterModifiers}{parameterName} : {parameterType} {accessorStr}{initValue}");
+                }
+                else
+                {
+                    if (type.GetType() == typeof(GenericNameSyntax))
+                    {
+                        additionalTypeDeclarationNodes.Add(parameterType);
+                    }
+                    relationships.AddAssociationFrom(parameter, node);
+                }
+            }
+            base.VisitRecordDeclaration(node);
+            nestingDepth--;
+
+            WriteLine("}");
+        }
+
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
             if (SkipInnerTypeDeclaration(node)) { return; }
