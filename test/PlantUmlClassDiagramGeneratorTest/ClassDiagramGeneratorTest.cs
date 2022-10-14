@@ -161,5 +161,26 @@ namespace PlantUmlClassDiagramGeneratorTest
             var reg = new System.Text.RegularExpressions.Regex("\r\n|\r|\n");
             return reg.Replace(text, newline);
         }
+
+        [TestMethod]
+        public void GenerateTestRecordTypes()
+        {
+            var code = File.ReadAllText("testData\\RecordType.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private | Accessibilities.Internal
+                                                                                            | Accessibilities.Protected | Accessibilities.ProtectedInternal);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\RecordType.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

@@ -67,7 +67,6 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             relationships.AddInnerclassRelationFrom(node);
             relationships.AddInheritanceFrom(node);
-
             var modifiers = GetTypeModifiersText(node.Modifiers);
             var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
                 + node.Keyword.ToString();
@@ -76,23 +75,20 @@ namespace PlantUmlClassDiagramGenerator.Library
             var name = typeName.Identifier;
             var typeParam = typeName.TypeArguments;
             var type = $"{name}{typeParam}";
-
+            var typeParams = typeParam.TrimStart('<').TrimEnd('>').Split(',', StringSplitOptions.TrimEntries);
             types.Add(name);
 
             // Write records as: "class <<record>>"
-            WriteLine($"class {type} {modifiers}<<record>> {{");
+            var structKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? " <<struct>>" : "";
+            WriteLine($"class {type} {modifiers}<<record>>{structKeyword} {{");
 
             nestingDepth++;
-
-            foreach(var parameter in node.ParameterList.Parameters)
+            var parameters = node.ParameterList?.Parameters ?? Enumerable.Empty<ParameterSyntax>();
+            foreach (var parameter in parameters)
             {
                 // Code copied from "VisitPropertyDeclaration":
-
                 var parameterType = parameter.Type;
-
-                var parentClass = (parameter.Parent as TypeDeclarationSyntax);
-                var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
-                    .Any(t => t.Identifier.Text == type.ToString()) ?? false;
+                var isTypeParameterProp = typeParams.Contains(parameterType.ToString());
 
                 if (!createAssociation || parameterType.GetType() == typeof(PredefinedTypeSyntax) || parameterType.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
                 {
@@ -103,7 +99,6 @@ namespace PlantUmlClassDiagramGenerator.Library
                     // ParameterList-Property always have get and init accessor
                     var accessorStr = "<<get>> <<init>>";
 
-                    
                     var useLiteralInit = 
                         //node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                         parameter.Default?.Value is not null;

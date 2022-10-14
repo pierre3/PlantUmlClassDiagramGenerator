@@ -1,0 +1,31 @@
+@startuml
+class MyRecord <<record>> {
+    + A : string <<get>>
+    + B : int <<get>>
+    + MyRecord(a:string, b:int)
+}
+class MyStructRecord <<record>> <<struct>> {
+    + A : string <<get>> <<init>>
+    + B : int <<get>> <<init>>
+}
+class MyRecord2 <<record>> {
+    + A : string <<get>> <<init>>
+    + B : int <<get>> <<init>>
+}
+class MyStructRecord2 <<record>> <<struct>> {
+    + A : string <<get>> <<init>>
+    + B : int <<get>> <<init>>
+}
+class "MyGenericRecord`2"<T1,T2> <<record>> {
+    + Type1 : T1 <<get>> <<init>>
+    + Type2 : T2 <<get>> <<init>>
+}
+class "MyGenericStructRecord`2"<T1,T2> <<record>> <<struct>> {
+    + Type1 : T1 <<get>>
+    + Type2 : T2 <<get>>
+    + MyGenericStructRecord(type1:T1, type2:T2)
+}
+class MyRecord3 <<record>> {
+}
+MyRecord3 --> "p1<long,bool>" "MyGenericRecord`2"
+@enduml
