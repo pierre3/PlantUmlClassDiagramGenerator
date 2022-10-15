@@ -3,9 +3,7 @@
 Create class diagrams of PlantUML from C# source code.
 
 ## Requirements
-
-- .NET Core SDK 2.1 or newer.
-- [.NET Core 3.1 Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1/runtime) 
+- [.NET Core 6.0 Runtime](https://dotnet.microsoft.com/download/dotnet-core/6.0/runtime) 
 
 ## Extension Settings
 
@@ -28,6 +26,12 @@ Create class diagrams of PlantUML from C# source code.
 
 
 ## Release Notes
+## 1.2.5
+- Update to .NET6.0
+- Supports a record declaration
+- Fix excludePaths from skipping incorrectly  
+  https://github.com/pierre3/PlantUmlClassDiagramGenerator/pull/54
+
 ### 1.2.4
 - Updated to .NET5.0
 

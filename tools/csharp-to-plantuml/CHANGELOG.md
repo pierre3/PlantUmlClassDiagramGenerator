@@ -4,6 +4,14 @@ All notable changes to the "csharp-to-plantuml" extension will be documented in 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Unreleased]
+## [1.2.5]
+### Changed
+- Update to .NET6.0
+- Supports a record declaration
+### Fixed
+- Fix excludePaths from skipping incorrectly
+  https://github.com/pierre3/PlantUmlClassDiagramGenerator/pull/54
+
 ## [1.2.4]
 ### Changed
 - Updated to .NET5.0
