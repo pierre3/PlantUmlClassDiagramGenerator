@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BA69B69C-C802-4077-B693-8845A154AD13}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantUmlClassDiagramGenerator.Attributes", "PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj", "{7C8C01F1-9D0D-449D-861B-AD7CA45667FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A5C78F0-D0E1-4146-A035-F13EF8BE542A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C8C01F1-9D0D-449D-861B-AD7CA45667FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8C01F1-9D0D-449D-861B-AD7CA45667FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8C01F1-9D0D-449D-861B-AD7CA45667FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8C01F1-9D0D-449D-861B-AD7CA45667FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
