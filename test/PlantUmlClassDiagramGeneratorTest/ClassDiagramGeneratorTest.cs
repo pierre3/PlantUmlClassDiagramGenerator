@@ -182,5 +182,26 @@ namespace PlantUmlClassDiagramGeneratorTest
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void GenerateTestAttributes()
+        {
+            var code = File.ReadAllText("testData\\Attributes.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private | Accessibilities.Internal
+                                                                                            | Accessibilities.Protected | Accessibilities.ProtectedInternal);
+                gen.Generate(root);
+            }
+
+            //var expected = ConvertNewLineCode(File.ReadAllText(@"uml\RecordType.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            //Assert.AreEqual(expected, actual);
+        }
     }
 }

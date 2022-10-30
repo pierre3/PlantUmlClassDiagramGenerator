@@ -12,11 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj" />
     <ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="testData\AtPrefixType.cs" />
+    <Compile Remove="testData\Attributes.cs" />
     <Compile Remove="testData\GenericsType.cs" />
     <Compile Remove="testData\InputClasses.cs" />
     <Compile Remove="testData\CurlyBrackets.cs" />
@@ -26,6 +28,9 @@
 
   <ItemGroup>
     <None Include="testData\AtPrefixType.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="testData\Attributes.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="testData\GenericsType.cs">

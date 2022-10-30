@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PlantUmlClassDiagramGenerator.Attributes;
 
 namespace PlantUmlClassDiagramGenerator.Library
 {
@@ -61,8 +62,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
         {
-            // Code copied from: VisitTypeDeclaration
-            
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -78,7 +78,6 @@ namespace PlantUmlClassDiagramGenerator.Library
             var typeParams = typeParam.TrimStart('<').TrimEnd('>').Split(',', StringSplitOptions.TrimEntries);
             types.Add(name);
 
-            // Write records as: "class <<record>>"
             var structKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? " <<struct>>" : "";
             WriteLine($"class {type} {modifiers}<<record>>{structKeyword} {{");
 
@@ -86,37 +85,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             var parameters = node.ParameterList?.Parameters ?? Enumerable.Empty<ParameterSyntax>();
             foreach (var parameter in parameters)
             {
-                // Code copied from "VisitPropertyDeclaration":
-                var parameterType = parameter.Type;
-                var isTypeParameterProp = typeParams.Contains(parameterType.ToString());
-
-                if (!createAssociation || parameterType.GetType() == typeof(PredefinedTypeSyntax) || parameterType.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
-                {
-                    // ParameterList-Property: always public
-                    var parameterModifiers = "+ ";
-                    var parameterName = parameter.Identifier.ToString();
-
-                    // ParameterList-Property always have get and init accessor
-                    var accessorStr = "<<get>> <<init>>";
-
-                    var useLiteralInit = 
-                        //node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-                        parameter.Default?.Value is not null;
-                    var initValue = useLiteralInit
-                        ? (" = " + escapeDictionary.Aggregate(parameter.Default.Value.ToString(),
-                            (n, e) => Regex.Replace(n, e.Key, e.Value)))
-                        : "";
-
-                    WriteLine($"{parameterModifiers}{parameterName} : {parameterType} {accessorStr}{initValue}");
-                }
-                else
-                {
-                    if (type.GetType() == typeof(GenericNameSyntax))
-                    {
-                        additionalTypeDeclarationNodes.Add(parameterType);
-                    }
-                    relationships.AddAssociationFrom(parameter, node);
-                }
+                VisitRecordParameter(node, type, typeParams, parameter);
             }
             base.VisitRecordDeclaration(node);
             nestingDepth--;
@@ -124,8 +93,44 @@ namespace PlantUmlClassDiagramGenerator.Library
             WriteLine("}");
         }
 
+        private void VisitRecordParameter(RecordDeclarationSyntax node, string type, string[] typeParams, ParameterSyntax parameter)
+        {
+            var parameterType = parameter.Type;
+            var isTypeParameterProp = typeParams.Contains(parameterType.ToString());
+
+            if (!createAssociation
+                || HasIgnoreAssociationAttribute(parameter.AttributeLists)
+                || parameterType.GetType() == typeof(PredefinedTypeSyntax)
+                || parameterType.GetType() == typeof(NullableTypeSyntax)
+                || isTypeParameterProp)
+            {
+                // ParameterList-Property: always public
+                var parameterModifiers = "+ ";
+                var parameterName = parameter.Identifier.ToString();
+
+                // ParameterList-Property always have get and init accessor
+                var accessorStr = "<<get>> <<init>>";
+
+                var useLiteralInit = parameter.Default?.Value is not null;
+                var initValue = useLiteralInit
+                    ? (" = " + escapeDictionary.Aggregate(parameter.Default.Value.ToString(),
+                        (n, e) => Regex.Replace(n, e.Key, e.Value)))
+                    : "";
+                WriteLine($"{parameterModifiers}{parameterName} : {parameterType} {accessorStr}{initValue}");
+            }
+            else
+            {
+                if (type.GetType() == typeof(GenericNameSyntax))
+                {
+                    additionalTypeDeclarationNodes.Add(parameterType);
+                }
+                relationships.AddAssociationFrom(parameter, node);
+            }
+        }
+
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -149,6 +154,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -168,8 +174,17 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
-
+            foreach (var parameter in node.ParameterList?.Parameters)
+            {
+                var associationAttrSyntax = GetAssociationAttributeSyntax(parameter.AttributeLists);
+                if (associationAttrSyntax is not null)
+                {
+                    var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+                    relationships.AddAssociationFrom(node, parameter, associationAttr);
+                }
+            }
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = node.Identifier.ToString();
             var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
@@ -179,6 +194,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var modifiers = GetMemberModifiersText(node.Modifiers);
@@ -191,7 +207,17 @@ namespace PlantUmlClassDiagramGenerator.Library
             foreach (var field in variables)
             {
                 Type fieldType = type.GetType();
-                if (!createAssociation || fieldType == typeof(PredefinedTypeSyntax) || fieldType == typeof(NullableTypeSyntax) || isTypeParameterField)
+                var associationAttrSyntax = GetAssociationAttributeSyntax(node.AttributeLists);
+                if (associationAttrSyntax is not null)
+                {
+                    var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+                    relationships.AddAssociationFrom(node, associationAttr);
+                }
+                else if (!createAssociation
+                    || HasIgnoreAssociationAttribute(node.AttributeLists)
+                    || fieldType == typeof(PredefinedTypeSyntax)
+                    || fieldType == typeof(NullableTypeSyntax)
+                    || isTypeParameterField)
                 {
                     var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                     var initValue = useLiteralInit
@@ -213,6 +239,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var type = node.Type;
@@ -221,11 +248,20 @@ namespace PlantUmlClassDiagramGenerator.Library
             var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
                 .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
-            if (!createAssociation || type.GetType() == typeof(PredefinedTypeSyntax) || type.GetType() == typeof(NullableTypeSyntax) || isTypeParameterProp)
+            var associationAttrSyntax = GetAssociationAttributeSyntax(node.AttributeLists);
+            if (associationAttrSyntax is not null)
+            {
+                var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+                relationships.AddAssociationFrom(node, associationAttr);
+            }
+            else if (!createAssociation
+                || HasIgnoreAssociationAttribute(node.AttributeLists)
+                || type.GetType() == typeof(PredefinedTypeSyntax)
+                || type.GetType() == typeof(NullableTypeSyntax)
+                || isTypeParameterProp)
             {
                 var modifiers = GetMemberModifiersText(node.Modifiers);
                 var name = node.Identifier.ToString();
-
                 //Property does not have an accessor is an expression-bodied property. (get only)
                 var accessorStr = "<<get>>";
                 if (node.AccessorList != null)
@@ -253,10 +289,35 @@ namespace PlantUmlClassDiagramGenerator.Library
             }
         }
 
+        private static PlantUmlAssociationAttribute CreateAssociationAttribute(AttributeSyntax associationAttribute)
+        {
+            var attributeProps = associationAttribute.ArgumentList.Arguments.Select(arg => new
+            {
+                Name = arg.NameEquals.Name.ToString(),
+                Value = arg.Expression.ToString().TrimStart('"').TrimEnd('"')
+            });
+            return new PlantUmlAssociationAttribute()
+            {
+                Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,
+                Name = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Name))?.Value,
+                Multiplicity = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Multiplicity))?.Value,
+                Label = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Label))?.Value
+            };
+        }
+
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
-
+            foreach (var parameter in node.ParameterList?.Parameters)
+            {
+                var associationAttrSyntax = GetAssociationAttributeSyntax(parameter.AttributeLists);
+                if (associationAttrSyntax is not null)
+                {
+                    var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+                    relationships.AddAssociationFrom(node, parameter, associationAttr);
+                }
+            }
             var modifiers = GetMemberModifiersText(node.Modifiers);
             var name = node.Identifier.ToString();
             var returnType = node.ReturnType.ToString();
@@ -341,6 +402,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
+            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -389,6 +451,43 @@ namespace PlantUmlClassDiagramGenerator.Library
                 result += " ";
             };
             return result;
+        }
+
+        private bool HasIgnoreAttribute(SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return GetIgnoreAttribute(attributeLists) is not null;
+        }
+        private AttributeSyntax GetIgnoreAttribute(SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return attributeLists.SelectMany(list => list.Attributes)
+                .FirstOrDefault(
+                      attr => attr.Name.ToString() == nameof(PlantUmlIgnoreAttribute)
+                        || attr.Name.ToString() == nameof(PlantUmlIgnoreAttribute).Replace("Attribute", ""));
+        }
+
+        private bool HasIgnoreAssociationAttribute(SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return GetIgnoreAssociationAttribute(attributeLists) is not null;
+        }
+        private AttributeSyntax GetIgnoreAssociationAttribute(SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return attributeLists.SelectMany(list => list.Attributes)
+                .FirstOrDefault(
+                      attr => attr.Name.ToString() == nameof(PlantUmlIgnoreAssociationAttribute)
+                        || attr.Name.ToString() == nameof(PlantUmlIgnoreAssociationAttribute).Replace("Attribute", ""));
+        }
+
+        private bool HasAssociationAttribute(SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return GetAssociationAttributeSyntax(attributeLists) is not null;
+
+        }
+        private AttributeSyntax GetAssociationAttributeSyntax(SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return attributeLists.SelectMany(list => list.Attributes)
+                .FirstOrDefault(
+                      attr => attr.Name.ToString() == nameof(PlantUmlAssociationAttribute)
+                        || attr.Name.ToString() == nameof(PlantUmlAssociationAttribute).Replace("Attribute", ""));
         }
 
         private bool IsIgnoreMember(SyntaxTokenList modifiers)
