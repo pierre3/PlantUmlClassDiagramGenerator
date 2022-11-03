@@ -7,11 +7,6 @@ using PlantUmlClassDiagramGenerator.Attributes;
 
 namespace PlantUmlClassDiagramGeneratorTest.testData
 {
-    class Item
-    {
-        public string Name { get; set; } = string.Empty;
-        public int Value { get; set; } = 0;
-    }
 
     class Parameters
     {
@@ -21,10 +16,10 @@ namespace PlantUmlClassDiagramGeneratorTest.testData
 
     class MyClass
     {
-        [PlantUmlAssociation(Name="Item", Association ="o--", Multiplicity ="0..*", Label="Items")]
+        [PlantUmlAssociation(Name = "Item", Association = "o--", LeafLabel = "0..*", Label = "Items")]
         public IList<Item> Items { get; set; }
 
-        [PlantUmlAssociation(Name = "IItem", Association = "*--", Multiplicity = "0..*", Label="ItemDictionary")]
+        [PlantUmlAssociation(Name = "IItem", Association = "*--", RootLabel = "1", Label = "ItemDictionary", LeafLabel = "0..*")]
         public IDictionary<string, IItem> ItemDictionary { get; set; } = new Dictionary<string, IItem>();
 
         [PlantUmlIgnore]
@@ -33,7 +28,7 @@ namespace PlantUmlClassDiagramGeneratorTest.testData
         [PlantUmlIgnoreAssociation]
         public IReadOnlyCollection<Item> ReadOnlyItems { get; }
 
-        public void Run([PlantUmlAssociation(Association ="..>", Label="use")]Parameters p)
+        public void Run([PlantUmlAssociation(Association = "..>", Label = "use")] Parameters p)
         {
             Console.WriteLine($"{p.A},{p.B}");
         }
@@ -44,6 +39,27 @@ namespace PlantUmlClassDiagramGeneratorTest.testData
             this.logger = logger;
         }
     }
+
+    struct MyStruct
+    {
+        [PlantUmlAssociation(Name = "int", Association = "o--", LeafLabel = "0..*", Label = "intCollection:List<int>")]
+        public IList<int> intCollection;
+
+        [PlantUmlAssociation(Name = "Parameters", Association = "-l->")]
+        public MyStruct(Parameters p)
+        {
+        }
+    }
+
+    record MyRecord(string name, [PlantUmlAssociation(Association = "o--")] Settings s);
+
+    record struct MyStructRecord
+    {
+        [PlantUmlAssociation(Name="string", Association = "o--",LeafLabel="Name")]
+        public string Name { get; init; }
+        
+    }
+
 
     [PlantUmlIgnore]
     class HiddenClass 
