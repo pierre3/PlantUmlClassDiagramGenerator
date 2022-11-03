@@ -62,7 +62,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -97,12 +97,17 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             var parameterType = parameter.Type;
             var isTypeParameterProp = typeParams.Contains(parameterType.ToString());
-
-            if (!createAssociation
-                || HasIgnoreAssociationAttribute(parameter.AttributeLists)
-                || parameterType.GetType() == typeof(PredefinedTypeSyntax)
-                || parameterType.GetType() == typeof(NullableTypeSyntax)
-                || isTypeParameterProp)
+            var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
+            if (associationAttrSyntax is not null)
+            {
+                var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+                relationships.AddAssociationFrom(node, parameter, associationAttr);
+            }
+            else if (!createAssociation
+              || parameter.AttributeLists.HasIgnoreAssociationAttribute()
+              || parameterType.GetType() == typeof(PredefinedTypeSyntax)
+              || parameterType.GetType() == typeof(NullableTypeSyntax)
+              || isTypeParameterProp)
             {
                 // ParameterList-Property: always public
                 var parameterModifiers = "+ ";
@@ -130,7 +135,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -154,7 +159,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -174,11 +179,11 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
             foreach (var parameter in node.ParameterList?.Parameters)
             {
-                var associationAttrSyntax = GetAssociationAttributeSyntax(parameter.AttributeLists);
+                var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
                 if (associationAttrSyntax is not null)
                 {
                     var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
@@ -194,7 +199,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var modifiers = GetMemberModifiersText(node.Modifiers);
@@ -207,14 +212,14 @@ namespace PlantUmlClassDiagramGenerator.Library
             foreach (var field in variables)
             {
                 Type fieldType = type.GetType();
-                var associationAttrSyntax = GetAssociationAttributeSyntax(node.AttributeLists);
+                var associationAttrSyntax = node.AttributeLists.GetAssociationAttributeSyntax();
                 if (associationAttrSyntax is not null)
                 {
                     var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
                     relationships.AddAssociationFrom(node, associationAttr);
                 }
                 else if (!createAssociation
-                    || HasIgnoreAssociationAttribute(node.AttributeLists)
+                    || node.AttributeLists.HasIgnoreAssociationAttribute()
                     || fieldType == typeof(PredefinedTypeSyntax)
                     || fieldType == typeof(NullableTypeSyntax)
                     || isTypeParameterField)
@@ -239,7 +244,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var type = node.Type;
@@ -248,14 +253,14 @@ namespace PlantUmlClassDiagramGenerator.Library
             var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
                 .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
-            var associationAttrSyntax = GetAssociationAttributeSyntax(node.AttributeLists);
+            var associationAttrSyntax = node.AttributeLists.GetAssociationAttributeSyntax();
             if (associationAttrSyntax is not null)
             {
                 var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
                 relationships.AddAssociationFrom(node, associationAttr);
             }
             else if (!createAssociation
-                || HasIgnoreAssociationAttribute(node.AttributeLists)
+                || node.AttributeLists.HasIgnoreAssociationAttribute()
                 || type.GetType() == typeof(PredefinedTypeSyntax)
                 || type.GetType() == typeof(NullableTypeSyntax)
                 || isTypeParameterProp)
@@ -300,18 +305,19 @@ namespace PlantUmlClassDiagramGenerator.Library
             {
                 Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,
                 Name = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Name))?.Value,
-                Multiplicity = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Multiplicity))?.Value,
+                RootLabel = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.RootLabel))?.Value,
+                LeafLabel = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.LeafLabel))?.Value,
                 Label = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Label))?.Value
             };
         }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
             foreach (var parameter in node.ParameterList?.Parameters)
             {
-                var associationAttrSyntax = GetAssociationAttributeSyntax(parameter.AttributeLists);
+                var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
                 if (associationAttrSyntax is not null)
                 {
                     var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
@@ -402,7 +408,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
-            if (HasIgnoreAttribute(node.AttributeLists)) { return; }
+            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
             relationships.AddInnerclassRelationFrom(node);
@@ -451,43 +457,6 @@ namespace PlantUmlClassDiagramGenerator.Library
                 result += " ";
             };
             return result;
-        }
-
-        private bool HasIgnoreAttribute(SyntaxList<AttributeListSyntax> attributeLists)
-        {
-            return GetIgnoreAttribute(attributeLists) is not null;
-        }
-        private AttributeSyntax GetIgnoreAttribute(SyntaxList<AttributeListSyntax> attributeLists)
-        {
-            return attributeLists.SelectMany(list => list.Attributes)
-                .FirstOrDefault(
-                      attr => attr.Name.ToString() == nameof(PlantUmlIgnoreAttribute)
-                        || attr.Name.ToString() == nameof(PlantUmlIgnoreAttribute).Replace("Attribute", ""));
-        }
-
-        private bool HasIgnoreAssociationAttribute(SyntaxList<AttributeListSyntax> attributeLists)
-        {
-            return GetIgnoreAssociationAttribute(attributeLists) is not null;
-        }
-        private AttributeSyntax GetIgnoreAssociationAttribute(SyntaxList<AttributeListSyntax> attributeLists)
-        {
-            return attributeLists.SelectMany(list => list.Attributes)
-                .FirstOrDefault(
-                      attr => attr.Name.ToString() == nameof(PlantUmlIgnoreAssociationAttribute)
-                        || attr.Name.ToString() == nameof(PlantUmlIgnoreAssociationAttribute).Replace("Attribute", ""));
-        }
-
-        private bool HasAssociationAttribute(SyntaxList<AttributeListSyntax> attributeLists)
-        {
-            return GetAssociationAttributeSyntax(attributeLists) is not null;
-
-        }
-        private AttributeSyntax GetAssociationAttributeSyntax(SyntaxList<AttributeListSyntax> attributeLists)
-        {
-            return attributeLists.SelectMany(list => list.Attributes)
-                .FirstOrDefault(
-                      attr => attr.Name.ToString() == nameof(PlantUmlAssociationAttribute)
-                        || attr.Name.ToString() == nameof(PlantUmlAssociationAttribute).Replace("Attribute", ""));
         }
 
         private bool IsIgnoreMember(SyntaxTokenList modifiers)

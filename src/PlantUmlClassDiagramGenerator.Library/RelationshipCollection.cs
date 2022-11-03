@@ -36,79 +36,109 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public void AddAssociationFrom(FieldDeclarationSyntax node, VariableDeclaratorSyntax field)
         {
-            if (node.Declaration.Type is not SimpleNameSyntax baseNode 
-                || node.Parent is not BaseTypeDeclarationSyntax subNode) return;
+            if (node.Declaration.Type is not SimpleNameSyntax leafNode 
+                || node.Parent is not BaseTypeDeclarationSyntax rootNode) return;
 
             var symbol = field.Initializer == null ? "-->" : "o->";
             var fieldIdentifier = field.Identifier.ToString();
-            AddRelationship(baseNode, subNode, symbol, fieldIdentifier);
+            var leafName = TypeNameText.From(leafNode);
+            var rootName = TypeNameText.From(rootNode);
+            AddRelationship(leafName, rootName, symbol, fieldIdentifier);
         }
 
         public void AddAssociationFrom(PropertyDeclarationSyntax node)
         {
-            if (node.Type is not SimpleNameSyntax baseNode 
-                || node.Parent is not BaseTypeDeclarationSyntax subNode) return;
+            if (node.Type is not SimpleNameSyntax leafNode 
+                || node.Parent is not BaseTypeDeclarationSyntax rootNode) return;
 
             var symbol = node.Initializer == null ? "-->" : "o->";
             var nodeIdentifier = node.Identifier.ToString();
-            AddRelationship(baseNode, subNode, symbol, nodeIdentifier);
+            var leafName = TypeNameText.From(leafNode);
+            var rootName = TypeNameText.From(rootNode);
+            AddRelationship(leafName, rootName, symbol, nodeIdentifier);
         }
 
         public void AddAssociationFrom(ParameterSyntax node, RecordDeclarationSyntax parent)
         {
-            if (node.Type is not SimpleNameSyntax baseNode 
-                || parent is not BaseTypeDeclarationSyntax subNode) return;
+            if (node.Type is not SimpleNameSyntax leafNode 
+                || parent is not BaseTypeDeclarationSyntax rootNode) return;
 
             var symbol = node.Default == null ? "-->" : "o->";
             var nodeIdentifier = node.Identifier.ToString();
-            AddRelationship(baseNode, subNode, symbol, nodeIdentifier);
+            var leafName = TypeNameText.From(leafNode);
+            var rootName = TypeNameText.From(rootNode);
+            AddRelationship(leafName, rootName, symbol, nodeIdentifier);
         }
 
         public void AddAssociationFrom(PropertyDeclarationSyntax node, PlantUmlAssociationAttribute attribute)
         {
-            if (node.Type is not SimpleNameSyntax baseNode
-                || node.Parent is not BaseTypeDeclarationSyntax subNode) return;
-            AddeRationship(attribute, baseNode, subNode);
+            if (node.Parent is not BaseTypeDeclarationSyntax rootNode) return;
+            var leafName = GetLeafName(attribute.Name, node.Type);
+            if (leafName is null) { return; }
+            var rootName = TypeNameText.From(rootNode);
+            AddeRationship(attribute, leafName, rootName);
 
         }
 
         public void AddAssociationFrom(MethodDeclarationSyntax node, ParameterSyntax parameter, PlantUmlAssociationAttribute attribute)
         {
-            if (parameter.Type is not SimpleNameSyntax baseNode
-                || node.Parent is not BaseTypeDeclarationSyntax subNode) return;
-            AddeRationship(attribute, baseNode, subNode);
+            if (node.Parent is not BaseTypeDeclarationSyntax rootNode) return;
+            var leafName = GetLeafName(attribute.Name, parameter.Type);
+            if (leafName is null) { return; }
+            var rootName = TypeNameText.From(rootNode);
+            AddeRationship(attribute, leafName, rootName);
+        }
+
+        public void AddAssociationFrom(RecordDeclarationSyntax node, ParameterSyntax parameter, PlantUmlAssociationAttribute attribute)
+        {
+            if (node is not BaseTypeDeclarationSyntax rootNode) { return; }
+            var leafName = GetLeafName(attribute.Name, parameter.Type);
+            if (leafName is null) { return; }
+            var rootName = TypeNameText.From(rootNode);
+            AddeRationship(attribute, leafName, rootName);
         }
 
         public void AddAssociationFrom(ConstructorDeclarationSyntax node, ParameterSyntax parameter, PlantUmlAssociationAttribute attribute)
         {
-            if (parameter.Type is not SimpleNameSyntax baseNode
-                || node.Parent is not BaseTypeDeclarationSyntax subNode) return;
-            AddeRationship(attribute, baseNode, subNode);
+            if (node.Parent is not BaseTypeDeclarationSyntax rootNode) { return; }
+            var leafName = GetLeafName(attribute.Name, parameter.Type);
+            if (leafName is null) { return; }
+            var rootName = TypeNameText.From(rootNode);
+            AddeRationship(attribute, leafName, rootName);
         }
 
         public void AddAssociationFrom(FieldDeclarationSyntax node, PlantUmlAssociationAttribute attribute)
         {
-            if (node.Declaration.Type is not SimpleNameSyntax baseNode 
-                || node.Parent is not BaseTypeDeclarationSyntax subNode) return;
-            AddeRationship(attribute, baseNode, subNode);
+            if (node.Parent is not BaseTypeDeclarationSyntax rootNode) { return; }
+            var leafName = GetLeafName(attribute.Name, node.Declaration.Type);
+            if(leafName is null) { return; }
+            var rootName = TypeNameText.From(rootNode);
+            AddeRationship(attribute, leafName, rootName);
         }
 
-        private void AddeRationship(PlantUmlAssociationAttribute attribute, SimpleNameSyntax baseNode, BaseTypeDeclarationSyntax subNode)
+        private static TypeNameText GetLeafName(string attributeName, TypeSyntax typeSyntax)
+        {
+            if (!string.IsNullOrWhiteSpace(attributeName))
+            {
+                return new TypeNameText() { Identifier = attributeName };
+            }
+            else if (typeSyntax is SimpleNameSyntax simpleNode)
+            {
+                return TypeNameText.From(simpleNode);
+            }
+            return null;
+            
+        }
+
+        private void AddeRationship(PlantUmlAssociationAttribute attribute, TypeNameText leafName, TypeNameText rootName)
         {
             var symbol = string.IsNullOrEmpty(attribute.Association) ? "--" : attribute.Association;
-
-            var baseName = string.IsNullOrWhiteSpace(attribute.Name)
-                ? TypeNameText.From(baseNode)
-                : new TypeNameText() { Identifier = attribute.Name };
-            var subName = TypeNameText.From(subNode);
-            items.Add(new Relationship(subName, baseName, symbol, "", attribute.Multiplicity, attribute.Label));
+            items.Add(new Relationship(rootName, leafName, symbol, attribute.RootLabel, attribute.LeafLabel, attribute.Label));
         }
 
-        private void AddRelationship(SimpleNameSyntax baseNode, BaseTypeDeclarationSyntax subNode, string symbol, string nodeIdentifier)
+        private void AddRelationship(TypeNameText leafName, TypeNameText rootName, string symbol, string nodeIdentifier)
         {
-            var baseName = TypeNameText.From(baseNode);
-            var subName = TypeNameText.From(subNode);
-            items.Add(new Relationship(subName, baseName, symbol, "", nodeIdentifier + baseName.TypeArguments));
+            items.Add(new Relationship(rootName, leafName, symbol, "", nodeIdentifier + leafName.TypeArguments));
         }
 
         public IEnumerator<Relationship> GetEnumerator()
