@@ -1,0 +1,26 @@
+﻿@startuml
+class ClassB {
+}
+interface IInterfaceB {
+    Num2 : double <<get>>
+}
+class RecordB <<record>> {
+    + Prop1 : string <<get>>
+    + Prop2 : string <<get>>
+    + RecordB(prop1:string, prop2:string)
+}
+class StructB <<struct>> {
+    + StructB(field1:RecordB)
+}
+class RecordStructB <<record>> <<struct>> {
+    + X : int <<get>> <<init>>
+    + Y : int <<get>> <<init>>
+}
+enum EnumB {
+    A,
+    B,
+    C,
+}
+StructB --> "field1" RecordB
+StructB --> RecordB : "use"
+@enduml

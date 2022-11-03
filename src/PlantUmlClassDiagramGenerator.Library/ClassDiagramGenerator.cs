@@ -20,20 +20,22 @@ namespace PlantUmlClassDiagramGenerator.Library
         private readonly string indent;
         private int nestingDepth = 0;
         private readonly bool createAssociation;
-
+        private readonly bool attributeRequired;
         private readonly Dictionary<string, string> escapeDictionary = new Dictionary<string, string>
         {
             {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
             {@"(?<before>[^}])}(?<after>[^}])", "${before}&#125;${after}"},
         };
 
-        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, bool createAssociation = true)
+        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, 
+            bool createAssociation = true, bool attributeRequired = false)
         {
             this.writer = writer;
             this.indent = indent;
             additionalTypeDeclarationNodes = new List<SyntaxNode>();
             this.ignoreMemberAccessibilities = ignoreMemberAccessibilities;
             this.createAssociation = createAssociation;
+            this.attributeRequired = attributeRequired;
         }
 
         public void Generate(SyntaxNode root)
@@ -62,6 +64,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
         {
+            if(attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
             if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
@@ -135,6 +138,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitStructDeclaration(StructDeclarationSyntax node)
         {
+            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
             if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
@@ -159,6 +163,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
         {
+            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
             if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
@@ -408,6 +413,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
         {
+            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
             if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 

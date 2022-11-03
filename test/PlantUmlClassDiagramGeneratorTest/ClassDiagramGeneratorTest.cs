@@ -198,10 +198,50 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            //var expected = ConvertNewLineCode(File.ReadAllText(@"uml\RecordType.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\Attributes.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
-            //Assert.AreEqual(expected, actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GenerateTestAttributeRequierd()
+        {
+            var code = File.ReadAllText("testData\\AttributeRequierd.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.None, true, true);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\AttributeRequierd.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GenerateTestNotAttributeRequierd()
+        {
+            var code = File.ReadAllText("testData\\AttributeRequierd.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.None, true, false);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\NotAttributeRequierd.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }

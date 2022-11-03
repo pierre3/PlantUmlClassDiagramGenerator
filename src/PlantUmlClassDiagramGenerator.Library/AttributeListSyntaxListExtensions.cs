@@ -46,5 +46,19 @@ namespace PlantUmlClassDiagramGenerator.Library
                       attr => attr.Name.ToString() == nameof(PlantUmlAssociationAttribute)
                         || attr.Name.ToString() == nameof(PlantUmlAssociationAttribute).Replace("Attribute", ""));
         }
+
+        public static bool HasDiagramAttribute(this SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return GetDiagramAttributeSyntax(attributeLists) is not null;
+
+        }
+
+        public static AttributeSyntax GetDiagramAttributeSyntax(this SyntaxList<AttributeListSyntax> attributeLists)
+        {
+            return attributeLists.SelectMany(list => list.Attributes)
+                .FirstOrDefault(
+                      attr => attr.Name.ToString() == nameof(PlantUmlDiagramAttribute)
+                        || attr.Name.ToString() == nameof(PlantUmlDiagramAttribute).Replace("Attribute", ""));
+        }
     }
 }
