@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj" />
+    <ProjectReference Include="..\PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj" />
   </ItemGroup>
 
 </Project>
