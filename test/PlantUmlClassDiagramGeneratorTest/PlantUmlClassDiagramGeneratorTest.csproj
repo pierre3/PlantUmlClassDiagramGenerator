@@ -51,6 +51,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="testData\AttributeRequierd.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="uml\NotAttributeRequierd.puml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="uml\AttributeRequierd.puml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="uml\Attributes.puml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="uml\all.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
