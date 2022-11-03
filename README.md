@@ -442,7 +442,7 @@ class Group <<record>> {
 You can add the package [PlantUmlClassDiagramGenerator.Attributes](https://www.nuget.org/packages/PlantUmlClassDiagramGenerator.Attributes) to your C# project for attribute-based configuration.
 
 ### PlantUmlDiagramAttribute
-Only types to which PlantUmlDdiagramAttribute has been added will be output.
+Only types to which PlantUmlDiagramAttribute has been added will be output.
 This attribute is enabled if the -attributeRequired switch is added to the command line argument.
 
 This attribute can be added only to type declalerations.
@@ -466,7 +466,7 @@ class ClassB
 }
 ```
 
-Only ClassB with PlantUMLDdiagramAttribute will be output.
+Only ClassB with PlantUmlDiagramAttribute will be output.
 
 ```
 @startuml
