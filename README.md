@@ -32,7 +32,7 @@ puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
   Specifies a relative path from the "InputPath", with a comma separated list.
 - -createAssociation: (Optional) Create object associations from references of fields and properites.
 - -allInOne: (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
-
+- -attributeRequired: (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
 
 examples
 ```bat
@@ -437,3 +437,239 @@ class Group <<record>> {
 
 ![InheritanceRelationsips.png](uml/RecordParameterList.png)
 
+## Attribute-based configuration
+
+You can add the package [PlantUmlClassDiagramGenerator.Attributes](https://www.nuget.org/packages/PlantUmlClassDiagramGenerator.Attributes) to your C# project for attribute-based configuration.
+
+### PlantUmlDiagramAttribute
+Only types to which PlantUmlDdiagramAttribute has been added will be output.
+This attribute is enabled if the -attributeRequired switch is added to the command line argument.
+
+This attribute can be added only to type declalerations.
+- class
+- struct
+- enum
+- record
+
+```cs
+class ClassA
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+[PlantUmlDiagram]
+class ClassB
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+```
+
+Only ClassB with PlantUMLDdiagramAttribute will be output.
+
+```
+@startuml
+class ClassB {
+    + Name : string <<get>> <<set>>
+    + Age : int <<get>> <<set>>
+}
+@enduml
+```
+
+
+### PlantUmlIgnoreAttribute
+Elements with this attribute added are excluded from the output.
+
+```cs
+[PlantUmlIgnore]
+class ClassA
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+class ClassB
+{
+    public string Name { get; set; }
+    [PlantUmlIgnore]
+    public int Age { get; set; }
+}
+
+class ClassC
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    [PlantUmlIgnore]
+    public ClassC(string name, int age) => (Name, Age) = (name, age);
+    
+    public void MethodA();
+    
+    [PlantUmlIgnore]
+    public void MethodB();
+}
+```
+
+```
+@startuml
+class ClassB {
+    + Name : string
+}
+class ClassC {
+    + Name : string
+    + Age : int
+    + MethodA() : void
+}
+@enduml
+```
+
+### PlantUmlAssociationAttribute
+By adding this attribute, you can define association between classes.
+This attribute can be added to properties, fields and method parameters.
+
+The details of the association are defined in the following properties.
+
+- _Name_
+  - Specifies the type name on the leaf node side.
+  - If omitted, the name of the element to which the attribute is added is used.
+- _Association_
+  - Specifies the edge portion of the association.Sets a valid string in PlantUML.
+  - If omitted, "--" is used.
+- _RootLabel_
+  - Specifies the label to be displayed on the root node side.
+  - If omitted, nothing is displayed. 
+- _Label_
+  - Specifies the label to be displayed in the center of the edge.
+  - If omitted, nothing is displayed. 
+- _LeafLabel_ 
+  - Specifies the label to be displayed on the leaf node side.
+  - If omitted, nothing is displayed.  
+
+```cs
+class Parameters
+{
+    public string A { get; set; }
+    public string B { get; set; }
+}
+
+class CustomAssociationSample
+{
+    [PlantUmlAssociation(Name = "Name", Association = "*-->", LeafLabel = "LeafLabel", Label= "Label", RootLabel = "RootLabel")] 
+    public ClassA A { get; set; }
+}
+
+class CollectionItemsSample
+{
+    [PlantUmlAssociation(Name = "Item", Association = "o--", LeafLabel = "0..*", Label = "Items")]
+    public IList<Item> Items { get; set; }
+}
+
+class MethodParamtersSample
+{
+    public void Run([PlantUmlAssociation(Association = "..>", Label = "use")] Parameters p)
+    {
+        Console.WriteLine($"{p.A},{p.B}");
+    }
+
+    private ILogger logger;
+    public MyClass([PlantUmlAssociation(Association = "..>", Label = "Injection")] ILogger logger)
+    {
+        this.logger = logger;
+    }
+}
+```
+
+```
+@startuml
+class Parameters {
+    + A : string <<get>> <<set>>
+    + B : string <<get>> <<set>>
+}
+class CustomAssociationSample {
+}
+class CollectionItemsSample {
+}
+class MethodParamtersSample {
+    + Run(p:Parameters) : void
+    + MyClass(logger:ILogger)
+}
+CustomAssociationSample "RootLabel" *--> "LeafLabel" Name : "Label"
+CollectionItemsSample o-- "0..*" Item : "Items"
+MethodParamtersSample ..> Parameters : "use"
+MethodParamtersSample ..> ILogger : "Injection"
+@enduml
+```
+
+![CustomAssociation.png](uml/CustomAssociation.png)
+
+### PlantUmlIgnoreAssociationAttribute
+
+This attribute can be added to properties and fields.
+Properties (or fields) with this attribute are described as members of the class without any association.
+
+```cs
+class User
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+class ClassA
+{
+    public static User DefaultUser { get; }
+    public IList<User> Users { get; }
+
+    public ClassA(IList<User> users)
+    {
+        Users = users;
+        DefaultUser = new User()
+        {
+            Name = "DefaultUser",
+            Age = "20"
+        };
+    }
+}
+
+class ClassB
+{
+    [PlantUmlIgnoreAssociation]
+    public static User DefaultUser { get; }
+
+    [PlantUmlIgnoreAssociation]
+    public IList<User> Users { get; }
+
+    public ClassB(IList<User> users)
+    {
+        Users = users;
+        DefaultUser = new User()
+        {
+            Name = "DefaultUser",
+            Age = "20"
+        };
+    }
+}
+```
+
+```
+@startuml
+class User {
+    + Name : string <<get>> <<set>>
+    + Age : int <<get>> <<set>>
+}
+class ClassA {
+    + ClassA(users:IList<User>)
+}
+class ClassB {
+    + {static} DefaultUser : User <<get>>
+    + Users : IList<User> <<get>>
+    + ClassB(users:IList<User>)
+}
+class "IList`1"<T> {
+}
+ClassA --> "DefaultUser" User
+ClassA --> "Users<User>" "IList`1"
+@enduml
+```
+
+![IgnoreAssociation.png](uml/IgnoreAssociation.png)

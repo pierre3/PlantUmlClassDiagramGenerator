@@ -1,0 +1,18 @@
+@startuml
+class User {
+    + Name : string <<get>> <<set>>
+    + Age : int <<get>> <<set>>
+}
+class ClassA {
+    + ClassA(users:IList<User>)
+}
+class ClassB {
+    + {static} DefaultUser : User <<get>>
+    + Users : IList<User> <<get>>
+    + ClassB(users:IList<User>)
+}
+class "IList`1"<T> {
+}
+ClassA --> "DefaultUser" User
+ClassA --> "Users<User>" "IList`1"
+@enduml
