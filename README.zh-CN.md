@@ -2,51 +2,49 @@
 <strong><a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a></strong>
 </div>
 
-
 # PlantUmlClassDiagramGenerator
+这是一个生成器，用于从C#源代码中创建PlantUML的类图。
 
-This is a generator to create a class-diagram of PlantUML from the C# source code.
+**README.md 版本修订历史**
 
-**README.md Version revision history**
+| 版本 | 提交 | 备注 | 
+| --------| ------ |---------|
+| 1.0     | [70bb820](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/70bb8202f7f489aa2d85ce9c25c58121c8f63aed) | 因为其它语言的README.md不一定同时更新，所以需要一个版本号 |
 
-| Version | Commit                                                       | Comment                                                      |
-| ------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1.0     | [70bb820](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/70bb8202f7f489aa2d85ce9c25c58121c8f63aed) | Because the README.md for other languages is not always updated at the same time, a version number is needed |
-
-## Visual Studio Code Extension
+## Visual Studio Code 扩展
 
 - [C# to PlantUML](https://marketplace.visualstudio.com/items?itemName=pierre3.csharp-to-plantuml)
 
-## .Net Core global tools
+## .Net Core 全局工具
 
 Nuget Gallery: https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
 
-### Installation
-Download and install the [.NET 6.0 SDK](https://www.microsoft.com/net/download/windows) or newer. Once installed, run the following command.
+### 安装
+下载并安装[.NET 6.0 SDK](https://www.microsoft.com/net/download/windows)或更新的版本。安装后，运行以下命令。
 
 ```bat
 dotnet tool install --global PlantUmlClassDiagramGenerator
 ```
-### Usage
-Run the "puml-gen" command.
+### 使用
+运行 "puml-gen" 命令.
 
 ```bat
 puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList] [-createAssociation]
 ```
 
-- InputPath: (Required) Sets a input source file or directory name.
-- OutputPath: (Optional) Sets a output file or directory name.  
-  If you omit this option, plantuml files are outputted to same directory as the input files.
-- -dir: (Optional) Specify when InputPath and OutputPath are directory names.
-- -public: (Optional) If specified, only public accessibility members are output. 
-- -ignore: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
-- -excludePaths: (Optional) Specify the exclude file and directory.   
-  Specifies a relative path from the "InputPath", with a comma separated list.
-- -createAssociation: (Optional) Create object associations from references of fields and properites.
-- -allInOne: (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
-- -attributeRequired: (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
+- InputPath: (必须) 设置一个输入源文件或目录名称。
+- OutputPath: (可选) 设置一个输出文件或目录名称。 
+  如果省略此选项，plantuml文件将被输出到与输入文件相同的目录中。
+- -dir: (可选) 当InputPath和OutputPath为目录名时，指定。
+- -public: (可选)  如果指定，只输出公共可及性成员。
+- -ignore: (可选) 指定要忽略的成员的可访问性，用逗号分隔的列表。
+- -excludePaths: (可选) 指定排除的文件和目录。  
+  指定来自 "InputPath "的相对路径，用逗号分隔的列表。
+- -createAssociation: (可选) 从字段和属性的引用中创建对象关联。
+- -allInOne: (可选) 只有当-dir被设置时：将所有图表的输出复制到文件include.puml（这允许PlanUMLServer渲染）。
+- -attributeRequired: (可选) 当这个开关被启用时，只有类型声明中带有 "PlantUmlDiagramAttribute "的类型会被输出。
 
-examples
+例子：
 ```bat
 puml-gen C:\Source\App1\ClassA.cs -public
 ```
@@ -59,11 +57,11 @@ puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected -createA
 puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 ```
 
-## Specification for conversion to PlantUML
+## 转换为PlantUML的规范
 
-### Type Declaration
+### 类型声明
 
-#### Type Keywords
+#### Type 关键字
 
 |C#               | PlantUML           |
 |:----------------|-------------------:|
@@ -73,7 +71,7 @@ puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 | `enum`          | `enum`             |
 | `record`        | `<<record>> class` |
 
-#### Type Modifiers
+#### Type 修饰符
 
 |C#               | PlantUML           |
 |:----------------|-------------------:|
@@ -133,7 +131,7 @@ enum EnumType {
 
 ![TypeDeclaration.png](uml/TypeDeclaration.png)
 
-#### Generics Type
+#### 泛型
 
 - C#
 
@@ -154,9 +152,9 @@ class "GenericsType`2"<T1,T2>{
 
 ![GenericsTypeDeclaration.png](uml/GenericsTypeDeclaration.png)
 
-### Member Declaration
+### 成员声明
 
-#### Accessibility Modifiers
+#### 可见性修饰符
 
 |C#                    | PlantUML           |
 |:---------------------|-------------------:|
@@ -166,7 +164,7 @@ class "GenericsType`2"<T1,T2>{
 | `protected`          | `#`                |
 | `private`            | `-`                |
 
-#### Modifiers
+#### 修饰符
 
 |C#            | PlantUML         |
 |:-------------|-----------------:|
@@ -178,7 +176,7 @@ class "GenericsType`2"<T1,T2>{
 | `readonly`   | `<<readonly>>`   |
 | `event`      | `<<event>>`      |
 
-#### Property Accessors
+#### 属性访问器
 
 |C#                              | PlantUML                            |
 |:-------------------------------|------------------------------------:|
@@ -252,9 +250,9 @@ AbstractClass <|-- ClassM
 
 ![MemberDeclaration.png](uml/MemberDeclaration.png)
 
-#### Field and Property Initializers
+#### 字段和属性初始化
 
-Only __literal__ initializers are output.
+只有**常量**的初始化才会被输出。
 
 - C#
 
@@ -279,9 +277,9 @@ class ClassC {
 
 ![Initializer.png](uml/Initializer.png)
 
-### Nested Class Declaration
+### 嵌套类声明
 
-Nested classes are expanded and associated with "OuterClass + - InnerClass".
+嵌套类被展开并与 "OuterClass + - InnerClass "关联。
 
 - C#
 
@@ -316,7 +314,7 @@ InnerClass +- InnerStruct
 
 ![NestedClass.png](uml/NestedClass.png)
 
-### Inheritance Relationsips
+### 继承关系
 
 - C#
 
@@ -369,9 +367,9 @@ IInterfaceA <|-- "IInterfaceA`1"
 
 ![InheritanceRelationsips.png](uml/InheritanceRelationsips.png)
 
-### Associations (from references of fields and properties)
+### 关联（来自字段和属性的引用）
 
-If you specify the "createAssociation" option, object associations is created from field and property references.
+如果你指定了 "createAssociation "选项，对象关联将从字段和属性引用中创建。
 
 - C#
 
@@ -416,10 +414,10 @@ Type2 --> "Prop2" ExternalType
 ![InheritanceRelationsips.png](uml/Associations.png)
 
 
-### Record types (with parameter list)
+### 记录类型（含参数列表）
 
-Record types in C# 9 can have a parameter list. In these cases these parameters
-are added as properties to the class.
+C# 9中的记录类型可以有一个参数列表。在这些情况下，这些参数
+被作为属性添加到类中。
 
 
 - C#
@@ -449,15 +447,16 @@ class Group <<record>> {
 
 ![InheritanceRelationsips.png](uml/RecordParameterList.png)
 
-## Attribute-based configuration
+## 基于特性的配置
 
-You can add the package [PlantUmlClassDiagramGenerator.Attributes](https://www.nuget.org/packages/PlantUmlClassDiagramGenerator.Attributes) to your C# project for attribute-based configuration.
+你可以将[PlantUmlClassDiagramGenerator.Attributes](https://www.nuget.org/packages/PlantUmlClassDiagramGenerator.Attributes)包添加到你的C#项目中，用于基于特性的配置。
 
 ### PlantUmlDiagramAttribute
-Only types to which PlantUmlDiagramAttribute has been added will be output.
-This attribute is enabled if the -attributeRequired switch is added to the command line argument.
+只有被添加了PlantUmlDiagramAttribute的类型才会被输出。
+如果-attributeRequired开关被添加到命令行参数中，这个属性就会被启用。
 
-This attribute can be added only to type declalerations.
+这个属性只能被添加到类型声明中。
+
 - class
 - struct
 - enum
@@ -491,7 +490,7 @@ class ClassB {
 
 
 ### PlantUmlIgnoreAttribute
-Elements with this attribute added are excluded from the output.
+添加了这个属性的元素被排除在输出之外。
 
 ```cs
 [PlantUmlIgnore]
@@ -537,26 +536,26 @@ class ClassC {
 ```
 
 ### PlantUmlAssociationAttribute
-By adding this attribute, you can define association between classes.
-This attribute can be added to properties, fields and method parameters.
+通过添加这个属性，你可以定义类之间的关联。
+这个属性可以被添加到属性、字段和方法参数。
 
-The details of the association are defined in the following properties.
+关联的细节被定义在以下属性中。
 
 - _Name_
-  - Specifies the type name on the leaf node side.
-  - If omitted, the name of the element to which the attribute is added is used.
+  - 指定叶子节点一侧的类型名称。
+  - 如果省略，则使用添加该属性的元素的名称。
 - _Association_
-  - Specifies the edge portion of the association.Sets a valid string in PlantUML.
-  - If omitted, "--" is used.
+  - 指定关联的边缘部分。在PlantUML中设置一个有效的字符串。
+  - 如果省略，则使用"--"。
 - _RootLabel_
-  - Specifies the label to be displayed on the root node side.
-  - If omitted, nothing is displayed. 
+  - 指定显示在根节点一侧的标签。
+  - 如果省略，则不显示。
 - _Label_
-  - Specifies the label to be displayed in the center of the edge.
-  - If omitted, nothing is displayed. 
+  - 指定要显示在边缘中心的标签。
+  - 如果省略，则不显示。
 - _LeafLabel_ 
-  - Specifies the label to be displayed on the leaf node side.
-  - If omitted, nothing is displayed.  
+  - 指定显示在叶子节点一侧的标签。
+  - 如果省略，则不显示。 
 
 ```cs
 class Parameters
@@ -617,8 +616,8 @@ MethodParamtersSample ..> ILogger : "Injection"
 
 ### PlantUmlIgnoreAssociationAttribute
 
-This attribute can be added to properties and fields.
-Properties (or fields) with this attribute are described as members of the class without any association.
+这个属性可以被添加到属性和字段中。
+具有此属性的属性（或字段）被描述为类的成员，没有任何关联。
 
 ```cs
 class User
