@@ -477,7 +477,7 @@ class ClassB
 }
 ```
 
-Only ClassB with PlantUmlDiagramAttribute will be output.
+只有带有PlantUmlDiagramAttribute的ClassB会被输出。
 
 ```
 @startuml
