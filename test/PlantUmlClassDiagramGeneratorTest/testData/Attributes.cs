@@ -67,4 +67,12 @@ namespace PlantUmlClassDiagramGeneratorTest.testData
         public string PropA { get; set; }
     }
 
+    class ClassA
+    {
+        private ILogger logger;
+        public ClassA([PlantUmlAssociation(Name = "\"ILogger<ClassA>\"" Association = "-->", Label = "\"\\escape\t\"")] ILogger logger)
+        {
+            this.logger = logger;
+        }
+    }
 }

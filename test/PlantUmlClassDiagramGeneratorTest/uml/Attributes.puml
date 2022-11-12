@@ -16,6 +16,9 @@ class MyRecord <<record>> {
 }
 class MyStructRecord <<record>> <<struct>> {
 }
+class ClassA {
+    + ClassA(logger:ILogger)
+}
 MyClass o-- "0..*" Item : "Items"
 MyClass "1" *-- "0..*" IItem : "ItemDictionary"
 MyClass ..> Parameters : "use"
@@ -23,4 +26,5 @@ MyClass ..> ILogger : "Injection"
 MyStruct o-- "0..*" int : "intCollection:List<int>"
 MyRecord o-- Settings
 MyStructRecord o-- "Name" string
+ClassA --> "ILogger<ClassA>" : ""\escape	""
 @enduml
