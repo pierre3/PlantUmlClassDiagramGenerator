@@ -3,6 +3,11 @@ All notable changes to the "csharp-to-plantuml" extension will be documented in 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.1]
+### Fixed
+- Fix an issue in which escape characters set in attribute parameters were not handled correctly  
+  https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/62
+
 ## [1.3.0]
 ### Added
 - Add attribute-based configuration.

@@ -28,6 +28,10 @@ Create class diagrams of PlantUML from C# source code.
 
 
 ## Release Notes
+## 1.3.1
+- Fix an issue in which escape characters set in attribute parameters were not handled correctly  
+  https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/62
+  
 ## 1.3.0
 - Add attribute-based configuration
   
