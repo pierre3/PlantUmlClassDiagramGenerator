@@ -304,8 +304,8 @@ namespace PlantUmlClassDiagramGenerator.Library
             var attributeProps = associationAttribute.ArgumentList.Arguments.Select(arg => new
             {
                 Name = arg.NameEquals.Name.ToString(),
-                Value = arg.Expression.ToString().TrimStart('"').TrimEnd('"')
-            });
+                Value = arg.Expression.GetLastToken().ValueText
+            }) ;
             return new PlantUmlAssociationAttribute()
             {
                 Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,
