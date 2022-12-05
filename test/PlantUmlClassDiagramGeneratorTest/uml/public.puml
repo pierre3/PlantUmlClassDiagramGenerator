@@ -1,5 +1,6 @@
 ﻿@startuml
 class ClassA {
+    strFieldWithoutModifier : string
     + PropD : string <<get>>
     + ClassA()
     {static} ClassA()

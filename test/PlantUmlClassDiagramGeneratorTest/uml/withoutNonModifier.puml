@@ -1,6 +1,5 @@
 ﻿@startuml
 class ClassA {
-    strFieldWithoutModifier : string
     # X : double = 0
     # Y : double = 1
     # Z : double = 2

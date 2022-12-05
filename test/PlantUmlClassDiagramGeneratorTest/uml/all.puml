@@ -2,6 +2,7 @@
 class ClassA {
     - <<readonly>> intField : int = 100
     - {static} strField : string
+    strFieldWithoutModifier : string
     # X : double = 0
     # Y : double = 1
     # Z : double = 2

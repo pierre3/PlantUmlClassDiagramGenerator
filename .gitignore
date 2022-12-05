@@ -213,3 +213,4 @@ ModelManifest.xml
 
 # Intellij files
 .idea
+/.project

@@ -26,7 +26,8 @@ namespace PlantUmlClassDiagramGenerator
             ["-excludePaths"] = OptionType.Value,
             ["-createAssociation"] = OptionType.Switch,
             ["-allInOne"] = OptionType.Switch,
-            ["-attributeRequired"] = OptionType.Switch
+            ["-attributeRequired"] = OptionType.Switch,
+            ["-ignoreEmptyModifier"] = OptionType.Switch
         };
 
         static int Main(string[] args)
@@ -179,7 +180,8 @@ namespace PlantUmlClassDiagramGenerator
                             "    ",
                             ignoreAcc,
                             parameters.ContainsKey("-createAssociation"),
-                            parameters.ContainsKey("-attributeRequired"));
+                            parameters.ContainsKey("-attributeRequired"),
+                            parameters.ContainsKey("-ignoreEmptyModifier"));
                         gen.Generate(root);
                     }
 

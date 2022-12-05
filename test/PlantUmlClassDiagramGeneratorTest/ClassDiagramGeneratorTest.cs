@@ -73,6 +73,26 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         [TestMethod]
+        public void GenerateTestWithoutEmptyModifier()
+        {
+            var code = File.ReadAllText("testData\\inputClasses.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private, true, false, true);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\withoutNonModifier.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void GenerateTestGenericsTypes()
         {
             var code = File.ReadAllText("testData\\GenericsType.cs");

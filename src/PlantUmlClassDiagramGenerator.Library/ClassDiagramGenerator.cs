@@ -21,6 +21,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         private int nestingDepth = 0;
         private readonly bool createAssociation;
         private readonly bool attributeRequired;
+        private readonly bool ignoreEmptyModifier;
         private readonly Dictionary<string, string> escapeDictionary = new Dictionary<string, string>
         {
             {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
@@ -28,7 +29,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         };
 
         public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, 
-            bool createAssociation = true, bool attributeRequired = false)
+            bool createAssociation = true, bool attributeRequired = false, bool ignoreEmptyModifier = false)
         {
             this.writer = writer;
             this.indent = indent;
@@ -36,6 +37,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             this.ignoreMemberAccessibilities = ignoreMemberAccessibilities;
             this.createAssociation = createAssociation;
             this.attributeRequired = attributeRequired;
+            this.ignoreEmptyModifier = ignoreEmptyModifier;
         }
 
         public void Generate(SyntaxNode root)
@@ -474,6 +476,11 @@ namespace PlantUmlClassDiagramGenerator.Library
             if (ignoreMemberAccessibilities.HasFlag(Accessibilities.ProtectedInternal)
                 && tokenKinds.Contains(SyntaxKind.ProtectedKeyword)
                 && tokenKinds.Contains(SyntaxKind.InternalKeyword))
+            {
+                return true;
+            }
+
+            if (tokenKinds.Count() == 0 && this.ignoreEmptyModifier)
             {
                 return true;
             }

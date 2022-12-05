@@ -8,6 +8,7 @@ namespace PlantUmlClassDiagramGeneratorTest
     {
         private readonly int intField = 100;
         private static string strField;
+        string strFieldWithoutModifier;
         protected double X = 0, Y = 1, Z = 2;
         private IList<int> list = new List<int>();
 
