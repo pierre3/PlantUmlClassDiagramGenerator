@@ -85,6 +85,9 @@
     <None Update="uml\withoutNonModifier.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="uml\withoutStartEndUml.puml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="uml\withoutPrivate.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

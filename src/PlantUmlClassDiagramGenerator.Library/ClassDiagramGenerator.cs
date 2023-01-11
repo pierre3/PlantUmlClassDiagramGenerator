@@ -22,6 +22,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         private readonly bool createAssociation;
         private readonly bool attributeRequired;
         private readonly bool ignoreEmptyModifier;
+        private readonly bool excludeUmlBeginEndTags;
         private readonly Dictionary<string, string> escapeDictionary = new Dictionary<string, string>
         {
             {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
@@ -29,7 +30,7 @@ namespace PlantUmlClassDiagramGenerator.Library
         };
 
         public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, 
-            bool createAssociation = true, bool attributeRequired = false, bool ignoreEmptyModifier = false)
+            bool createAssociation = true, bool attributeRequired = false, bool ignoreEmptyModifier = false, bool excludeUmlBeginEndTags = false)
         {
             this.writer = writer;
             this.indent = indent;
@@ -38,13 +39,14 @@ namespace PlantUmlClassDiagramGenerator.Library
             this.createAssociation = createAssociation;
             this.attributeRequired = attributeRequired;
             this.ignoreEmptyModifier = ignoreEmptyModifier;
+            this.excludeUmlBeginEndTags = excludeUmlBeginEndTags;
         }
 
         public void Generate(SyntaxNode root)
         {
-            WriteLine("@startuml");
+            if (!this.excludeUmlBeginEndTags) WriteLine("@startuml");
             GenerateInternal(root);
-            WriteLine("@enduml");
+            if (!this.excludeUmlBeginEndTags) WriteLine("@enduml");
         }
 
         public void GenerateInternal(SyntaxNode root)
