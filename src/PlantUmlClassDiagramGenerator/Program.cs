@@ -26,7 +26,8 @@ namespace PlantUmlClassDiagramGenerator
             ["-excludePaths"] = OptionType.Value,
             ["-createAssociation"] = OptionType.Switch,
             ["-allInOne"] = OptionType.Switch,
-            ["-attributeRequired"] = OptionType.Switch
+            ["-attributeRequired"] = OptionType.Switch,
+            ["-excludeUmlBeginEndTags"] = OptionType.Switch
         };
 
         static int Main(string[] args)
@@ -143,10 +144,11 @@ namespace PlantUmlClassDiagramGenerator
                 excludePaths.AddRange(parameters["-excludePaths"].Split(',', splitOptions));
             }
 
+            var excludeUmlBeginEndTags = parameters.ContainsKey("-excludeUmlBeginEndTags");
             var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
 
             var includeRefs = new StringBuilder();
-            includeRefs.AppendLine("@startuml");
+            if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@startuml");
 
             var error = false;
             foreach (var inputFile in files)
@@ -179,7 +181,8 @@ namespace PlantUmlClassDiagramGenerator
                             "    ",
                             ignoreAcc,
                             parameters.ContainsKey("-createAssociation"),
-                            parameters.ContainsKey("-attributeRequired"));
+                            parameters.ContainsKey("-ignoreEmptyModifier"),
+                            excludeUmlBeginEndTags);
                         gen.Generate(root);
                     }
 
@@ -203,7 +206,7 @@ namespace PlantUmlClassDiagramGenerator
                     error = true;
                 }
             }
-            includeRefs.AppendLine("@enduml");
+            if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@enduml");
             File.WriteAllText(CombinePath(outputRoot, "include.puml"), includeRefs.ToString());
 
             if (error)

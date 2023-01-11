@@ -21,14 +21,20 @@ namespace PlantUmlClassDiagramGenerator.Library
         private int nestingDepth = 0;
         private readonly bool createAssociation;
         private readonly bool attributeRequired;
+        private readonly bool excludeUmlBeginEndTags;
         private readonly Dictionary<string, string> escapeDictionary = new Dictionary<string, string>
         {
             {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
             {@"(?<before>[^}])}(?<after>[^}])", "${before}&#125;${after}"},
         };
 
-        public ClassDiagramGenerator(TextWriter writer, string indent, Accessibilities ignoreMemberAccessibilities = Accessibilities.None, 
-            bool createAssociation = true, bool attributeRequired = false)
+        public ClassDiagramGenerator(
+            TextWriter writer,
+            string indent,
+            Accessibilities ignoreMemberAccessibilities = Accessibilities.None,
+            bool createAssociation = true,
+            bool attributeRequired = false, 
+            bool excludeUmlBeginEndTags = false)
         {
             this.writer = writer;
             this.indent = indent;
@@ -36,13 +42,14 @@ namespace PlantUmlClassDiagramGenerator.Library
             this.ignoreMemberAccessibilities = ignoreMemberAccessibilities;
             this.createAssociation = createAssociation;
             this.attributeRequired = attributeRequired;
+            this.excludeUmlBeginEndTags = excludeUmlBeginEndTags;
         }
 
         public void Generate(SyntaxNode root)
         {
-            WriteLine("@startuml");
+            if (!this.excludeUmlBeginEndTags) WriteLine("@startuml");
             GenerateInternal(root);
-            WriteLine("@enduml");
+            if (!this.excludeUmlBeginEndTags) WriteLine("@enduml");
         }
 
         public void GenerateInternal(SyntaxNode root)

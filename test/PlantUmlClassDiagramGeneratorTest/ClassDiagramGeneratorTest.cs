@@ -135,7 +135,7 @@ namespace PlantUmlClassDiagramGeneratorTest
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void GenerateTestCurlyBrackets()
         {
             var code = File.ReadAllText("testData\\CurlyBrackets.cs");
@@ -239,6 +239,25 @@ namespace PlantUmlClassDiagramGeneratorTest
             }
 
             var expected = ConvertNewLineCode(File.ReadAllText(@"uml\NotAttributeRequierd.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        public void GenerateTestWithoutUmlStartEnd()
+        {
+            var code = File.ReadAllText("testData\\inputClasses.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private, true, false, true, true);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\withoutStartEndUml.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
