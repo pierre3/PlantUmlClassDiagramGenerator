@@ -93,7 +93,9 @@ namespace PlantUmlClassDiagramGenerator
                     "    ",
                     ignoreAcc,
                     parameters.ContainsKey("-createAssociation"),
-                    parameters.ContainsKey("-attributeRequired"));
+                    parameters.ContainsKey("-attributeRequired"),
+                    parameters.ContainsKey("-ignoreEmptyModifier"),
+                    parameters.ContainsKey("-excludeUmlBeginEndTags"));
                 gen.Generate(root);
             }
             catch (Exception e)
@@ -191,7 +193,11 @@ namespace PlantUmlClassDiagramGenerator
                     if (parameters.ContainsKey("-allInOne"))
                     {
                         var lines = File.ReadAllLines(outputFile);
-                        foreach (string line in lines.Skip(1).SkipLast(1))
+                        if (!excludeUmlBeginEndTags)
+                        {
+                            lines = lines.Skip(1).SkipLast(1).ToArray();
+                        }
+                        foreach (string line in lines)
                         {
                             includeRefs.AppendLine(line);
                         }
