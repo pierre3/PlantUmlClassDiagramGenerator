@@ -1,8 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+		<TargetFramework>netstandard1.0</TargetFramework>
 		<Description>
 This is an attribute classes liblary for the PlantUmlClassDiagramGenerator.
 https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
