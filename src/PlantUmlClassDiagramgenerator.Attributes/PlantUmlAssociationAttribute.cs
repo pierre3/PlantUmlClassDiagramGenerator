@@ -1,4 +1,6 @@
-﻿namespace PlantUmlClassDiagramGenerator.Attributes
+﻿using System;
+
+namespace PlantUmlClassDiagramGenerator.Attributes
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter)]
     public class PlantUmlAssociationAttribute : Attribute
