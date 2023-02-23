@@ -20,11 +20,18 @@
     <Compile Remove="testData\AtPrefixType.cs" />
     <Compile Remove="testData\AttributeRequierd.cs" />
     <Compile Remove="testData\Attributes.cs" />
+    <Compile Remove="testData\DefaultModifierType.cs" />
     <Compile Remove="testData\GenericsType.cs" />
     <Compile Remove="testData\InputClasses.cs" />
     <Compile Remove="testData\CurlyBrackets.cs" />
     <Compile Remove="testData\NullableType.cs" />
     <Compile Remove="testData\RecordType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="testData\DefaultModifierType.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +62,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="uml\DefaultModifierType.puml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="uml\NotAttributeRequierd.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
