@@ -262,5 +262,24 @@ namespace PlantUmlClassDiagramGeneratorTest
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
         }
+        [TestMethod]
+        public void GenerateTestDefaultModifierType()
+        {
+            var code = File.ReadAllText("testData\\DefaultModifierType.cs");
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = tree.GetRoot();
+
+            var output = new StringBuilder();
+            using (var writer = new StringWriter(output))
+            {
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private, true, false);
+                gen.Generate(root);
+            }
+
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\DefaultModifierType.puml"), Environment.NewLine);
+            var actual = output.ToString();
+            Console.Write(actual);
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

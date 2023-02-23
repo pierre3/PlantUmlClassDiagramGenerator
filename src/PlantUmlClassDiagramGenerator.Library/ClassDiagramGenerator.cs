@@ -33,7 +33,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             string indent,
             Accessibilities ignoreMemberAccessibilities = Accessibilities.None,
             bool createAssociation = true,
-            bool attributeRequired = false, 
+            bool attributeRequired = false,
             bool excludeUmlBeginEndTags = false)
         {
             this.writer = writer;
@@ -71,7 +71,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
         {
-            if(attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
+            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
             if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (SkipInnerTypeDeclaration(node)) { return; }
 
@@ -202,7 +202,9 @@ namespace PlantUmlClassDiagramGenerator.Library
                     relationships.AddAssociationFrom(node, parameter, associationAttr);
                 }
             }
-            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var modifiers = GetMemberModifiersText(node.Modifiers,
+                isConstructor: true,
+                isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var name = node.Identifier.ToString();
             var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
 
@@ -214,7 +216,9 @@ namespace PlantUmlClassDiagramGenerator.Library
             if (node.AttributeLists.HasIgnoreAttribute()) { return; }
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
-            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var modifiers = GetMemberModifiersText(node.Modifiers,
+                    isConstructor: false,
+                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var type = node.Declaration.Type;
             var variables = node.Declaration.Variables;
             var parentClass = (node.Parent as TypeDeclarationSyntax);
@@ -277,7 +281,9 @@ namespace PlantUmlClassDiagramGenerator.Library
                 || type.GetType() == typeof(NullableTypeSyntax)
                 || isTypeParameterProp)
             {
-                var modifiers = GetMemberModifiersText(node.Modifiers);
+                var modifiers = GetMemberModifiersText(node.Modifiers,
+                    isConstructor: false,
+                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
                 var name = node.Identifier.ToString();
                 //Property does not have an accessor is an expression-bodied property. (get only)
                 var accessorStr = "<<get>>";
@@ -312,7 +318,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             {
                 Name = arg.NameEquals.Name.ToString(),
                 Value = arg.Expression.GetLastToken().ValueText
-            }) ;
+            });
             return new PlantUmlAssociationAttribute()
             {
                 Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,
@@ -336,7 +342,9 @@ namespace PlantUmlClassDiagramGenerator.Library
                     relationships.AddAssociationFrom(node, parameter, associationAttr);
                 }
             }
-            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var modifiers = GetMemberModifiersText(node.Modifiers,
+                    isConstructor: false,
+                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var name = node.Identifier.ToString();
             var returnType = node.ReturnType.ToString();
             var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
@@ -353,7 +361,9 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
-            var modifiers = GetMemberModifiersText(node.Modifiers);
+            var modifiers = GetMemberModifiersText(node.Modifiers,
+                    isConstructor: false,
+                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var name = string.Join(",", node.Declaration.Variables.Select(v => v.Identifier));
             var typeName = node.Declaration.Type.ToString();
 
@@ -511,32 +521,41 @@ namespace PlantUmlClassDiagramGenerator.Library
             return false;
         }
 
-        private string GetMemberModifiersText(SyntaxTokenList modifiers)
+        private string GetMemberModifiersText(
+            SyntaxTokenList modifiers,
+            bool isConstructor,
+            bool isInterfaceMember)
         {
             var tokens = modifiers.Select(token =>
             {
-                switch (token.Kind())
+                return token.Kind() switch
                 {
-                    case SyntaxKind.PublicKeyword:
-                        return "+";
-                    case SyntaxKind.PrivateKeyword:
-                        return "-";
-                    case SyntaxKind.ProtectedKeyword:
-                        return "#";
-                    case SyntaxKind.AbstractKeyword:
-                    case SyntaxKind.StaticKeyword:
-                        return $"{{{token.ValueText}}}";
-                    case SyntaxKind.InternalKeyword:
-                    default:
-                        return $"<<{token.ValueText}>>";
-                }
-            });
+                    SyntaxKind.PublicKeyword => "+",
+                    SyntaxKind.PrivateKeyword => "-",
+                    SyntaxKind.ProtectedKeyword => "#",
+                    SyntaxKind.AbstractKeyword or SyntaxKind.StaticKeyword => $"{{{token.ValueText}}}",
+                    _ => $"<<{token.ValueText}>>",
+                };
+            }).ToList();
+            if (!isInterfaceMember && !isConstructor && !HasAccessModifier(modifiers))
+            {
+                tokens.Add("-");
+            }
             var result = string.Join(" ", tokens);
             if (result != string.Empty)
             {
                 result += " ";
             };
             return result;
+        }
+
+        private static bool HasAccessModifier(SyntaxTokenList modifiers)
+        {
+            return modifiers.Any(token =>
+                token.IsKind(SyntaxKind.PublicKeyword)
+                || token.IsKind(SyntaxKind.PrivateKeyword)
+                || token.IsKind(SyntaxKind.ProtectedKeyword)
+                || token.IsKind(SyntaxKind.InternalKeyword));
         }
     }
 
