@@ -1,0 +1,11 @@
+@startuml
+!include .\\AtPrefixType.puml
+!include .\\AttributeRequierd.puml
+!include .\\Attributes.puml
+!include .\\CurlyBrackets.puml
+!include .\\DefaultModifierType.puml
+!include .\\GenericsType.puml
+!include .\\InputClasses.puml
+!include .\\NullableType.puml
+!include .\\RecordType.puml
+@enduml

@@ -45,6 +45,7 @@ puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
 - -createAssociation: (Optional) Create object associations from references of fields and properites.
 - -allInOne: (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
 - -attributeRequired: (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
+- excludeUmlBeginEndTags: (Optional) When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file.
 
 examples
 ```bat

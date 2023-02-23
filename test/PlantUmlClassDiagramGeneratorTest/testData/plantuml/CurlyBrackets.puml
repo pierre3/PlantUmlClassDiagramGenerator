@@ -1,0 +1,20 @@
+@startuml
+class CurlyBrackets {
+    + openingBracket : string = @"
+{
+"
+    + openingBrackets : string = @"
+&#123;{
+"
+    + closingBracket : string = @"
+&#125;
+"
+    + closingBrackets : string = @"
+}}
+"
+    + bothBrackets : string = @"
+&#123;{
+}}
+"
+}
+@enduml

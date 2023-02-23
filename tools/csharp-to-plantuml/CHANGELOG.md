@@ -3,6 +3,12 @@ All notable changes to the "csharp-to-plantuml" extension will be documented in 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.2]
+### Fixed
+- Fixed to add "- "(private) as default modifier when access modifier is omitted.
+### Added
+- Add a switch to exclude "@startuml" and "@enduml" tags from the puml file. 
+
 ## [1.3.1]
 ### Fixed
 - Fix an issue in which escape characters set in attribute parameters were not handled correctly  

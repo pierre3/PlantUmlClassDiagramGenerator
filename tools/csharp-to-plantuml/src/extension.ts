@@ -37,6 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const createAssociation = conf.get('csharp2plantuml.createAssociation') as boolean;
 		const allInOne = conf.get('csharp2plantuml.allInOne') as boolean;
 		const attributeRequired = conf.get('csharp2plantuml.attributeRequired') as boolean;
+		const excludeUmlBeginEndTags = conf.get('csharp2plantuml.excludeUmlBeginEndTags') as boolean;
 		const input = pathJoin(wsroot, inputPath);
 
 		var command = `dotnet "${tool}" "${input}"`;
@@ -60,6 +61,9 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		if(attributeRequired) {
 			command += " -attributeRequired";
+		}
+		if(excludeUmlBeginEndTags) {
+			command += " -excludeUmlBeginEndTags";
 		}
 
 		outputchannel.appendLine("[exec] " + command);

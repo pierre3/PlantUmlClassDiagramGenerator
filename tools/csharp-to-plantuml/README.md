@@ -23,11 +23,17 @@ Create class diagrams of PlantUML from C# source code.
   Copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
 - __csharp2plantuml.attributeRequired__
   When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
+- __csharp2plantuml.excludeUmlBeginEndTags__
+  When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file.
 
 ## Known Issues
 
 
 ## Release Notes
+## 1.3.2
+- Add a switch to exclude "@startuml" and "@enduml" tags from the puml file. 
+- Fixed to add "- "(private) as default modifier when access modifier is omitted.
+
 ## 1.3.1
 - Fix an issue in which escape characters set in attribute parameters were not handled correctly  
   https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues/62

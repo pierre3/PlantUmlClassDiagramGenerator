@@ -5,20 +5,21 @@
 		<PackAsTool>true</PackAsTool>
 		<ToolCommandName>puml-gen</ToolCommandName>
 		<Description>This is a generator to create a class-diagram of PlantUML from the C# source code.</Description>
-		<Copyright>© 2015-2022 pierre3</Copyright>
+		<Copyright>© 2015-2023 pierre3</Copyright>
 		<PackageLicenseUrl></PackageLicenseUrl>
 		<PackageProjectUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</RepositoryUrl>
 		<RepositoryType></RepositoryType>
 		<PackageTags>plantuml</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.3.1.0</Version>
+		<Version>1.3.2.0</Version>
 		<Authors>pierre3</Authors>
 		<Company />
 		<Product />
 		<PackageReleaseNotes>
-			[V1.3.1.0]
-			- Fix an issue in which escape characters set in attribute parameters were not handled correctly
+			[V1.3.2.0]
+			- Add a switch to exclude "@startuml" and "@enduml" tags from the puml file.
+			- Fixed to add "- "(private) as default modifier when access modifier is omitted.
 		</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
