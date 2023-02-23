@@ -93,7 +93,6 @@ namespace PlantUmlClassDiagramGenerator
                     ignoreAcc,
                     parameters.ContainsKey("-createAssociation"),
                     parameters.ContainsKey("-attributeRequired"),
-                    parameters.ContainsKey("-ignoreEmptyModifier"),
                     parameters.ContainsKey("-excludeUmlBeginEndTags"));
                 gen.Generate(root);
             }

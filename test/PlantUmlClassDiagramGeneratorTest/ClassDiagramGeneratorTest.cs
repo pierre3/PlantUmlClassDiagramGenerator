@@ -253,7 +253,7 @@ namespace PlantUmlClassDiagramGeneratorTest
             var output = new StringBuilder();
             using (var writer = new StringWriter(output))
             {
-                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private, true, false, true, true);
+                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private, true, false, true);
                 gen.Generate(root);
             }
 
