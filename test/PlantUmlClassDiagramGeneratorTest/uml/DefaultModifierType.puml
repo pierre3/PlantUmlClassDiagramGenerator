@@ -4,10 +4,21 @@ class ClassA {
     + PropB : int <<get>>
     # <<internal>> PropD : int <<get>>
     - MethodA() : void
+    - MethodB() : int
+    + ClassA()
+    - ClassA()
 }
 class StructA <<struct>> {
     - PropA : string <<get>>
     {static} - PropB : string <<get>>
+    - PropC : string <<get>>
     {static} - MethodA() : void
+    - {static} MethodB() : int
+    + StructA()
+    - StructA()
+}
+interface Interface {
+    PropA : int <<get>>
+    MethodA() : void
 }
 @enduml

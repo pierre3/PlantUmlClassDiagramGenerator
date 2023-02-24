@@ -1,114 +1,112 @@
 {
-  "name": "csharp-to-plantuml",
-  "displayName": "CSharp to PlantUML",
-  "description": "Generator to create class-diagram of PlantUML from C# source code.",
-  "version": "1.3.2",
-  "preview": false,
-  "publisher": "pierre3",
-  "license": "MIT",
-  "keywords": [
-    "PlantUML",
-    "class diagram",
-    "C#"
-  ],
-  "engines": {
-    "vscode": "^1.31.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onCommand:csharp2plantuml.classDiagram"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "csharp2plantuml.classDiagram",
-        "title": "C# to PlantUML: Class-diagram"
-      }
+    "name": "csharp-to-plantuml",
+    "displayName": "CSharp to PlantUML",
+    "description": "Generator to create class-diagram of PlantUML from C# source code.",
+    "version": "1.3.3",
+    "preview": false,
+    "publisher": "pierre3",
+    "license": "MIT",
+    "keywords": [
+        "PlantUML",
+        "class diagram",
+        "C#"
     ],
-    "configuration": {
-      "type": "object",
-      "title": "C# to PlantUML configuration",
-      "properties": {
-        "csharp2plantuml.inputPath": {
-          "type": "string",
-          "scope": "resource",
-          "default": "",
-          "description": "Specify a input folder (relative to workspace folder)."
-        },
-        "csharp2plantuml.outputPath": {
-          "type": "string",
-          "scope": "resource",
-          "default": "plantuml",
-          "description": "Specify a output folder (relative to workspace folder)."
-        },
-        "csharp2plantuml.public": {
-          "type": "boolean",
-          "scope": "resource",
-          "default": true,
-          "description": "Only public accessibility members are output."
-        },
-        "csharp2plantuml.ignoreAccessibility": {
-          "type": "string",
-          "scope": "resource",
-          "default": "",
-          "description": "Specify accessibiliies of members to ignore, with a comma separated list. (ex. 'private,protected,protected internal')"
-        },
-        "csharp2plantuml.excludePath": {
-          "type": "string",
-          "scope": "resource",
-          "default": "",
-          "description": "Specify exclude file or directory paths (relative to the \"InputPath\"), with a comma separated list. (ex. 'obj,Properties\\AssemblyInfo.cs')"
-        },
-        "csharp2plantuml.createAssociation": {
-          "type": "boolean",
-          "scope": "resource",
-          "default": true,
-          "description": "Create object associations from field and property references."
-        },
-        "csharp2plantuml.allInOne": {
-          "type": "boolean",
-          "scope": "resource",
-          "default": false,
-          "description": "Copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it)."
-        },
-        "csharp2plantuml.attributeRequired": {
-          "type": "boolean",
-          "scope": "resource",
-          "default": false,
-          "description": "When this switch is enabled, only types with \"PlantUmlDiagramAttribute\" in the type declaration will be output."
-        },
-        "csharp2plantuml.excludeUmlBeginEndTags": {
-          "type": "boolean",
-          "scope": "resource",
-          "default": false,
-          "description": "When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file."
+    "engines": {
+        "vscode": "^1.31.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:csharp2plantuml.classDiagram"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [{
+            "command": "csharp2plantuml.classDiagram",
+            "title": "C# to PlantUML: Class-diagram"
+        }],
+        "configuration": {
+            "type": "object",
+            "title": "C# to PlantUML configuration",
+            "properties": {
+                "csharp2plantuml.inputPath": {
+                    "type": "string",
+                    "scope": "resource",
+                    "default": "",
+                    "description": "Specify a input folder (relative to workspace folder)."
+                },
+                "csharp2plantuml.outputPath": {
+                    "type": "string",
+                    "scope": "resource",
+                    "default": "plantuml",
+                    "description": "Specify a output folder (relative to workspace folder)."
+                },
+                "csharp2plantuml.public": {
+                    "type": "boolean",
+                    "scope": "resource",
+                    "default": true,
+                    "description": "Only public accessibility members are output."
+                },
+                "csharp2plantuml.ignoreAccessibility": {
+                    "type": "string",
+                    "scope": "resource",
+                    "default": "",
+                    "description": "Specify accessibiliies of members to ignore, with a comma separated list. (ex. 'private,protected,protected internal')"
+                },
+                "csharp2plantuml.excludePath": {
+                    "type": "string",
+                    "scope": "resource",
+                    "default": "",
+                    "description": "Specify exclude file or directory paths (relative to the \"InputPath\"), with a comma separated list. (ex. 'obj,Properties\\AssemblyInfo.cs')"
+                },
+                "csharp2plantuml.createAssociation": {
+                    "type": "boolean",
+                    "scope": "resource",
+                    "default": true,
+                    "description": "Create object associations from field and property references."
+                },
+                "csharp2plantuml.allInOne": {
+                    "type": "boolean",
+                    "scope": "resource",
+                    "default": false,
+                    "description": "Copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it)."
+                },
+                "csharp2plantuml.attributeRequired": {
+                    "type": "boolean",
+                    "scope": "resource",
+                    "default": false,
+                    "description": "When this switch is enabled, only types with \"PlantUmlDiagramAttribute\" in the type declaration will be output."
+                },
+                "csharp2plantuml.excludeUmlBeginEndTags": {
+                    "type": "boolean",
+                    "scope": "resource",
+                    "default": false,
+                    "description": "When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file."
+                }
+            }
         }
-      }
-    }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.14.0",
-    "tslint": "^5.20.1",
-    "typescript": "^4.9.5",
-    "vscode": "^1.1.37"
-  },
-  "bugs": {
-    "url": "https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pierre3/PlantUmlClassDiagramGenerator.git"
-  },
-  "homepage": "https://github.com/pierre3/PlantUmlClassDiagramGenerator/tree/master/tools/csharp-to-plantuml"
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^10.0.1",
+        "@types/node": "^18.14.0",
+        "tslint": "^5.20.1",
+        "typescript": "^4.9.5",
+        "vscode": "^1.1.37"
+    },
+    "bugs": {
+        "url": "https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pierre3/PlantUmlClassDiagramGenerator.git"
+    },
+    "homepage": "https://github.com/pierre3/PlantUmlClassDiagramGenerator/tree/master/tools/csharp-to-plantuml"
 }

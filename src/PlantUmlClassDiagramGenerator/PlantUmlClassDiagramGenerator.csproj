@@ -12,12 +12,14 @@
 		<RepositoryType></RepositoryType>
 		<PackageTags>plantuml</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.3.2.0</Version>
+		<Version>1.3.3</Version>
 		<Authors>pierre3</Authors>
 		<Company />
 		<Product />
 		<PackageReleaseNotes>
-			[V1.3.2.0]
+			[V1.3.3]
+			- Fixed an issue where the IgnoreAttributes parameter did not work when using the default access modifier.
+			[V1.3.2]
 			- Add a switch to exclude "@startuml" and "@enduml" tags from the puml file.
 			- Fixed to add "- "(private) as default modifier when access modifier is omitted.
 		</PackageReleaseNotes>

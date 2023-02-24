@@ -203,7 +203,6 @@ namespace PlantUmlClassDiagramGenerator.Library
                 }
             }
             var modifiers = GetMemberModifiersText(node.Modifiers,
-                isConstructor: true,
                 isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var name = node.Identifier.ToString();
             var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
@@ -217,7 +216,6 @@ namespace PlantUmlClassDiagramGenerator.Library
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isConstructor: false,
                     isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var type = node.Declaration.Type;
             var variables = node.Declaration.Variables;
@@ -282,7 +280,6 @@ namespace PlantUmlClassDiagramGenerator.Library
                 || isTypeParameterProp)
             {
                 var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isConstructor: false,
                     isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
                 var name = node.Identifier.ToString();
                 //Property does not have an accessor is an expression-bodied property. (get only)
@@ -343,7 +340,6 @@ namespace PlantUmlClassDiagramGenerator.Library
                 }
             }
             var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isConstructor: false,
                     isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var name = node.Identifier.ToString();
             var returnType = node.ReturnType.ToString();
@@ -362,7 +358,6 @@ namespace PlantUmlClassDiagramGenerator.Library
             if (IsIgnoreMember(node.Modifiers)) { return; }
 
             var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isConstructor: false,
                     isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
             var name = string.Join(",", node.Declaration.Variables.Select(v => v.Identifier));
             var typeName = node.Declaration.Type.ToString();
@@ -486,7 +481,9 @@ namespace PlantUmlClassDiagramGenerator.Library
         {
             if (ignoreMemberAccessibilities == Accessibilities.None) { return false; }
 
-            var tokenKinds = modifiers.Select(x => x.Kind()).ToArray();
+            var tokenKinds = HasAccessModifier(modifiers)
+                ? modifiers.Select(x => x.Kind()).ToArray()
+                : new[] { SyntaxKind.PrivateKeyword };
 
             if (ignoreMemberAccessibilities.HasFlag(Accessibilities.ProtectedInternal)
                 && tokenKinds.Contains(SyntaxKind.ProtectedKeyword)
@@ -523,7 +520,6 @@ namespace PlantUmlClassDiagramGenerator.Library
 
         private string GetMemberModifiersText(
             SyntaxTokenList modifiers,
-            bool isConstructor,
             bool isInterfaceMember)
         {
             var tokens = modifiers.Select(token =>
@@ -537,7 +533,7 @@ namespace PlantUmlClassDiagramGenerator.Library
                     _ => $"<<{token.ValueText}>>",
                 };
             }).ToList();
-            if (!isInterfaceMember && !isConstructor && !HasAccessModifier(modifiers))
+            if (!isInterfaceMember && !HasAccessModifier(modifiers))
             {
                 tokens.Add("-");
             }

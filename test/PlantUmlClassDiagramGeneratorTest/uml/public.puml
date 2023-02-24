@@ -2,7 +2,6 @@
 class ClassA {
     + PropD : string <<get>>
     + ClassA()
-    {static} ClassA()
     + <<override>> ToString() : string
     + {static} StaticMethod() : string
     + ExpressonBodiedMethod(x:int) : void

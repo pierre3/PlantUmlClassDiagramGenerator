@@ -30,6 +30,9 @@ Create class diagrams of PlantUML from C# source code.
 
 
 ## Release Notes
+## 1.3.3
+- Fixed an issue where the IgnoreAttributes parameter did not work when using the default access modifier.
+
 ## 1.3.2
 - Add a switch to exclude "@startuml" and "@enduml" tags from the puml file. 
 - Fixed to add "- "(private) as default modifier when access modifier is omitted.
