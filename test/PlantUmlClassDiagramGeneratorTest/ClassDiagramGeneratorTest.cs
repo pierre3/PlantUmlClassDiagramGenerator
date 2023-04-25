@@ -13,7 +13,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestAll()
         {
-            var code = File.ReadAllText("testData\\inputClasses.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "InputClasses.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -24,7 +24,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\all.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "all.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -33,7 +33,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestPublic()
         {
-            var code = File.ReadAllText("testData\\inputClasses.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "InputClasses.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -46,7 +46,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\public.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "public.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -55,7 +55,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestWithoutPrivate()
         {
-            var code = File.ReadAllText("testData\\inputClasses.cs");
+            var code = File.ReadAllText(Path.Combine("testdata", "InputClasses.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -66,7 +66,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\withoutPrivate.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "withoutPrivate.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -75,7 +75,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestGenericsTypes()
         {
-            var code = File.ReadAllText("testData\\GenericsType.cs");
+            var code = File.ReadAllText(Path.Combine("testdata", "GenericsType.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -87,7 +87,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\genericsType.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "genericsType.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -117,7 +117,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestAtPrefixType()
         {
-            var code = File.ReadAllText("testData\\AtPrefixType.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "AtPrefixType.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -129,7 +129,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\AtPrefixType.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "AtPrefixType.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -138,7 +138,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         //[TestMethod]
         public void GenerateTestCurlyBrackets()
         {
-            var code = File.ReadAllText("testData\\CurlyBrackets.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "CurlyBrackets.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -150,7 +150,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\CurlyBrackets.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "CurlyBrackets.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -165,7 +165,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestRecordTypes()
         {
-            var code = File.ReadAllText("testData\\RecordType.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "RecordType.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -177,7 +177,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\RecordType.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "RecordType.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -186,7 +186,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestAttributes()
         {
-            var code = File.ReadAllText("testData\\Attributes.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "Attributes.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -198,7 +198,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\Attributes.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "Attributes.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -207,7 +207,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestAttributeRequired()
         {
-            var code = File.ReadAllText("testData\\AttributeRequired.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "AttributeRequired.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -218,7 +218,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\AttributeRequired.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "AttributeRequired.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -227,7 +227,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestNotAttributeRequired()
         {
-            var code = File.ReadAllText("testData\\AttributeRequired.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "AttributeRequired.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -238,7 +238,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\NotAttributeRequired.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "NotAttributeRequired.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -246,7 +246,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestWithoutUmlStartEnd()
         {
-            var code = File.ReadAllText("testData\\inputClasses.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "inputClasses.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -257,7 +257,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\withoutStartEndUml.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "withoutStartEndUml.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
@@ -265,7 +265,7 @@ namespace PlantUmlClassDiagramGeneratorTest
         [TestMethod]
         public void GenerateTestDefaultModifierType()
         {
-            var code = File.ReadAllText("testData\\DefaultModifierType.cs");
+            var code = File.ReadAllText(Path.Combine("testData", "DefaultModifierType.cs"));
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -276,7 +276,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\DefaultModifierType.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "DefaultModifierType.puml")), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
