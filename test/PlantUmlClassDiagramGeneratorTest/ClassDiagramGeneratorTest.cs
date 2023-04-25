@@ -205,9 +205,9 @@ namespace PlantUmlClassDiagramGeneratorTest
         }
 
         [TestMethod]
-        public void GenerateTestAttributeRequierd()
+        public void GenerateTestAttributeRequired()
         {
-            var code = File.ReadAllText("testData\\AttributeRequierd.cs");
+            var code = File.ReadAllText("testData\\AttributeRequired.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -218,16 +218,16 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\AttributeRequierd.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\AttributeRequired.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
-        public void GenerateTestNotAttributeRequierd()
+        public void GenerateTestNotAttributeRequired()
         {
-            var code = File.ReadAllText("testData\\AttributeRequierd.cs");
+            var code = File.ReadAllText("testData\\AttributeRequired.cs");
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = tree.GetRoot();
 
@@ -238,7 +238,7 @@ namespace PlantUmlClassDiagramGeneratorTest
                 gen.Generate(root);
             }
 
-            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\NotAttributeRequierd.puml"), Environment.NewLine);
+            var expected = ConvertNewLineCode(File.ReadAllText(@"uml\NotAttributeRequired.puml"), Environment.NewLine);
             var actual = output.ToString();
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
