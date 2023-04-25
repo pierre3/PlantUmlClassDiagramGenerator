@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Compile Remove="testData\AtPrefixType.cs" />
-    <Compile Remove="testData\AttributeRequired.cs" />
     <Compile Remove="testData\Attributes.cs" />
     <Compile Remove="testData\DefaultModifierType.cs" />
     <Compile Remove="testData\GenericsType.cs" />
