@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Compile Remove="testData\AtPrefixType.cs" />
-    <Compile Remove="testData\AttributeRequierd.cs" />
+    <Compile Remove="testData\AttributeRequired.cs" />
     <Compile Remove="testData\Attributes.cs" />
     <Compile Remove="testData\DefaultModifierType.cs" />
     <Compile Remove="testData\GenericsType.cs" />
@@ -36,9 +36,6 @@
 
   <ItemGroup>
     <None Include="testData\AtPrefixType.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="testData\AttributeRequierd.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="testData\Attributes.cs">
@@ -65,10 +62,10 @@
     <None Update="uml\DefaultModifierType.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="uml\NotAttributeRequierd.puml">
+    <None Update="uml\NotAttributeRequired.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="uml\AttributeRequierd.puml">
+    <None Update="uml\AttributeRequired.puml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="uml\Attributes.puml">
