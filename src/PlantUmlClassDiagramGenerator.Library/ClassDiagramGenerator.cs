@@ -78,8 +78,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             relationships.AddInnerclassRelationFrom(node);
             relationships.AddInheritanceFrom(node);
             var modifiers = GetTypeModifiersText(node.Modifiers);
-            var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
-                + node.Keyword.ToString();
+            var abstractKeyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "");
 
             var typeName = TypeNameText.From(node);
             var name = typeName.Identifier;
@@ -89,7 +88,7 @@ namespace PlantUmlClassDiagramGenerator.Library
             types.Add(name);
 
             var structKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? " <<struct>>" : "";
-            WriteLine($"class {type} {modifiers}<<record>>{structKeyword} {{");
+            WriteLine($"{abstractKeyword}class {type} {modifiers}<<record>>{structKeyword} {{");
 
             nestingDepth++;
             var parameters = node.ParameterList?.Parameters ?? Enumerable.Empty<ParameterSyntax>();

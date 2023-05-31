@@ -27,5 +27,8 @@ class "MyGenericStructRecord`2"<T1,T2> <<record>> <<struct>> {
 }
 class MyRecord3 <<record>> {
 }
+abstract class MyRecord4 <<record>> {
+    + {abstract} Execute() : string
+}
 MyRecord3 --> "p1<long,bool>" "MyGenericRecord`2"
 @enduml

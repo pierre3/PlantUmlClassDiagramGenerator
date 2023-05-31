@@ -31,4 +31,9 @@ namespace PlantUmlClassDiagramGeneratorTest.testData
     }
 
    record MyRecord3(MyGenericRecord<long,bool> p1);
+
+   abstract record MyRecord4()
+   {
+       public abstract string Execute();
+   };
 }
