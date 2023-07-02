@@ -43,6 +43,7 @@ puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
 - -ignore: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
 - -excludePaths: (Optional) Specify the exclude file and directory.   
   Specifies a relative path from the "InputPath", with a comma separated list.
+  To exclude multiple paths, which contain a specific folder name, preceed the name by "\*\*/". Example: "**/bin"
 - -createAssociation: (Optional) Create object associations from references of fields and properites.
 - -allInOne: (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
 - -attributeRequired: (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
