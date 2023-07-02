@@ -30,6 +30,8 @@ namespace PlantUmlClassDiagramGenerator
             ["-excludeUmlBeginEndTags"] = OptionType.Switch
         };
 
+        static readonly ExcludeFileFilter _excludeFileFilter = new ExcludeFileFilter();
+
         static int Main(string[] args)
         {
             Dictionary<string, string> parameters = MakeParameters(args);
@@ -152,7 +154,7 @@ namespace PlantUmlClassDiagramGenerator
             if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@startuml");
 
             var error = false;
-            var filesToProcess = GetFilesToProcess(files, excludePaths, inputRoot);
+            var filesToProcess = _excludeFileFilter.GetFilesToProcess(files, excludePaths, inputRoot);
             foreach (var inputFile in filesToProcess)
             {
                 Console.WriteLine($"Processing \"{inputFile}\"...");
@@ -216,24 +218,6 @@ namespace PlantUmlClassDiagramGenerator
             return true;
         }
 
-        private static IEnumerable<string> GetFilesToProcess(IEnumerable<string> files, IList<string> excludePaths, string inputRoot)
-        {
-            return files.Where(f => !IsFileExcluded(f, excludePaths, inputRoot));
-        }
-
-        private static bool IsFileExcluded(string inputFile, IEnumerable<string> excludePaths, string inputRoot)
-        {
-            bool isExcluded = excludePaths
-                .Select(p => CombinePath(inputRoot, p))
-                .Any(p => inputFile.StartsWith(p, StringComparison.InvariantCultureIgnoreCase));
-
-            if (isExcluded)
-            {
-                Console.WriteLine($"Skipped \"{inputFile}\"...");
-            }
-
-            return isExcluded;
-        }
 
         private static Accessibilities GetIgnoreAccessibilities(Dictionary<string, string> parameters)
         {
@@ -296,9 +280,7 @@ namespace PlantUmlClassDiagramGenerator
 
         private static string CombinePath(string first, string second)
         {
-            return first.TrimEnd(Path.DirectorySeparatorChar)
-                + Path.DirectorySeparatorChar
-                + second.TrimStart(Path.DirectorySeparatorChar);
+            return PathHelper.CombinePath(first, second);
         }
     }
 }
