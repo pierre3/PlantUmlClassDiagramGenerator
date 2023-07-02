@@ -154,9 +154,7 @@ namespace PlantUmlClassDiagramGenerator
             var error = false;
             foreach (var inputFile in files)
             {
-                if (excludePaths
-                    .Select(p => CombinePath(inputRoot, p))
-                    .Any(p => inputFile.StartsWith(p, StringComparison.InvariantCultureIgnoreCase)))
+                if (IsFileExcluded(inputFile, excludePaths, inputRoot))
                 {
                     Console.WriteLine($"Skipped \"{inputFile}\"...");
                     continue;
@@ -220,6 +218,15 @@ namespace PlantUmlClassDiagramGenerator
                 return false;
             }
             return true;
+        }
+
+        private static bool IsFileExcluded(string inputFile, IList<string> excludePaths, string inputRoot)
+        {
+            bool isExcluded = excludePaths
+                .Select(p => CombinePath(inputRoot, p))
+                .Any(p => inputFile.StartsWith(p, StringComparison.InvariantCultureIgnoreCase));
+
+            return isExcluded;
         }
 
         private static Accessibilities GetIgnoreAccessibilities(Dictionary<string, string> parameters)
