@@ -152,13 +152,9 @@ namespace PlantUmlClassDiagramGenerator
             if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@startuml");
 
             var error = false;
-            foreach (var inputFile in files)
+            var filesToProcess = GetFilesToProcess(files, excludePaths, inputRoot);
+            foreach (var inputFile in filesToProcess)
             {
-                if (IsFileExcluded(inputFile, excludePaths, inputRoot))
-                {
-                    Console.WriteLine($"Skipped \"{inputFile}\"...");
-                    continue;
-                }
                 Console.WriteLine($"Processing \"{inputFile}\"...");
                 try
                 {
@@ -176,7 +172,7 @@ namespace PlantUmlClassDiagramGenerator
                         using var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
                         using var writer = new StreamWriter(filestream);
                         var gen = new ClassDiagramGenerator(
-                            writer, 
+                            writer,
                             "    ",
                             ignoreAcc,
                             parameters.ContainsKey("-createAssociation"),
@@ -220,11 +216,21 @@ namespace PlantUmlClassDiagramGenerator
             return true;
         }
 
-        private static bool IsFileExcluded(string inputFile, IList<string> excludePaths, string inputRoot)
+        private static IEnumerable<string> GetFilesToProcess(IEnumerable<string> files, IList<string> excludePaths, string inputRoot)
+        {
+            return files.Where(f => !IsFileExcluded(f, excludePaths, inputRoot));
+        }
+
+        private static bool IsFileExcluded(string inputFile, IEnumerable<string> excludePaths, string inputRoot)
         {
             bool isExcluded = excludePaths
                 .Select(p => CombinePath(inputRoot, p))
                 .Any(p => inputFile.StartsWith(p, StringComparison.InvariantCultureIgnoreCase));
+
+            if (isExcluded)
+            {
+                Console.WriteLine($"Skipped \"{inputFile}\"...");
+            }
 
             return isExcluded;
         }
