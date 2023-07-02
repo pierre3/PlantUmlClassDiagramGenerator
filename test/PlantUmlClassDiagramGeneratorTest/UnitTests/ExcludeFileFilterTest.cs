@@ -33,6 +33,9 @@ namespace PlantUmlClassDiagramGeneratorTest.UnitTests
         [DataRow(new string[] { }, new[] {0, 1, 2, 3, 4, 5, 6}, DisplayName = "Exclude path (empty array)")]
         [DataRow(new[] {"ProjectA\\bin"}, new[] {0, 1, 3, 4, 5, 6}, DisplayName = "Exclude path (one)")]
         [DataRow(new[] {"ProjectA\\bin", "ProjectB\\bin"}, new[] {0, 1, 3, 4, 6}, DisplayName = "Exclude path (multiple)")]
+        [DataRow(new[] {"**/bin"}, new[] {0, 1, 3, 4, 6}, DisplayName = "Exclude pattern (one)")]
+        [DataRow(new[] {"**/bin", "**/obj"}, new[] {0, 1, 4}, DisplayName = "Exclude pattern (multiple)")]
+        [DataRow(new[] {"**/bin", "ProjectB\\", "**/obj"}, new[] {0, 1}, DisplayName = "Mixed combination of exclude path and pattern")]
         public void GetFilesToProcessTest(string[] excludePaths, int[] expectedTestFileIndices)
         {
             // Act

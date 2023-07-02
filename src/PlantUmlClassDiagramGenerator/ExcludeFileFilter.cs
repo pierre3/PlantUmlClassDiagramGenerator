@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace PlantUmlClassDiagramGenerator
@@ -13,9 +14,7 @@ namespace PlantUmlClassDiagramGenerator
 
         private static bool IsFileExcluded(string inputFile, IEnumerable<string> excludePaths, string inputRoot)
         {
-            bool isExcluded = excludePaths
-                .Select(p => PathHelper.CombinePath(inputRoot, p))
-                .Any(p => inputFile.StartsWith(p, StringComparison.InvariantCultureIgnoreCase));
+            bool isExcluded = excludePaths.Any(excludePath => IsFileExcluded(inputFile, excludePath, inputRoot));
 
             if (isExcluded)
             {
@@ -23,6 +22,19 @@ namespace PlantUmlClassDiagramGenerator
             }
 
             return isExcluded;
+        }
+
+        private static bool IsFileExcluded(string inputFile, string excludePath, string inputRoot)
+        {
+            if (excludePath.StartsWith("**/"))
+            {
+                return inputFile.Split('\\', '/').Any(x => x.StartsWith(excludePath[3..]));
+            }
+            else
+            {
+                string fullPath = PathHelper.CombinePath(inputRoot, excludePath);
+                return inputFile.StartsWith(fullPath, StringComparison.InvariantCultureIgnoreCase);
+            }
         }
     }
 }
