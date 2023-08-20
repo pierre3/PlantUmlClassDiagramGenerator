@@ -71,7 +71,7 @@ puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 |C#               | PlantUML           |
 |:----------------|-------------------:|
 | `class`         | `class`            |
-| `struct`        | `<<struct>> class` |
+| `struct`        | `struct`           |
 | `interface`     | `interface`        |
 | `enum`          | `enum`             |
 | `record`        | `<<record>> class` |
@@ -80,7 +80,7 @@ puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 
 |C#               | PlantUML           |
 |:----------------|-------------------:|
-| `abstract`       | `abstract`         |
+| `abstract`       | `abstract`        |
 | `static`        | `<<static>>`       |
 | `partial`       | `<<partial>>`      |
 | `sealed`        | `<<sealed>>`       |

@@ -19,17 +19,17 @@ class RecordB <<record>> {
     + Prop2 : string <<get>>
     + RecordB(prop1:string, prop2:string)
 }
-class StructA <<struct>> {
+struct StructA {
     + StructA(field1:RecordA)
 }
-class StructB <<struct>> {
+struct StructB {
     + StructB(field1:RecordB)
 }
-class RecordStructA <<record>> <<struct>> {
+struct RecordStructA <<record>> {
     + X : int <<get>> <<init>>
     + Y : int <<get>> <<init>>
 }
-class RecordStructB <<record>> <<struct>> {
+struct RecordStructB <<record>> {
     + X : int <<get>> <<init>>
     + Y : int <<get>> <<init>>
 }

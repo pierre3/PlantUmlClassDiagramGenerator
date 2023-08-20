@@ -15,7 +15,7 @@ class ClassC <<sealed>> {
     +  <<event>> PropertyChanged : PropertyChangedEventHandler 
     + <<override>> AbstractMethod(arg1:int, arg2:double) : string
 }
-class Vector <<struct>> {
+struct Vector {
     + X : double <<get>>
     + Y : double <<get>>
     + Z : double <<get>>
@@ -38,7 +38,7 @@ class InnerClass {
     + X : string <<get>> = "xx"
     + MethodX() : void
 }
-class InnerStruct <<struct>> {
+struct InnerStruct {
     + A : int <<get>>
     + InnerStruct(a:int)
 }

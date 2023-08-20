@@ -87,8 +87,8 @@ namespace PlantUmlClassDiagramGenerator.Library
             var typeParams = typeParam.TrimStart('<').TrimEnd('>').Split(',', StringSplitOptions.TrimEntries);
             types.Add(name);
 
-            var structKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? " <<struct>>" : "";
-            WriteLine($"{abstractKeyword}class {type} {modifiers}<<record>>{structKeyword} {{");
+            var typeKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? "struct" : "class";
+            WriteLine($"{abstractKeyword}{typeKeyword} {type} {modifiers}<<record>> {{");
 
             nestingDepth++;
             var parameters = node.ParameterList?.Parameters ?? Enumerable.Empty<ParameterSyntax>();
@@ -158,7 +158,7 @@ namespace PlantUmlClassDiagramGenerator.Library
 
             types.Add(name);
 
-            WriteLine($"class {type} <<struct>> {{");
+            WriteLine($"struct {type} {{");
 
             nestingDepth++;
             base.VisitStructDeclaration(node);

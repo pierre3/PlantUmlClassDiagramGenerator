@@ -8,13 +8,13 @@ class MyClass {
     + Run(p:Parameters) : void
     + MyClass(logger:ILogger)
 }
-class MyStruct <<struct>> {
+struct MyStruct {
     + MyStruct(p:Parameters)
 }
 class MyRecord <<record>> {
     + name : string <<get>> <<init>>
 }
-class MyStructRecord <<record>> <<struct>> {
+struct MyStructRecord <<record>> {
 }
 class ClassA {
     + ClassA(logger:ILogger)

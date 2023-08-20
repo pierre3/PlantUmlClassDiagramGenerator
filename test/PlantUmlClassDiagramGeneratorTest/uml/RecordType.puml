@@ -4,7 +4,7 @@ class MyRecord <<record>> {
     + B : int <<get>>
     + MyRecord(a:string, b:int)
 }
-class MyStructRecord <<record>> <<struct>> {
+struct MyStructRecord <<record>> {
     + A : string <<get>> <<init>>
     + B : int <<get>> <<init>>
 }
@@ -12,7 +12,7 @@ class MyRecord2 <<record>> {
     + A : string <<get>> <<init>>
     + B : int <<get>> <<init>>
 }
-class MyStructRecord2 <<record>> <<struct>> {
+struct MyStructRecord2 <<record>> {
     + A : string <<get>> <<init>>
     + B : int <<get>> <<init>>
 }
@@ -20,7 +20,7 @@ class "MyGenericRecord`2"<T1,T2> <<record>> {
     + Type1 : T1 <<get>> <<init>>
     + Type2 : T2 <<get>> <<init>>
 }
-class "MyGenericStructRecord`2"<T1,T2> <<record>> <<struct>> {
+struct "MyGenericStructRecord`2"<T1,T2> <<record>> {
     + Type1 : T1 <<get>>
     + Type2 : T2 <<get>>
     + MyGenericStructRecord(type1:T1, type2:T2)

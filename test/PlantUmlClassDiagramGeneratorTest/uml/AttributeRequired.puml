@@ -9,10 +9,10 @@ class RecordB <<record>> {
     + Prop2 : string <<get>>
     + RecordB(prop1:string, prop2:string)
 }
-class StructB <<struct>> {
+struct StructB {
     + StructB(field1:RecordB)
 }
-class RecordStructB <<record>> <<struct>> {
+struct RecordStructB <<record>> {
     + X : int <<get>> <<init>>
     + Y : int <<get>> <<init>>
 }

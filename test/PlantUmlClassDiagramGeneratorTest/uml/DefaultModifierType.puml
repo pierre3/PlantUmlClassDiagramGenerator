@@ -8,7 +8,7 @@ class ClassA {
     + ClassA()
     - ClassA()
 }
-class StructA <<struct>> {
+struct StructA {
     - PropA : string <<get>>
     {static} - PropB : string <<get>>
     - PropC : string <<get>>
