@@ -114,7 +114,7 @@ enum EnumType{
 @startuml
 class ClassA {
 }
-class StructA <<struct>> {
+struct StructA {
 }
 interface InterfaceA {
 }

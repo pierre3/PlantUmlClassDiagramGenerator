@@ -14,9 +14,9 @@ Create class diagrams of PlantUML from C# source code.
 - __csharp2plantuml.public__
   Only public accessibility members are output.
 - __csharp2plantuml.ignoreAccessibility__
-  Specify accessibiliies of members to ignore, with a comma separated list. (ex. 'private,protected,protected internal')
+  Specify accessibiliies of members to ignore, with a comma separated list (ex. 'private,protected,protected internal'). 
 - __csharp2plantuml.excludePath__
-  Specify exclude file or directory paths (relative to the \"InputPath\"), with a comma separated list. (ex. 'obj,Properties\\AssemblyInfo.cs')
+  Specify exclude file or directory paths (relative to the \"InputPath\"), with a comma separated list (ex. 'obj,Properties\\AssemblyInfo.cs'). To exclude multiple paths, which contain a specific folder name, preceed the name by "**/". Example: "**/bin".
 - __csharp2plantuml.createAssociation__
   Create object associations from references of fields and properites.
 - __csharp2plantuml.allInOne__
@@ -30,6 +30,12 @@ Create class diagrams of PlantUML from C# source code.
 
 
 ## Release Notes
+## 1.3.4
+- Added support for the "struct" keyword in type definitions.
+- Added exclude path to consider "**/" syntax (filtering on all folder levels).
+- Fixed attributeRequired not working in Directory based Generation
+- Fixed missing 'abstract' keyword for record type
+
 ## 1.3.3
 - Fixed an issue where the IgnoreAttributes parameter did not work when using the default access modifier.
 

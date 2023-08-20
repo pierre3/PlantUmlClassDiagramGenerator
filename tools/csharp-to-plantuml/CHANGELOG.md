@@ -3,6 +3,12 @@ All notable changes to the "csharp-to-plantuml" extension will be documented in 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.3.4]
+- Added support for the "struct" keyword in type definitions.
+- Added exclude path to consider "**/" syntax (filtering on all folder levels).
+- Fixed attributeRequired not working in Directory based Generation
+- Fixed missing 'abstract' keyword for record type
+
 ## [1.3.3]
 - Fixed an issue where the IgnoreAttributes parameter did not work when using the default access modifier.
 
