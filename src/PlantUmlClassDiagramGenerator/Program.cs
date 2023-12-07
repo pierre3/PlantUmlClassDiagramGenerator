@@ -8,279 +8,271 @@ using System.Text;
 using PlantUmlClassDiagramGenerator.Library;
 using System.Runtime.InteropServices;
 
-namespace PlantUmlClassDiagramGenerator
+namespace PlantUmlClassDiagramGenerator;
+
+class Program
 {
-    class Program
+    enum OptionType
     {
-        enum OptionType
+        Value,
+        Switch
+    }
+
+    static readonly Dictionary<string, OptionType> options = new()
+    {
+        ["-dir"] = OptionType.Switch,
+        ["-public"] = OptionType.Switch,
+        ["-ignore"] = OptionType.Value,
+        ["-excludePaths"] = OptionType.Value,
+        ["-createAssociation"] = OptionType.Switch,
+        ["-allInOne"] = OptionType.Switch,
+        ["-attributeRequired"] = OptionType.Switch,
+        ["-excludeUmlBeginEndTags"] = OptionType.Switch
+    };
+
+    static int Main(string[] args)
+    {
+        Dictionary<string, string> parameters = MakeParameters(args);
+        if (!parameters.ContainsKey("in"))
         {
-            Value,
-            Switch
+            Console.WriteLine("Specify a source file name or directory name.");
+            return -1;
         }
-
-        static readonly Dictionary<string, OptionType> options = new Dictionary<string, OptionType>()
+        if (parameters.ContainsKey("-dir"))
         {
-            ["-dir"] = OptionType.Switch,
-            ["-public"] = OptionType.Switch,
-            ["-ignore"] = OptionType.Value,
-            ["-excludePaths"] = OptionType.Value,
-            ["-createAssociation"] = OptionType.Switch,
-            ["-allInOne"] = OptionType.Switch,
-            ["-attributeRequired"] = OptionType.Switch,
-            ["-excludeUmlBeginEndTags"] = OptionType.Switch
-        };
-
-        static readonly ExcludeFileFilter _excludeFileFilter = new ExcludeFileFilter();
-
-        static int Main(string[] args)
-        {
-            Dictionary<string, string> parameters = MakeParameters(args);
-            if (!parameters.ContainsKey("in"))
-            {
-                Console.WriteLine("Specify a source file name or directory name.");
-                return -1;
-            }
-            if (parameters.ContainsKey("-dir"))
-            {
-                if (!GeneratePlantUmlFromDir(parameters)) { return -1; }
-            }
-            else
-            {
-                if (!GeneratePlantUmlFromFile(parameters)) { return -1; }
-            }
-            return 0;
+            if (!GeneratePlantUmlFromDir(parameters)) { return -1; }
         }
-
-        private static bool GeneratePlantUmlFromFile(Dictionary<string, string> parameters)
+        else
         {
-            var inputFileName = parameters["in"];
-            if (!File.Exists(inputFileName))
-            {
-                Console.WriteLine($"\"{inputFileName}\" does not exist.");
-                return false;
-            }
-            string outputFileName;
-            if (parameters.ContainsKey("out"))
-            {
-                outputFileName = parameters["out"];
-                try
-                {
-                    var outdir = Path.GetDirectoryName(outputFileName);
-                    Directory.CreateDirectory(outdir);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    return false;
-                }
-            }
-            else
-            {
-                outputFileName = CombinePath(Path.GetDirectoryName(inputFileName),
-                    Path.GetFileNameWithoutExtension(inputFileName) + ".puml");
-            }
+            if (!GeneratePlantUmlFromFile(parameters)) { return -1; }
+        }
+        return 0;
+    }
 
+    private static bool GeneratePlantUmlFromFile(Dictionary<string, string> parameters)
+    {
+        var inputFileName = parameters["in"];
+        if (!File.Exists(inputFileName))
+        {
+            Console.WriteLine($"\"{inputFileName}\" does not exist.");
+            return false;
+        }
+        string outputFileName;
+        if (parameters.TryGetValue("out", out string value))
+        {
+            outputFileName = value;
             try
             {
-                using var stream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read);
-                var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
-                var root = tree.GetRoot();
-                Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
-
-                using var filestream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write);
-                using var writer = new StreamWriter(filestream);
-                var gen = new ClassDiagramGenerator(
-                    writer,
-                    "    ",
-                    ignoreAcc,
-                    parameters.ContainsKey("-createAssociation"),
-                    parameters.ContainsKey("-attributeRequired"),
-                    parameters.ContainsKey("-excludeUmlBeginEndTags"));
-                gen.Generate(root);
+                var outdir = Path.GetDirectoryName(outputFileName);
+                Directory.CreateDirectory(outdir);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 return false;
             }
-            return true;
+        }
+        else
+        {
+            outputFileName = CombinePath(Path.GetDirectoryName(inputFileName),
+                Path.GetFileNameWithoutExtension(inputFileName) + ".puml");
         }
 
-        private static bool GeneratePlantUmlFromDir(Dictionary<string, string> parameters)
+        try
         {
-            var inputRoot = parameters["in"];
-            if (!Directory.Exists(inputRoot))
+            using var stream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read);
+            var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
+            var root = tree.GetRoot();
+            Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
+
+            using var filestream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write);
+            using var writer = new StreamWriter(filestream);
+            var gen = new ClassDiagramGenerator(
+                writer,
+                "    ",
+                ignoreAcc,
+                parameters.ContainsKey("-createAssociation"),
+                parameters.ContainsKey("-attributeRequired"),
+                parameters.ContainsKey("-excludeUmlBeginEndTags"));
+            gen.Generate(root);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+        return true;
+    }
+
+    private static bool GeneratePlantUmlFromDir(Dictionary<string, string> parameters)
+    {
+        var inputRoot = parameters["in"];
+        if (!Directory.Exists(inputRoot))
+        {
+            Console.WriteLine($"Directory \"{inputRoot}\" does not exist.");
+            return false;
+        }
+
+        // Use GetFullPath to fully support relative paths.
+        var outputRoot = Path.GetFullPath(inputRoot);
+        if (parameters.TryGetValue("out", out string outValue))
+        {
+            outputRoot = outValue;
+            try
             {
-                Console.WriteLine($"Directory \"{inputRoot}\" does not exist.");
+                Directory.CreateDirectory(outputRoot);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
                 return false;
             }
-
-            // Use GetFullPath to fully support relative paths.
-            var outputRoot = Path.GetFullPath(inputRoot);
-            if (parameters.ContainsKey("out"))
-            {
-                outputRoot = parameters["out"];
-                try
-                {
-                    Directory.CreateDirectory(outputRoot);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    return false;
-                }
-            }
-
-            var excludePaths = new List<string>();
-            var pumlexclude = CombinePath(inputRoot, ".pumlexclude");
-            if (File.Exists(pumlexclude))
-            {
-                excludePaths = File
-                    .ReadAllLines(pumlexclude)
-                    .Where(path => !string.IsNullOrWhiteSpace(path))
-                    .Select(path => path.Trim())
-                    .ToList();
-            }
-            if (parameters.ContainsKey("-excludePaths"))
-            {
-                var splitOptions = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
-                excludePaths.AddRange(parameters["-excludePaths"].Split(',', splitOptions));
-            }
-
-            var excludeUmlBeginEndTags = parameters.ContainsKey("-excludeUmlBeginEndTags");
-            var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
-
-            var includeRefs = new StringBuilder();
-            if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@startuml");
-
-            var error = false;
-            var filesToProcess = _excludeFileFilter.GetFilesToProcess(files, excludePaths, inputRoot);
-            foreach (var inputFile in filesToProcess)
-            {
-                Console.WriteLine($"Processing \"{inputFile}\"...");
-                try
-                {
-                    var outputDir = CombinePath(outputRoot, Path.GetDirectoryName(inputFile).Replace(inputRoot, ""));
-                    Directory.CreateDirectory(outputDir);
-                    var outputFile = CombinePath(outputDir,
-                        Path.GetFileNameWithoutExtension(inputFile) + ".puml");
-
-                    using (var stream = new FileStream(inputFile, FileMode.Open, FileAccess.Read))
-                    {
-                        var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
-                        var root = tree.GetRoot();
-                        Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
-
-                        using var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
-                        using var writer = new StreamWriter(filestream);
-                        var gen = new ClassDiagramGenerator(
-                            writer,
-                            "    ",
-                            ignoreAcc,
-                            parameters.ContainsKey("-createAssociation"),
-                            parameters.ContainsKey("-attributeRequired"),
-                            excludeUmlBeginEndTags);
-                        gen.Generate(root);
-                    }
-
-                    if (parameters.ContainsKey("-allInOne"))
-                    {
-                        var lines = File.ReadAllLines(outputFile);
-                        if (!excludeUmlBeginEndTags)
-                        {
-                            lines = lines.Skip(1).SkipLast(1).ToArray();
-                        }
-                        foreach (string line in lines)
-                        {
-                            includeRefs.AppendLine(line);
-                        }
-                    }
-                    else
-                    {
-                        var newRoot = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @".\" : @".";
-                        includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, newRoot));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    error = true;
-                }
-            }
-            if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@enduml");
-            File.WriteAllText(CombinePath(outputRoot, "include.puml"), includeRefs.ToString());
-
-            if (error)
-            {
-                Console.WriteLine("There were files that could not be processed.");
-                return false;
-            }
-            return true;
         }
 
-
-        private static Accessibilities GetIgnoreAccessibilities(Dictionary<string, string> parameters)
+        var excludePaths = new List<string>();
+        var pumlexclude = CombinePath(inputRoot, ".pumlexclude");
+        if (File.Exists(pumlexclude))
         {
-            var ignoreAcc = Accessibilities.None;
-            if (parameters.ContainsKey("-public"))
-            {
-                ignoreAcc = Accessibilities.Private | Accessibilities.Internal
-                    | Accessibilities.Protected | Accessibilities.ProtectedInternal;
-            }
-            else if (parameters.ContainsKey("-ignore"))
-            {
-                var ignoreItems = parameters["-ignore"].Split(',');
-                foreach (var item in ignoreItems)
-                {
-                    if (Enum.TryParse(item, true, out Accessibilities acc))
-                    {
-                        ignoreAcc |= acc;
-                    }
-                }
-            }
-            return ignoreAcc;
+            excludePaths = File
+                .ReadAllLines(pumlexclude)
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .Select(path => path.Trim())
+                .ToList();
         }
-
-        private static Dictionary<string, string> MakeParameters(string[] args)
+        if (parameters.TryGetValue("-excludePaths", out string excludePathValue))
         {
-            var currentKey = "";
-            var parameters = new Dictionary<string, string>();
+            var splitOptions = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
+            excludePaths.AddRange(excludePathValue.Split(',', splitOptions));
+        }
 
-            foreach (var arg in args)
+        var excludeUmlBeginEndTags = parameters.ContainsKey("-excludeUmlBeginEndTags");
+        var files = Directory.EnumerateFiles(inputRoot, "*.cs", SearchOption.AllDirectories);
+
+        var includeRefs = new StringBuilder();
+        if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@startuml");
+
+        var error = false;
+        var filesToProcess = ExcludeFileFilter.GetFilesToProcess(files, excludePaths, inputRoot);
+        foreach (var inputFile in filesToProcess)
+        {
+            Console.WriteLine($"Processing \"{inputFile}\"...");
+            try
             {
-                if (currentKey != string.Empty)
+                var outputDir = CombinePath(outputRoot, Path.GetDirectoryName(inputFile).Replace(inputRoot, ""));
+                Directory.CreateDirectory(outputDir);
+                var outputFile = CombinePath(outputDir,
+                    Path.GetFileNameWithoutExtension(inputFile) + ".puml");
+
+                using (var stream = new FileStream(inputFile, FileMode.Open, FileAccess.Read))
                 {
-                    parameters.Add(currentKey, arg);
-                    currentKey = "";
-                    continue;
+                    var tree = CSharpSyntaxTree.ParseText(SourceText.From(stream));
+                    var root = tree.GetRoot();
+                    Accessibilities ignoreAcc = GetIgnoreAccessibilities(parameters);
+
+                    using var filestream = new FileStream(outputFile, FileMode.Create, FileAccess.Write);
+                    using var writer = new StreamWriter(filestream);
+                    var gen = new ClassDiagramGenerator(
+                        writer,
+                        "    ",
+                        ignoreAcc,
+                        parameters.ContainsKey("-createAssociation"),
+                        parameters.ContainsKey("-attributeRequired"),
+                        excludeUmlBeginEndTags);
+                    gen.Generate(root);
                 }
 
-                if (options.ContainsKey(arg))
+                if (parameters.ContainsKey("-allInOne"))
                 {
-                    if (options[arg] == OptionType.Value)
+                    var lines = File.ReadAllLines(outputFile);
+                    if (!excludeUmlBeginEndTags)
                     {
-                        currentKey = arg;
+                        lines = lines.Skip(1).SkipLast(1).ToArray();
                     }
-                    else
+                    foreach (string line in lines)
                     {
-                        parameters.Add(arg, string.Empty);
+                        includeRefs.AppendLine(line);
                     }
                 }
-                else if (!parameters.ContainsKey("in"))
+                else
                 {
-                    parameters.Add("in", arg);
-                }
-                else if (!parameters.ContainsKey("out"))
-                {
-                    parameters.Add("out", arg);
+                    var newRoot = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @".\" : @".";
+                    includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, newRoot));
                 }
             }
-            return parameters;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                error = true;
+            }
         }
+        if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@enduml");
+        File.WriteAllText(CombinePath(outputRoot, "include.puml"), includeRefs.ToString());
 
-        private static string CombinePath(string first, string second)
+        if (error)
         {
-            return PathHelper.CombinePath(first, second);
+            Console.WriteLine("There were files that could not be processed.");
+            return false;
         }
+        return true;
+    }
+
+
+    private static Accessibilities GetIgnoreAccessibilities(Dictionary<string, string> parameters)
+    {
+        var ignoreAcc = Accessibilities.None;
+        if (parameters.ContainsKey("-public"))
+        {
+            ignoreAcc = Accessibilities.Private | Accessibilities.Internal
+                | Accessibilities.Protected | Accessibilities.ProtectedInternal;
+        }
+        else if (parameters.TryGetValue("-ignore", out string value))
+        {
+            var ignoreItems = value.Split(',');
+            foreach (var item in ignoreItems)
+            {
+                if (Enum.TryParse(item, true, out Accessibilities acc))
+                {
+                    ignoreAcc |= acc;
+                }
+            }
+        }
+        return ignoreAcc;
+    }
+
+    private static Dictionary<string, string> MakeParameters(string[] args)
+    {
+        var currentKey = "";
+        var parameters = new Dictionary<string, string>();
+
+        foreach (var arg in args)
+        {
+            if (currentKey != string.Empty)
+            {
+                parameters.Add(currentKey, arg);
+                currentKey = "";
+                continue;
+            }
+
+            if (options.TryGetValue(arg, out OptionType value))
+            {
+                if (value == OptionType.Value)
+                {
+                    currentKey = arg;
+                }
+                else
+                {
+                    parameters.Add(arg, string.Empty);
+                }
+            }
+
+            parameters.TryAdd("in", arg);
+            parameters.TryAdd("out", arg);
+        }
+        return parameters;
+    }
+
+    private static string CombinePath(string first, string second)
+    {
+        return PathHelper.CombinePath(first, second);
     }
 }

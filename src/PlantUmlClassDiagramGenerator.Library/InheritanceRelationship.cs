@@ -1,9 +1,5 @@
-﻿namespace PlantUmlClassDiagramGenerator.Library
+﻿namespace PlantUmlClassDiagramGenerator.Library;
+
+public class InheritanceRelationship(TypeNameText baseTypeName, TypeNameText subTypeName) : Relationship(baseTypeName, subTypeName, "<|--", baseTypeName.TypeArguments)
 {
-    public class InheritanceRelationship : Relationship
-    {
-        public InheritanceRelationship(TypeNameText baseTypeName, TypeNameText subTypeName): base(baseTypeName, subTypeName, "<|--", baseTypeName.TypeArguments)
-        {          
-        }
-    }
 }
