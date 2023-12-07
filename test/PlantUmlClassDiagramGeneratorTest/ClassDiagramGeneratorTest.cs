@@ -8,7 +8,7 @@ using PlantUmlClassDiagramGenerator.Library;
 namespace PlantUmlClassDiagramGeneratorTest
 {
     [TestClass]
-    public class ClassDiagramGeneratorTest
+    public partial class ClassDiagramGeneratorTest
     {
         [TestMethod]
         public void GenerateTestAll()
@@ -135,30 +135,9 @@ namespace PlantUmlClassDiagramGeneratorTest
             Assert.AreEqual(expected, actual);
         }
 
-        //[TestMethod]
-        public void GenerateTestCurlyBrackets()
-        {
-            var code = File.ReadAllText(Path.Combine("testData", "CurlyBrackets.cs"));
-            var tree = CSharpSyntaxTree.ParseText(code);
-            var root = tree.GetRoot();
-
-            var output = new StringBuilder();
-            using (var writer = new StringWriter(output))
-            {
-                var gen = new ClassDiagramGenerator(writer, "    ", Accessibilities.Private | Accessibilities.Internal
-                                                                                            | Accessibilities.Protected | Accessibilities.ProtectedInternal, true);
-                gen.Generate(root);
-            }
-
-            var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "CurlyBrackets.puml")), Environment.NewLine);
-            var actual = output.ToString();
-            Console.Write(actual);
-            Assert.AreEqual(expected, actual);
-        }
-
         private static string ConvertNewLineCode(string text, string newline)
         {
-            var reg = new System.Text.RegularExpressions.Regex("\r\n|\r|\n");
+            var reg = EndLineRegex();
             return reg.Replace(text, newline);
         }
 
@@ -281,5 +260,8 @@ namespace PlantUmlClassDiagramGeneratorTest
             Console.Write(actual);
             Assert.AreEqual(expected, actual);
         }
+
+        [System.Text.RegularExpressions.GeneratedRegex("\r\n|\r|\n")]
+        private static partial System.Text.RegularExpressions.Regex EndLineRegex();
     }
 }

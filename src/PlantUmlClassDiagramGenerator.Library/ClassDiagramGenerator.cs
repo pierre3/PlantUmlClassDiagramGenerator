@@ -8,264 +8,212 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.Attributes;
 
-namespace PlantUmlClassDiagramGenerator.Library
+namespace PlantUmlClassDiagramGenerator.Library;
+
+public class ClassDiagramGenerator(
+    TextWriter writer,
+    string indent,
+    Accessibilities ignoreMemberAccessibilities = Accessibilities.None,
+    bool createAssociation = true,
+    bool attributeRequired = false,
+    bool excludeUmlBeginEndTags = false) : CSharpSyntaxWalker
 {
-    public class ClassDiagramGenerator : CSharpSyntaxWalker
+    private readonly HashSet<string> types = [];
+    private readonly List<SyntaxNode> additionalTypeDeclarationNodes = [];
+    private readonly Accessibilities ignoreMemberAccessibilities = ignoreMemberAccessibilities;
+    private readonly RelationshipCollection relationships = new();
+    private readonly TextWriter writer = writer;
+    private readonly string indent = indent;
+    private int nestingDepth = 0;
+    private readonly bool createAssociation = createAssociation;
+    private readonly bool attributeRequired = attributeRequired;
+    private readonly bool excludeUmlBeginEndTags = excludeUmlBeginEndTags;
+    private readonly Dictionary<string, string> escapeDictionary = new()
     {
-        private readonly HashSet<string> types = new HashSet<string>();
-        private readonly IList<SyntaxNode> additionalTypeDeclarationNodes;
-        private readonly Accessibilities ignoreMemberAccessibilities;
-        private readonly RelationshipCollection relationships = new RelationshipCollection();
-        private readonly TextWriter writer;
-        private readonly string indent;
-        private int nestingDepth = 0;
-        private readonly bool createAssociation;
-        private readonly bool attributeRequired;
-        private readonly bool excludeUmlBeginEndTags;
-        private readonly Dictionary<string, string> escapeDictionary = new Dictionary<string, string>
-        {
-            {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
-            {@"(?<before>[^}])}(?<after>[^}])", "${before}&#125;${after}"},
-        };
+        {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
+        {@"(?<before>[^}])}(?<after>[^}])", "${before}&#125;${after}"},
+    };
 
-        public ClassDiagramGenerator(
-            TextWriter writer,
-            string indent,
-            Accessibilities ignoreMemberAccessibilities = Accessibilities.None,
-            bool createAssociation = true,
-            bool attributeRequired = false,
-            bool excludeUmlBeginEndTags = false)
+    public void Generate(SyntaxNode root)
+    {
+        if (!this.excludeUmlBeginEndTags) WriteLine("@startuml");
+        GenerateInternal(root);
+        if (!this.excludeUmlBeginEndTags) WriteLine("@enduml");
+    }
+
+    public void GenerateInternal(SyntaxNode root)
+    {
+        Visit(root);
+        GenerateAdditionalTypeDeclarations();
+        GenerateRelationships();
+    }
+
+    public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+    {
+        VisitTypeDeclaration(node, () => base.VisitInterfaceDeclaration(node));
+    }
+
+    public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+    {
+        VisitTypeDeclaration(node, () => base.VisitClassDeclaration(node));
+    }
+
+    public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
+    {
+        if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (SkipInnerTypeDeclaration(node)) { return; }
+
+        relationships.AddInnerclassRelationFrom(node);
+        relationships.AddInheritanceFrom(node);
+        var modifiers = GetTypeModifiersText(node.Modifiers);
+        var abstractKeyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "");
+
+        var typeName = TypeNameText.From(node);
+        var name = typeName.Identifier;
+        var typeParam = typeName.TypeArguments;
+        var type = $"{name}{typeParam}";
+        var typeParams = typeParam.TrimStart('<').TrimEnd('>').Split(',', StringSplitOptions.TrimEntries);
+        types.Add(name);
+
+        var typeKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? "struct" : "class";
+        WriteLine($"{abstractKeyword}{typeKeyword} {type} {modifiers}<<record>> {{");
+
+        nestingDepth++;
+        var parameters = node.ParameterList?.Parameters ?? Enumerable.Empty<ParameterSyntax>();
+        foreach (var parameter in parameters)
         {
-            this.writer = writer;
-            this.indent = indent;
-            additionalTypeDeclarationNodes = new List<SyntaxNode>();
-            this.ignoreMemberAccessibilities = ignoreMemberAccessibilities;
-            this.createAssociation = createAssociation;
-            this.attributeRequired = attributeRequired;
-            this.excludeUmlBeginEndTags = excludeUmlBeginEndTags;
+            VisitRecordParameter(node, type, typeParams, parameter);
         }
+        base.VisitRecordDeclaration(node);
+        nestingDepth--;
 
-        public void Generate(SyntaxNode root)
+        WriteLine("}");
+    }
+
+    private void VisitRecordParameter(RecordDeclarationSyntax node, string type, string[] typeParams, ParameterSyntax parameter)
+    {
+        var parameterType = parameter.Type;
+        var isTypeParameterProp = typeParams.Contains(parameterType.ToString());
+        var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
+        if (associationAttrSyntax is not null)
         {
-            if (!this.excludeUmlBeginEndTags) WriteLine("@startuml");
-            GenerateInternal(root);
-            if (!this.excludeUmlBeginEndTags) WriteLine("@enduml");
+            var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+            relationships.AddAssociationFrom(node, parameter, associationAttr);
         }
-
-        public void GenerateInternal(SyntaxNode root)
+        else if (!createAssociation
+          || parameter.AttributeLists.HasIgnoreAssociationAttribute()
+          || parameterType.GetType() == typeof(PredefinedTypeSyntax)
+          || parameterType.GetType() == typeof(NullableTypeSyntax)
+          || isTypeParameterProp)
         {
-            Visit(root);
-            GenerateAdditionalTypeDeclarations();
-            GenerateRelationships();
+            // ParameterList-Property: always public
+            var parameterModifiers = "+ ";
+            var parameterName = parameter.Identifier.ToString();
+
+            // ParameterList-Property always have get and init accessor
+            var accessorStr = "<<get>> <<init>>";
+
+            var useLiteralInit = parameter.Default?.Value is not null;
+            var initValue = useLiteralInit
+                ? (" = " + escapeDictionary.Aggregate(parameter.Default.Value.ToString(),
+                    (n, e) => Regex.Replace(n, e.Key, e.Value)))
+                : "";
+            WriteLine($"{parameterModifiers}{parameterName} : {parameterType} {accessorStr}{initValue}");
         }
-
-        public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+        else
         {
-            VisitTypeDeclaration(node, () => base.VisitInterfaceDeclaration(node));
-        }
-
-        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
-        {
-            VisitTypeDeclaration(node, () => base.VisitClassDeclaration(node));
-        }
-
-        public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
-        {
-            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (SkipInnerTypeDeclaration(node)) { return; }
-
-            relationships.AddInnerclassRelationFrom(node);
-            relationships.AddInheritanceFrom(node);
-            var modifiers = GetTypeModifiersText(node.Modifiers);
-            var abstractKeyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "");
-
-            var typeName = TypeNameText.From(node);
-            var name = typeName.Identifier;
-            var typeParam = typeName.TypeArguments;
-            var type = $"{name}{typeParam}";
-            var typeParams = typeParam.TrimStart('<').TrimEnd('>').Split(',', StringSplitOptions.TrimEntries);
-            types.Add(name);
-
-            var typeKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? "struct" : "class";
-            WriteLine($"{abstractKeyword}{typeKeyword} {type} {modifiers}<<record>> {{");
-
-            nestingDepth++;
-            var parameters = node.ParameterList?.Parameters ?? Enumerable.Empty<ParameterSyntax>();
-            foreach (var parameter in parameters)
+            if (type.GetType() == typeof(GenericNameSyntax))
             {
-                VisitRecordParameter(node, type, typeParams, parameter);
+                additionalTypeDeclarationNodes.Add(parameterType);
             }
-            base.VisitRecordDeclaration(node);
-            nestingDepth--;
-
-            WriteLine("}");
+            relationships.AddAssociationFrom(parameter, node);
         }
+    }
 
-        private void VisitRecordParameter(RecordDeclarationSyntax node, string type, string[] typeParams, ParameterSyntax parameter)
+    public override void VisitStructDeclaration(StructDeclarationSyntax node)
+    {
+        if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (SkipInnerTypeDeclaration(node)) { return; }
+
+        relationships.AddInnerclassRelationFrom(node);
+        relationships.AddInheritanceFrom(node);
+
+        var typeName = TypeNameText.From(node);
+        var name = typeName.Identifier;
+        var typeParam = typeName.TypeArguments;
+        var type = $"{name}{typeParam}";
+
+        types.Add(name);
+
+        WriteLine($"struct {type} {{");
+
+        nestingDepth++;
+        base.VisitStructDeclaration(node);
+        nestingDepth--;
+
+        WriteLine("}");
+    }
+
+    public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
+    {
+        if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (SkipInnerTypeDeclaration(node)) { return; }
+
+        relationships.AddInnerclassRelationFrom(node);
+
+        var type = $"{node.Identifier}";
+
+        types.Add(type);
+
+        WriteLine($"{node.EnumKeyword} {type} {{");
+
+        nestingDepth++;
+        base.VisitEnumDeclaration(node);
+        nestingDepth--;
+
+        WriteLine("}");
+    }
+
+    public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
+    {
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (IsIgnoreMember(node.Modifiers)) { return; }
+        foreach (var parameter in node.ParameterList?.Parameters)
         {
-            var parameterType = parameter.Type;
-            var isTypeParameterProp = typeParams.Contains(parameterType.ToString());
             var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
             if (associationAttrSyntax is not null)
             {
                 var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
                 relationships.AddAssociationFrom(node, parameter, associationAttr);
             }
-            else if (!createAssociation
-              || parameter.AttributeLists.HasIgnoreAssociationAttribute()
-              || parameterType.GetType() == typeof(PredefinedTypeSyntax)
-              || parameterType.GetType() == typeof(NullableTypeSyntax)
-              || isTypeParameterProp)
-            {
-                // ParameterList-Property: always public
-                var parameterModifiers = "+ ";
-                var parameterName = parameter.Identifier.ToString();
-
-                // ParameterList-Property always have get and init accessor
-                var accessorStr = "<<get>> <<init>>";
-
-                var useLiteralInit = parameter.Default?.Value is not null;
-                var initValue = useLiteralInit
-                    ? (" = " + escapeDictionary.Aggregate(parameter.Default.Value.ToString(),
-                        (n, e) => Regex.Replace(n, e.Key, e.Value)))
-                    : "";
-                WriteLine($"{parameterModifiers}{parameterName} : {parameterType} {accessorStr}{initValue}");
-            }
-            else
-            {
-                if (type.GetType() == typeof(GenericNameSyntax))
-                {
-                    additionalTypeDeclarationNodes.Add(parameterType);
-                }
-                relationships.AddAssociationFrom(parameter, node);
-            }
         }
+        var modifiers = GetMemberModifiersText(node.Modifiers,
+            isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
+        var name = node.Identifier.ToString();
+        var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
 
-        public override void VisitStructDeclaration(StructDeclarationSyntax node)
-        {
-            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (SkipInnerTypeDeclaration(node)) { return; }
+        WriteLine($"{modifiers}{name}({string.Join(", ", args)})");
+    }
 
-            relationships.AddInnerclassRelationFrom(node);
-            relationships.AddInheritanceFrom(node);
+    public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+    {
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (IsIgnoreMember(node.Modifiers)) { return; }
 
-            var typeName = TypeNameText.From(node);
-            var name = typeName.Identifier;
-            var typeParam = typeName.TypeArguments;
-            var type = $"{name}{typeParam}";
-
-            types.Add(name);
-
-            WriteLine($"struct {type} {{");
-
-            nestingDepth++;
-            base.VisitStructDeclaration(node);
-            nestingDepth--;
-
-            WriteLine("}");
-        }
-
-        public override void VisitEnumDeclaration(EnumDeclarationSyntax node)
-        {
-            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (SkipInnerTypeDeclaration(node)) { return; }
-
-            relationships.AddInnerclassRelationFrom(node);
-
-            var type = $"{node.Identifier}";
-
-            types.Add(type);
-
-            WriteLine($"{node.EnumKeyword} {type} {{");
-
-            nestingDepth++;
-            base.VisitEnumDeclaration(node);
-            nestingDepth--;
-
-            WriteLine("}");
-        }
-
-        public override void VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
-        {
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (IsIgnoreMember(node.Modifiers)) { return; }
-            foreach (var parameter in node.ParameterList?.Parameters)
-            {
-                var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
-                if (associationAttrSyntax is not null)
-                {
-                    var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
-                    relationships.AddAssociationFrom(node, parameter, associationAttr);
-                }
-            }
-            var modifiers = GetMemberModifiersText(node.Modifiers,
+        var modifiers = GetMemberModifiersText(node.Modifiers,
                 isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
-            var name = node.Identifier.ToString();
-            var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
+        var type = node.Declaration.Type;
+        var variables = node.Declaration.Variables;
+        var parentClass = (node.Parent as TypeDeclarationSyntax);
+        var isTypeParameterField = parentClass?.TypeParameterList?.Parameters
+            .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
-            WriteLine($"{modifiers}{name}({string.Join(", ", args)})");
-        }
-
-        public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+        foreach (var field in variables)
         {
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (IsIgnoreMember(node.Modifiers)) { return; }
-
-            var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
-            var type = node.Declaration.Type;
-            var variables = node.Declaration.Variables;
-            var parentClass = (node.Parent as TypeDeclarationSyntax);
-            var isTypeParameterField = parentClass?.TypeParameterList?.Parameters
-                .Any(t => t.Identifier.Text == type.ToString()) ?? false;
-
-            foreach (var field in variables)
-            {
-                Type fieldType = type.GetType();
-                var associationAttrSyntax = node.AttributeLists.GetAssociationAttributeSyntax();
-                if (associationAttrSyntax is not null)
-                {
-                    var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
-                    relationships.AddAssociationFrom(node, associationAttr);
-                }
-                else if (!createAssociation
-                    || node.AttributeLists.HasIgnoreAssociationAttribute()
-                    || fieldType == typeof(PredefinedTypeSyntax)
-                    || fieldType == typeof(NullableTypeSyntax)
-                    || isTypeParameterField)
-                {
-                    var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-                    var initValue = useLiteralInit
-                        ? (" = " + escapeDictionary.Aggregate(field.Initializer.Value.ToString(),
-                            (f, e) => Regex.Replace(f, e.Key, e.Value)))
-                        : "";
-                    WriteLine($"{modifiers}{field.Identifier} : {type}{initValue}");
-                }
-                else
-                {
-                    if (fieldType == typeof(GenericNameSyntax))
-                    {
-                        additionalTypeDeclarationNodes.Add(type);
-                    }
-                    relationships.AddAssociationFrom(node, field);
-                }
-            }
-        }
-
-        public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
-        {
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (IsIgnoreMember(node.Modifiers)) { return; }
-
-            var type = node.Type;
-
-            var parentClass = (node.Parent as TypeDeclarationSyntax);
-            var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
-                .Any(t => t.Identifier.Text == type.ToString()) ?? false;
-
+            Type fieldType = type.GetType();
             var associationAttrSyntax = node.AttributeLists.GetAssociationAttributeSyntax();
             if (associationAttrSyntax is not null)
             {
@@ -274,284 +222,323 @@ namespace PlantUmlClassDiagramGenerator.Library
             }
             else if (!createAssociation
                 || node.AttributeLists.HasIgnoreAssociationAttribute()
-                || type.GetType() == typeof(PredefinedTypeSyntax)
-                || type.GetType() == typeof(NullableTypeSyntax)
-                || isTypeParameterProp)
+                || fieldType == typeof(PredefinedTypeSyntax)
+                || fieldType == typeof(NullableTypeSyntax)
+                || isTypeParameterField)
             {
-                var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
-                var name = node.Identifier.ToString();
-                //Property does not have an accessor is an expression-bodied property. (get only)
-                var accessorStr = "<<get>>";
-                if (node.AccessorList != null)
-                {
-                    var accessor = node.AccessorList.Accessors
-                        .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
-                        .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
-                    accessorStr = string.Join(" ", accessor);
-                }
-                var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+                var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
                 var initValue = useLiteralInit
-                    ? (" = " + escapeDictionary.Aggregate(node.Initializer.Value.ToString(),
-                        (n, e) => Regex.Replace(n, e.Key, e.Value)))
+                    ? (" = " + escapeDictionary.Aggregate(field.Initializer.Value.ToString(),
+                        (f, e) => Regex.Replace(f, e.Key, e.Value)))
                     : "";
-
-                WriteLine($"{modifiers}{name} : {type} {accessorStr}{initValue}");
+                WriteLine($"{modifiers}{field.Identifier} : {type}{initValue}");
             }
             else
             {
-                if (type.GetType() == typeof(GenericNameSyntax))
+                if (fieldType == typeof(GenericNameSyntax))
                 {
                     additionalTypeDeclarationNodes.Add(type);
                 }
-                relationships.AddAssociationFrom(node);
+                relationships.AddAssociationFrom(node, field);
             }
-        }
-
-        private static PlantUmlAssociationAttribute CreateAssociationAttribute(AttributeSyntax associationAttribute)
-        {
-            var attributeProps = associationAttribute.ArgumentList.Arguments.Select(arg => new
-            {
-                Name = arg.NameEquals.Name.ToString(),
-                Value = arg.Expression.GetLastToken().ValueText
-            });
-            return new PlantUmlAssociationAttribute()
-            {
-                Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,
-                Name = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Name))?.Value,
-                RootLabel = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.RootLabel))?.Value,
-                LeafLabel = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.LeafLabel))?.Value,
-                Label = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Label))?.Value
-            };
-        }
-
-        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
-        {
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (IsIgnoreMember(node.Modifiers)) { return; }
-            foreach (var parameter in node.ParameterList?.Parameters)
-            {
-                var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
-                if (associationAttrSyntax is not null)
-                {
-                    var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
-                    relationships.AddAssociationFrom(node, parameter, associationAttr);
-                }
-            }
-            var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
-            var name = node.Identifier.ToString();
-            var returnType = node.ReturnType.ToString();
-            var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
-
-            WriteLine($"{modifiers}{name}({string.Join(", ", args)}) : {returnType}");
-        }
-
-        public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
-        {
-            WriteLine($"{node.Identifier}{node.EqualsValue},");
-        }
-
-        public override void VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
-        {
-            if (IsIgnoreMember(node.Modifiers)) { return; }
-
-            var modifiers = GetMemberModifiersText(node.Modifiers,
-                    isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
-            var name = string.Join(",", node.Declaration.Variables.Select(v => v.Identifier));
-            var typeName = node.Declaration.Type.ToString();
-
-            WriteLine($"{modifiers} <<{node.EventKeyword}>> {name} : {typeName} ");
-        }
-
-        public override void VisitGenericName(GenericNameSyntax node)
-        {
-            if (createAssociation)
-            {
-                additionalTypeDeclarationNodes.Add(node);
-            }
-        }
-
-        private void WriteLine(string line)
-        {
-            var space = string.Concat(Enumerable.Repeat(indent, nestingDepth));
-            writer.WriteLine(space + line);
-        }
-
-        private bool SkipInnerTypeDeclaration(SyntaxNode node)
-        {
-            if (nestingDepth <= 0) return false;
-
-            additionalTypeDeclarationNodes.Add(node);
-            return true;
-        }
-
-        private void GenerateAdditionalTypeDeclarations()
-        {
-            for (int i = 0; i < additionalTypeDeclarationNodes.Count; i++)
-            {
-                SyntaxNode node = additionalTypeDeclarationNodes[i];
-                if (node is GenericNameSyntax genericNode)
-                {
-                    if (createAssociation)
-                    {
-                        GenerateAdditionalGenericTypeDeclaration(genericNode);
-                    }
-                    continue;
-                }
-                Visit(node);
-            }
-        }
-
-        private void GenerateAdditionalGenericTypeDeclaration(GenericNameSyntax genericNode)
-        {
-            var typename = TypeNameText.From(genericNode);
-            if (!types.Contains(typename.Identifier))
-            {
-                WriteLine($"class {typename.Identifier}{typename.TypeArguments} {{");
-                WriteLine("}");
-                types.Add(typename.Identifier);
-            }
-        }
-
-        private void GenerateRelationships()
-        {
-            foreach (var relationship in relationships)
-            {
-                WriteLine(relationship.ToString());
-            }
-        }
-
-        private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
-        {
-            if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
-            if (node.AttributeLists.HasIgnoreAttribute()) { return; }
-            if (SkipInnerTypeDeclaration(node)) { return; }
-
-            relationships.AddInnerclassRelationFrom(node);
-            relationships.AddInheritanceFrom(node);
-
-            var modifiers = GetTypeModifiersText(node.Modifiers);
-            var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
-                + node.Keyword.ToString();
-
-            var typeName = TypeNameText.From(node);
-            var name = typeName.Identifier;
-            var typeParam = typeName.TypeArguments;
-            var type = $"{name}{typeParam}";
-
-            types.Add(name);
-
-            WriteLine($"{keyword} {type} {modifiers}{{");
-
-            nestingDepth++;
-            visitBase();
-            nestingDepth--;
-
-            WriteLine("}");
-        }
-
-        private string GetTypeModifiersText(SyntaxTokenList modifiers)
-        {
-            var tokens = modifiers.Select(token =>
-            {
-                switch (token.Kind())
-                {
-                    case SyntaxKind.PublicKeyword:
-                    case SyntaxKind.PrivateKeyword:
-                    case SyntaxKind.ProtectedKeyword:
-                    case SyntaxKind.InternalKeyword:
-                    case SyntaxKind.AbstractKeyword:
-                        return "";
-                    default:
-                        return $"<<{token.ValueText}>>";
-                }
-            }).Where(token => token != "");
-
-            var result = string.Join(" ", tokens);
-            if (result != string.Empty)
-            {
-                result += " ";
-            };
-            return result;
-        }
-
-        private bool IsIgnoreMember(SyntaxTokenList modifiers)
-        {
-            if (ignoreMemberAccessibilities == Accessibilities.None) { return false; }
-
-            var tokenKinds = HasAccessModifier(modifiers)
-                ? modifiers.Select(x => x.Kind()).ToArray()
-                : new[] { SyntaxKind.PrivateKeyword };
-
-            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.ProtectedInternal)
-                && tokenKinds.Contains(SyntaxKind.ProtectedKeyword)
-                && tokenKinds.Contains(SyntaxKind.InternalKeyword))
-            {
-                return true;
-            }
-
-            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Public)
-                && tokenKinds.Contains(SyntaxKind.PublicKeyword))
-            {
-                return true;
-            }
-
-            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Protected)
-                && tokenKinds.Contains(SyntaxKind.ProtectedKeyword))
-            {
-                return true;
-            }
-
-            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Internal)
-                && tokenKinds.Contains(SyntaxKind.InternalKeyword))
-            {
-                return true;
-            }
-
-            if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Private)
-                && tokenKinds.Contains(SyntaxKind.PrivateKeyword))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private string GetMemberModifiersText(
-            SyntaxTokenList modifiers,
-            bool isInterfaceMember)
-        {
-            var tokens = modifiers.Select(token =>
-            {
-                return token.Kind() switch
-                {
-                    SyntaxKind.PublicKeyword => "+",
-                    SyntaxKind.PrivateKeyword => "-",
-                    SyntaxKind.ProtectedKeyword => "#",
-                    SyntaxKind.AbstractKeyword or SyntaxKind.StaticKeyword => $"{{{token.ValueText}}}",
-                    _ => $"<<{token.ValueText}>>",
-                };
-            }).ToList();
-            if (!isInterfaceMember && !HasAccessModifier(modifiers))
-            {
-                tokens.Add("-");
-            }
-            var result = string.Join(" ", tokens);
-            if (result != string.Empty)
-            {
-                result += " ";
-            };
-            return result;
-        }
-
-        private static bool HasAccessModifier(SyntaxTokenList modifiers)
-        {
-            return modifiers.Any(token =>
-                token.IsKind(SyntaxKind.PublicKeyword)
-                || token.IsKind(SyntaxKind.PrivateKeyword)
-                || token.IsKind(SyntaxKind.ProtectedKeyword)
-                || token.IsKind(SyntaxKind.InternalKeyword));
         }
     }
 
+    public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+    {
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (IsIgnoreMember(node.Modifiers)) { return; }
+
+        var type = node.Type;
+
+        var parentClass = (node.Parent as TypeDeclarationSyntax);
+        var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
+            .Any(t => t.Identifier.Text == type.ToString()) ?? false;
+
+        var associationAttrSyntax = node.AttributeLists.GetAssociationAttributeSyntax();
+        if (associationAttrSyntax is not null)
+        {
+            var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+            relationships.AddAssociationFrom(node, associationAttr);
+        }
+        else if (!createAssociation
+            || node.AttributeLists.HasIgnoreAssociationAttribute()
+            || type.GetType() == typeof(PredefinedTypeSyntax)
+            || type.GetType() == typeof(NullableTypeSyntax)
+            || isTypeParameterProp)
+        {
+            var modifiers = GetMemberModifiersText(node.Modifiers,
+                isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
+            var name = node.Identifier.ToString();
+            //Property does not have an accessor is an expression-bodied property. (get only)
+            var accessorStr = "<<get>>";
+            if (node.AccessorList != null)
+            {
+                var accessor = node.AccessorList.Accessors
+                    .Where(x => !x.Modifiers.Select(y => y.Kind()).Contains(SyntaxKind.PrivateKeyword))
+                    .Select(x => $"<<{(x.Modifiers.ToString() == "" ? "" : (x.Modifiers.ToString() + " "))}{x.Keyword}>>");
+                accessorStr = string.Join(" ", accessor);
+            }
+            var useLiteralInit = node.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+            var initValue = useLiteralInit
+                ? (" = " + escapeDictionary.Aggregate(node.Initializer.Value.ToString(),
+                    (n, e) => Regex.Replace(n, e.Key, e.Value)))
+                : "";
+
+            WriteLine($"{modifiers}{name} : {type} {accessorStr}{initValue}");
+        }
+        else
+        {
+            if (type.GetType() == typeof(GenericNameSyntax))
+            {
+                additionalTypeDeclarationNodes.Add(type);
+            }
+            relationships.AddAssociationFrom(node);
+        }
+    }
+
+    private static PlantUmlAssociationAttribute CreateAssociationAttribute(AttributeSyntax associationAttribute)
+    {
+        var attributeProps = associationAttribute.ArgumentList.Arguments.Select(arg => new
+        {
+            Name = arg.NameEquals.Name.ToString(),
+            Value = arg.Expression.GetLastToken().ValueText
+        });
+        return new PlantUmlAssociationAttribute()
+        {
+            Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,
+            Name = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Name))?.Value,
+            RootLabel = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.RootLabel))?.Value,
+            LeafLabel = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.LeafLabel))?.Value,
+            Label = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Label))?.Value
+        };
+    }
+
+    public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+    {
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (IsIgnoreMember(node.Modifiers)) { return; }
+        foreach (var parameter in node.ParameterList?.Parameters)
+        {
+            var associationAttrSyntax = parameter.AttributeLists.GetAssociationAttributeSyntax();
+            if (associationAttrSyntax is not null)
+            {
+                var associationAttr = CreateAssociationAttribute(associationAttrSyntax);
+                relationships.AddAssociationFrom(node, parameter, associationAttr);
+            }
+        }
+        var modifiers = GetMemberModifiersText(node.Modifiers,
+                isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
+        var name = node.Identifier.ToString();
+        var returnType = node.ReturnType.ToString();
+        var args = node.ParameterList.Parameters.Select(p => $"{p.Identifier}:{p.Type}");
+
+        WriteLine($"{modifiers}{name}({string.Join(", ", args)}) : {returnType}");
+    }
+
+    public override void VisitEnumMemberDeclaration(EnumMemberDeclarationSyntax node)
+    {
+        WriteLine($"{node.Identifier}{node.EqualsValue},");
+    }
+
+    public override void VisitEventFieldDeclaration(EventFieldDeclarationSyntax node)
+    {
+        if (IsIgnoreMember(node.Modifiers)) { return; }
+
+        var modifiers = GetMemberModifiersText(node.Modifiers,
+                isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
+        var name = string.Join(",", node.Declaration.Variables.Select(v => v.Identifier));
+        var typeName = node.Declaration.Type.ToString();
+
+        WriteLine($"{modifiers} <<{node.EventKeyword}>> {name} : {typeName} ");
+    }
+
+    public override void VisitGenericName(GenericNameSyntax node)
+    {
+        if (createAssociation)
+        {
+            additionalTypeDeclarationNodes.Add(node);
+        }
+    }
+
+    private void WriteLine(string line)
+    {
+        var space = string.Concat(Enumerable.Repeat(indent, nestingDepth));
+        writer.WriteLine(space + line);
+    }
+
+    private bool SkipInnerTypeDeclaration(SyntaxNode node)
+    {
+        if (nestingDepth <= 0) return false;
+
+        additionalTypeDeclarationNodes.Add(node);
+        return true;
+    }
+
+    private void GenerateAdditionalTypeDeclarations()
+    {
+        for (int i = 0; i < additionalTypeDeclarationNodes.Count; i++)
+        {
+            SyntaxNode node = additionalTypeDeclarationNodes[i];
+            if (node is GenericNameSyntax genericNode)
+            {
+                if (createAssociation)
+                {
+                    GenerateAdditionalGenericTypeDeclaration(genericNode);
+                }
+                continue;
+            }
+            Visit(node);
+        }
+    }
+
+    private void GenerateAdditionalGenericTypeDeclaration(GenericNameSyntax genericNode)
+    {
+        var typename = TypeNameText.From(genericNode);
+        if (!types.Contains(typename.Identifier))
+        {
+            WriteLine($"class {typename.Identifier}{typename.TypeArguments} {{");
+            WriteLine("}");
+            types.Add(typename.Identifier);
+        }
+    }
+
+    private void GenerateRelationships()
+    {
+        foreach (var relationship in relationships)
+        {
+            WriteLine(relationship.ToString());
+        }
+    }
+
+    private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
+    {
+        if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (SkipInnerTypeDeclaration(node)) { return; }
+
+        relationships.AddInnerclassRelationFrom(node);
+        relationships.AddInheritanceFrom(node);
+
+        var modifiers = GetTypeModifiersText(node.Modifiers);
+        var keyword = (node.Modifiers.Any(SyntaxKind.AbstractKeyword) ? "abstract " : "")
+            + node.Keyword.ToString();
+
+        var typeName = TypeNameText.From(node);
+        var name = typeName.Identifier;
+        var typeParam = typeName.TypeArguments;
+        var type = $"{name}{typeParam}";
+
+        types.Add(name);
+
+        WriteLine($"{keyword} {type} {modifiers}{{");
+
+        nestingDepth++;
+        visitBase();
+        nestingDepth--;
+
+        WriteLine("}");
+    }
+
+    private static string GetTypeModifiersText(SyntaxTokenList modifiers)
+    {
+        var tokens = modifiers.Select(token =>
+        {
+            switch (token.Kind())
+            {
+                case SyntaxKind.PublicKeyword:
+                case SyntaxKind.PrivateKeyword:
+                case SyntaxKind.ProtectedKeyword:
+                case SyntaxKind.InternalKeyword:
+                case SyntaxKind.AbstractKeyword:
+                    return "";
+                default:
+                    return $"<<{token.ValueText}>>";
+            }
+        }).Where(token => token != "");
+
+        var result = string.Join(" ", tokens);
+        if (result != string.Empty)
+        {
+            result += " ";
+        };
+        return result;
+    }
+
+    private bool IsIgnoreMember(SyntaxTokenList modifiers)
+    {
+        if (ignoreMemberAccessibilities == Accessibilities.None) { return false; }
+
+        var tokenKinds = HasAccessModifier(modifiers)
+            ? modifiers.Select(x => x.Kind()).ToArray()
+            : [SyntaxKind.PrivateKeyword];
+
+        if (ignoreMemberAccessibilities.HasFlag(Accessibilities.ProtectedInternal)
+            && tokenKinds.Contains(SyntaxKind.ProtectedKeyword)
+            && tokenKinds.Contains(SyntaxKind.InternalKeyword))
+        {
+            return true;
+        }
+
+        if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Public)
+            && tokenKinds.Contains(SyntaxKind.PublicKeyword))
+        {
+            return true;
+        }
+
+        if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Protected)
+            && tokenKinds.Contains(SyntaxKind.ProtectedKeyword))
+        {
+            return true;
+        }
+
+        if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Internal)
+            && tokenKinds.Contains(SyntaxKind.InternalKeyword))
+        {
+            return true;
+        }
+
+        if (ignoreMemberAccessibilities.HasFlag(Accessibilities.Private)
+            && tokenKinds.Contains(SyntaxKind.PrivateKeyword))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private static string GetMemberModifiersText(
+        SyntaxTokenList modifiers,
+        bool isInterfaceMember)
+    {
+        var tokens = modifiers.Select(token =>
+        {
+            return token.Kind() switch
+            {
+                SyntaxKind.PublicKeyword => "+",
+                SyntaxKind.PrivateKeyword => "-",
+                SyntaxKind.ProtectedKeyword => "#",
+                SyntaxKind.AbstractKeyword or SyntaxKind.StaticKeyword => $"{{{token.ValueText}}}",
+                _ => $"<<{token.ValueText}>>",
+            };
+        }).ToList();
+        if (!isInterfaceMember && !HasAccessModifier(modifiers))
+        {
+            tokens.Add("-");
+        }
+        var result = string.Join(" ", tokens);
+        if (result != string.Empty)
+        {
+            result += " ";
+        };
+        return result;
+    }
+
+    private static bool HasAccessModifier(SyntaxTokenList modifiers)
+    {
+        return modifiers.Any(token =>
+            token.IsKind(SyntaxKind.PublicKeyword)
+            || token.IsKind(SyntaxKind.PrivateKeyword)
+            || token.IsKind(SyntaxKind.ProtectedKeyword)
+            || token.IsKind(SyntaxKind.InternalKeyword));
+    }
 }
