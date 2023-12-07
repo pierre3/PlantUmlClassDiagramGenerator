@@ -23,7 +23,7 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 Nuget Gallery: https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
 
 ### Installation
-Download and install the [.NET 6.0 SDK](https://www.microsoft.com/net/download/windows) or newer. Once installed, run the following command.
+Download and install the [.NET 8.0 SDK](https://www.microsoft.com/net/download/windows) or newer. Once installed, run the following command.
 
 ```bat
 dotnet tool install --global PlantUmlClassDiagramGenerator

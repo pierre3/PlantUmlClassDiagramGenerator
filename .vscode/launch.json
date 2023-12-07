@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/PlantUmlClassDiagramGenerator/bin/Debug/net5.0/PlantUmlClassDiagramGenerator.dll",
+            "program": "${workspaceFolder}/src/PlantUmlClassDiagramGenerator/bin/Debug/net8.0/PlantUmlClassDiagramGenerator.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/PlantUmlClassDiagramGenerator",
             // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
