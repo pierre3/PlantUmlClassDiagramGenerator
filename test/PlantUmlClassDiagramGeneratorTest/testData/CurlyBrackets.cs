@@ -1,22 +1,21 @@
-namespace PlantUmlClassDiagramGeneratorTest
+namespace PlantUmlClassDiagramGeneratorTest;
+
+public class CurlyBrackets
 {
-    public class CurlyBrackets
-    {
-        public string openingBracket = @"
+    public string openingBracket = @"
 {
 ";
-        public string openingBrackets = @"
+    public string openingBrackets = @"
 {{
 ";
-        public string closingBracket = @"
+    public string closingBracket = @"
 }
 ";
-        public string closingBrackets = @"
+    public string closingBrackets = @"
 }}
 ";
-        public string bothBrackets = @"
+    public string bothBrackets = @"
 {{
 }}
 ";
-    }
 }

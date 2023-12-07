@@ -1,7 +1,6 @@
-namespace PlantUmlClassDiagramGeneratorTest
+namespace PlantUmlClassDiagramGeneratorTest;
+
+public class NullableType1
 {
-    public class NullableType1
-    {
-        public long? NullableLong;
-    }
+    public long? NullableLong;
 }
