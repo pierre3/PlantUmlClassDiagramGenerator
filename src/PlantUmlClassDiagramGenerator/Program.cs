@@ -18,7 +18,7 @@ namespace PlantUmlClassDiagramGenerator
             Switch
         }
 
-        static readonly Dictionary<string, OptionType> options = new Dictionary<string, OptionType>()
+        static readonly Dictionary<string, OptionType> options = new()
         {
             ["-dir"] = OptionType.Switch,
             ["-public"] = OptionType.Switch,
@@ -29,8 +29,6 @@ namespace PlantUmlClassDiagramGenerator
             ["-attributeRequired"] = OptionType.Switch,
             ["-excludeUmlBeginEndTags"] = OptionType.Switch
         };
-
-        static readonly ExcludeFileFilter _excludeFileFilter = new ExcludeFileFilter();
 
         static int Main(string[] args)
         {
@@ -60,9 +58,9 @@ namespace PlantUmlClassDiagramGenerator
                 return false;
             }
             string outputFileName;
-            if (parameters.ContainsKey("out"))
+            if (parameters.TryGetValue("out", out string value))
             {
-                outputFileName = parameters["out"];
+                outputFileName = value;
                 try
                 {
                     var outdir = Path.GetDirectoryName(outputFileName);
@@ -117,9 +115,9 @@ namespace PlantUmlClassDiagramGenerator
 
             // Use GetFullPath to fully support relative paths.
             var outputRoot = Path.GetFullPath(inputRoot);
-            if (parameters.ContainsKey("out"))
+            if (parameters.TryGetValue("out", out string outValue))
             {
-                outputRoot = parameters["out"];
+                outputRoot = outValue;
                 try
                 {
                     Directory.CreateDirectory(outputRoot);
@@ -141,10 +139,10 @@ namespace PlantUmlClassDiagramGenerator
                     .Select(path => path.Trim())
                     .ToList();
             }
-            if (parameters.ContainsKey("-excludePaths"))
+            if (parameters.TryGetValue("-excludePaths", out string excludePathValue))
             {
                 var splitOptions = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
-                excludePaths.AddRange(parameters["-excludePaths"].Split(',', splitOptions));
+                excludePaths.AddRange(excludePathValue.Split(',', splitOptions));
             }
 
             var excludeUmlBeginEndTags = parameters.ContainsKey("-excludeUmlBeginEndTags");
@@ -154,7 +152,7 @@ namespace PlantUmlClassDiagramGenerator
             if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@startuml");
 
             var error = false;
-            var filesToProcess = _excludeFileFilter.GetFilesToProcess(files, excludePaths, inputRoot);
+            var filesToProcess = ExcludeFileFilter.GetFilesToProcess(files, excludePaths, inputRoot);
             foreach (var inputFile in filesToProcess)
             {
                 Console.WriteLine($"Processing \"{inputFile}\"...");
@@ -227,9 +225,9 @@ namespace PlantUmlClassDiagramGenerator
                 ignoreAcc = Accessibilities.Private | Accessibilities.Internal
                     | Accessibilities.Protected | Accessibilities.ProtectedInternal;
             }
-            else if (parameters.ContainsKey("-ignore"))
+            else if (parameters.TryGetValue("-ignore", out string value))
             {
-                var ignoreItems = parameters["-ignore"].Split(',');
+                var ignoreItems = value.Split(',');
                 foreach (var item in ignoreItems)
                 {
                     if (Enum.TryParse(item, true, out Accessibilities acc))
@@ -255,9 +253,9 @@ namespace PlantUmlClassDiagramGenerator
                     continue;
                 }
 
-                if (options.ContainsKey(arg))
+                if (options.TryGetValue(arg, out OptionType value))
                 {
-                    if (options[arg] == OptionType.Value)
+                    if (value == OptionType.Value)
                     {
                         currentKey = arg;
                     }
@@ -266,14 +264,9 @@ namespace PlantUmlClassDiagramGenerator
                         parameters.Add(arg, string.Empty);
                     }
                 }
-                else if (!parameters.ContainsKey("in"))
-                {
-                    parameters.Add("in", arg);
-                }
-                else if (!parameters.ContainsKey("out"))
-                {
-                    parameters.Add("out", arg);
-                }
+
+                parameters.TryAdd("in", arg);
+                parameters.TryAdd("out", arg);
             }
             return parameters;
         }

@@ -46,7 +46,7 @@ namespace PlantUmlClassDiagramGeneratorTest.UnitTests
                 excludePaths = excludePaths.Select(s => s.Replace("\\", "/")).ToArray();
             }
             // Act
-            List<string> result = testObject.GetFilesToProcess(TestFiles, excludePaths, InputRoot).ToList();
+            List<string> result = ExcludeFileFilter.GetFilesToProcess(TestFiles, excludePaths, InputRoot).ToList();
 
             // Assert
             string[] expected = GetByIndices(TestFiles, expectedTestFileIndices);

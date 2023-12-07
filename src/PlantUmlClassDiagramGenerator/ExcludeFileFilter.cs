@@ -7,7 +7,7 @@ namespace PlantUmlClassDiagramGenerator
 {
     public class ExcludeFileFilter
     {
-        public IEnumerable<string> GetFilesToProcess(IEnumerable<string> files, IList<string> excludePaths, string inputRoot)
+        public static IEnumerable<string> GetFilesToProcess(IEnumerable<string> files, IList<string> excludePaths, string inputRoot)
         {
             return files.Where(f => !IsFileExcluded(f, excludePaths, inputRoot));
         }

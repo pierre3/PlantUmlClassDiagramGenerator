@@ -1,23 +1,13 @@
 ﻿namespace PlantUmlClassDiagramGenerator.Library
 {
-    public class Relationship
+    public class Relationship(TypeNameText baseTypeName, TypeNameText subTypeName, string symbol, string baseLabel = "", string subLabel = "", string centerLabel = "")
     {
-        protected TypeNameText baseTypeName;
-        protected TypeNameText subTypeName;
-        protected string baseLabel;
-        protected string subLabel;
-        protected string centerLabel;
-        private readonly string symbol;
-
-        public Relationship(TypeNameText baseTypeName, TypeNameText subTypeName, string symbol, string baseLabel = "", string subLabel = "", string centerLabel="")
-        {
-            this.baseTypeName = baseTypeName;
-            this.subTypeName = subTypeName;
-            this.symbol = symbol;
-            this.baseLabel = string.IsNullOrWhiteSpace(baseLabel) ? "" : $" \"{baseLabel}\"";
-            this.subLabel = string.IsNullOrWhiteSpace(subLabel) ? "" : $" \"{subLabel}\"";
-            this.centerLabel = string.IsNullOrWhiteSpace(centerLabel) ? "" : $" : \"{centerLabel}\"";
-        }
+        protected TypeNameText baseTypeName = baseTypeName;
+        protected TypeNameText subTypeName = subTypeName;
+        protected string baseLabel = string.IsNullOrWhiteSpace(baseLabel) ? "" : $" \"{baseLabel}\"";
+        protected string subLabel = string.IsNullOrWhiteSpace(subLabel) ? "" : $" \"{subLabel}\"";
+        protected string centerLabel = string.IsNullOrWhiteSpace(centerLabel) ? "" : $" : \"{centerLabel}\"";
+        private readonly string symbol = symbol;
 
         public override string ToString()
         {
