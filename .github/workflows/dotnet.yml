@@ -23,7 +23,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ./PlantUmlClassDiagramGenerator.sln
     - name: Build
-      run: dotnet build ./PlantUmlClassDiagramGenerator.sln --no-restore
+      run: dotnet build ./test/PlantUmlClassDiagramGeneratorTest/PlantUmlClassDiagramGeneratorTest.csproj --no-restore
     - name: Test
       run: dotnet test ./test/PlantUmlClassDiagramGeneratorTest/PlantUmlClassDiagramGeneratorTest.csproj --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Publish coverage report to coveralls.io   
