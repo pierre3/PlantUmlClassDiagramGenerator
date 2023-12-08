@@ -25,7 +25,7 @@ jobs:
     - name: Build
       run: dotnet build ./PlantUmlClassDiagramGenerator.sln --no-restore
     - name: Test
-      run: dotnet test ./test/PlantUmlClassDiagramGeneratorTest/PlantUmlClassDiagramGeneratorTest.csproj --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      run: dotnet test ./test/PlantUmlClassDiagramGeneratorTest/PlantUmlClassDiagramGeneratorTest.csproj --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Publish coverage report to coveralls.io   
       uses: coverallsapp/github-action@master   
       with:
