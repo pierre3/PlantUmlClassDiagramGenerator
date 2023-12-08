@@ -55,7 +55,7 @@ public partial class ClassDiagramGeneratorTest
     [TestMethod]
     public void GenerateTestWithoutPrivate()
     {
-        var code = File.ReadAllText(Path.Combine("testdata", "InputClasses.cs"));
+        var code = File.ReadAllText(Path.Combine("testData", "InputClasses.cs"));
         var tree = CSharpSyntaxTree.ParseText(code);
         var root = tree.GetRoot();
 
@@ -75,7 +75,7 @@ public partial class ClassDiagramGeneratorTest
     [TestMethod]
     public void GenerateTestGenericsTypes()
     {
-        var code = File.ReadAllText(Path.Combine("testdata", "GenericsType.cs"));
+        var code = File.ReadAllText(Path.Combine("testData", "GenericsType.cs"));
         var tree = CSharpSyntaxTree.ParseText(code);
         var root = tree.GetRoot();
 
