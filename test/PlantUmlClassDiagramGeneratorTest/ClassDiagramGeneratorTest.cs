@@ -225,7 +225,7 @@ public partial class ClassDiagramGeneratorTest
     [TestMethod]
     public void GenerateTestWithoutUmlStartEnd()
     {
-        var code = File.ReadAllText(Path.Combine("testData", "inputClasses.cs"));
+        var code = File.ReadAllText(Path.Combine("testData", "InputClasses.cs"));
         var tree = CSharpSyntaxTree.ParseText(code);
         var root = tree.GetRoot();
 
