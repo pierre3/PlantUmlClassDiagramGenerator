@@ -63,6 +63,11 @@ internal sealed class ClassC : ClassB, INotifyPropertyChanged
     }
 }
 
+public class ClassWIthPrimaryConstructor(string name)
+{
+    public string Name { get; } = name;
+}
+
 public struct Vector
 {
     public double X { get; }

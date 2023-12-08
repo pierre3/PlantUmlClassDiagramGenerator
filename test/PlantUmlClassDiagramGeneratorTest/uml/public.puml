@@ -15,6 +15,9 @@ class ClassC <<sealed>> {
     +  <<event>> PropertyChanged : PropertyChangedEventHandler 
     + <<override>> AbstractMethod(arg1:int, arg2:double) : string
 }
+class ClassWIthPrimaryConstructor {
+    + Name : string <<get>>
+}
 struct Vector {
     + X : double <<get>>
     + Y : double <<get>>
