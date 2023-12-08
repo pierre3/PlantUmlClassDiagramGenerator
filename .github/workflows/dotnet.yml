@@ -24,10 +24,6 @@ jobs:
       run: dotnet restore ./PlantUmlClassDiagramGenerator.sln
     - name: Build
       run: dotnet build ./test/PlantUmlClassDiagramGeneratorTest/PlantUmlClassDiagramGeneratorTest.csproj --no-restore
-    - name: copy test files
-      run: |
-        cp -R ./test/PlantUmlClassDiagramGeneratorTest/testData ./test/PlantUmlClassDiagramGeneratorTest/bin/Debug/net8.0/
-        cp -R ./test/PlantUmlClassDiagramGeneratorTest/uml ./test/PlantUmlClassDiagramGeneratorTest/bin/Debug/net8.0/
     - name: Test
       run: dotnet test ./test/PlantUmlClassDiagramGeneratorTest/PlantUmlClassDiagramGeneratorTest.csproj --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Publish coverage report to coveralls.io   
