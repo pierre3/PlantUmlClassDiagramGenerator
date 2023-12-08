@@ -87,7 +87,7 @@ public partial class ClassDiagramGeneratorTest
             gen.Generate(root);
         }
 
-        var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "genericsType.puml")), Environment.NewLine);
+        var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", "GenericsType.puml")), Environment.NewLine);
         var actual = output.ToString();
         Console.Write(actual);
         Assert.AreEqual(expected, actual);
