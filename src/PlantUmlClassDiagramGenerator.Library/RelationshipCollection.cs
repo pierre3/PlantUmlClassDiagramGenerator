@@ -66,7 +66,10 @@ public class RelationshipCollection : IEnumerable<Relationship>
 
         if(realDeclarationType is ArrayTypeSyntax arrayTypeSyntax)
         {
-            typeNameText = TypeNameText.From(arrayTypeSyntax.ElementType as SimpleNameSyntax);
+            if(arrayTypeSyntax.ElementType is SimpleNameSyntax simpleNameSyntax)
+            {
+                typeNameText = TypeNameText.From(simpleNameSyntax);
+            }
         }
 
         var symbol = field.Initializer == null ? "-->" : "o->";

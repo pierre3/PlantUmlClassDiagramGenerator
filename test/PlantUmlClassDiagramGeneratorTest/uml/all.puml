@@ -5,6 +5,7 @@ class ClassA {
     # X : double = 0
     # Y : double = 1
     # Z : double = 2
+    - list : IList<int>
     # PropA : int <<get>>
     # <<internal>> PropB : string <<get>> <<protected set>>
     <<internal>> PropC : double <<get>> = 3.141592
@@ -58,7 +59,6 @@ struct InnerStruct {
     + A : int <<get>>
     + InnerStruct(a:int)
 }
-ClassA o-> "list" int
 ClassB --> "publicA" ClassA
 ClassB o-> "listOfA" ClassA
 ClassB <|-- ClassC
