@@ -1,5 +1,7 @@
 @startuml
 class Associations {
+    + ListOfInt : IList<int>
+    + ArrayOfInt : int[]
 }
 class AssociatedClass {
 }

@@ -206,8 +206,37 @@ public class ClassDiagramGenerator(
         var modifiers = GetMemberModifiersText(node.Modifiers,
                 isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
         var type = node.Declaration.Type;
-        var isGeneric = type is NullableTypeSyntax nullableTypeSyntax ? nullableTypeSyntax.ElementType is GenericNameSyntax elementTypeGenericNameSyntax : type is GenericNameSyntax;
-        var isArray = type is NullableTypeSyntax nullableTypeSyntax2 ? nullableTypeSyntax2.ElementType is ArrayTypeSyntax : type is ArrayTypeSyntax;
+        TypeSyntax embededType = null;
+        bool isNullable = false;
+        var isGeneric = false;
+        IEnumerable<SyntaxNode> argumentTypesNodes;
+        var isArray = false;
+
+        if (type is NullableTypeSyntax nullableTypeSyntax)
+        {
+            embededType = nullableTypeSyntax.ElementType;
+            isNullable = true;
+        }
+        else
+        {
+            embededType = type;
+        }
+
+        if (embededType is GenericNameSyntax genericNameSyntax)
+        {
+            isGeneric = true;
+            argumentTypesNodes = genericNameSyntax.TypeArgumentList.Arguments;
+        }
+        else
+        {
+            argumentTypesNodes = new List<TypeSyntax>();
+        }
+
+        if (embededType is ArrayTypeSyntax arrayTypeSyntax)
+        {
+            isArray = true;
+            argumentTypesNodes = [arrayTypeSyntax.ElementType];
+        }
 
         var variables = node.Declaration.Variables;
         var parentClass = (node.Parent as TypeDeclarationSyntax);
@@ -227,6 +256,8 @@ public class ClassDiagramGenerator(
                 || node.AttributeLists.HasIgnoreAssociationAttribute()
                 || fieldType == typeof(PredefinedTypeSyntax)
                 || (fieldType == typeof(NullableTypeSyntax) && !isGeneric && !isArray)
+                || (isGeneric && argumentTypesNodes.FirstOrDefault() is PredefinedTypeSyntax)
+                || (isArray && argumentTypesNodes.FirstOrDefault() is PredefinedTypeSyntax)
                 || isTypeParameterField)
             {
                 var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;

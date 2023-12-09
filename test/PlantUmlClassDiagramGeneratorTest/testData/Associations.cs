@@ -12,6 +12,8 @@ internal class Associations
     public IEnumerable<AssociatedClass>? IEnumarableOfANullable = new List<AssociatedClass>();
     public AssociatedClass[] ArrayOfA = [];
     public AssociatedClass[]? ArrayOfANullable = [];
+    public IList<int> ListOfInt = new List<int>(); //Should not output association (difficult to read association with primitive type in the diagram)
+    public int[] ArrayOfInt = []; //Should not output association (difficult to read association with primitive type in the diagram)
 }
 
 internal class AssociatedClass
