@@ -4,7 +4,7 @@ class ClassA {
     + ClassA()
     + <<override>> ToString() : string
     + {static} StaticMethod() : string
-    + ExpressonBodiedMethod(x:int) : void
+    + ExpressonBodiedMethod(x:int) : int
 }
 abstract class ClassB {
     + {abstract} PropA : int <<get>> <<protected set>>
@@ -35,8 +35,6 @@ enum EnumA {
 class NestedClass {
     + A : int <<get>>
 }
-class "IList`1"<T> {
-}
 class InnerClass {
     + X : string <<get>> = "xx"
     + MethodX() : void
@@ -46,7 +44,7 @@ struct InnerStruct {
     + InnerStruct(a:int)
 }
 ClassB --> "publicA" ClassA
-ClassB o-> "listOfA<ClassA>" "IList`1"
+ClassB o-> "listOfA" ClassA
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
 ClassC --> "PropB" ClassB
