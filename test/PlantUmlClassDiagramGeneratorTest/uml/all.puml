@@ -14,7 +14,7 @@ class ClassA {
     # <<virtual>> VirtualMethod() : void
     + <<override>> ToString() : string
     + {static} StaticMethod() : string
-    + ExpressonBodiedMethod(x:int) : void
+    + ExpressonBodiedMethod(x:int) : int
 }
 abstract class ClassB {
     - field1 : int
@@ -50,8 +50,6 @@ enum EnumA {
 class NestedClass {
     + A : int <<get>>
 }
-class "IList`1"<T> {
-}
 class InnerClass {
     + X : string <<get>> = "xx"
     + MethodX() : void
@@ -60,9 +58,9 @@ struct InnerStruct {
     + A : int <<get>>
     + InnerStruct(a:int)
 }
-ClassA o-> "list<int>" "IList`1"
+ClassA o-> "list" int
 ClassB --> "publicA" ClassA
-ClassB o-> "listOfA<ClassA>" "IList`1"
+ClassB o-> "listOfA" ClassA
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
 ClassC --> "PropB" ClassB

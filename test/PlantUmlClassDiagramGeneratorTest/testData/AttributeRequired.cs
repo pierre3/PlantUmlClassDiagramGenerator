@@ -1,6 +1,6 @@
 ﻿using PlantUmlClassDiagramGenerator.Attributes;
 
-namespace PlantUmlClassDiagramGeneratorTest.testData;
+namespace PlantUmlClassDiagramGeneratorTest.testData2;
 
 
 class ClassA

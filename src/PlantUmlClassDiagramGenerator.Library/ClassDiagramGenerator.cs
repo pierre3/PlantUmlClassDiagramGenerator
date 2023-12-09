@@ -206,6 +206,9 @@ public class ClassDiagramGenerator(
         var modifiers = GetMemberModifiersText(node.Modifiers,
                 isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
         var type = node.Declaration.Type;
+        var isGeneric = type is NullableTypeSyntax nullableTypeSyntax ? nullableTypeSyntax.ElementType is GenericNameSyntax elementTypeGenericNameSyntax : type is GenericNameSyntax;
+        var isArray = type is NullableTypeSyntax nullableTypeSyntax2 ? nullableTypeSyntax2.ElementType is ArrayTypeSyntax : type is ArrayTypeSyntax;
+
         var variables = node.Declaration.Variables;
         var parentClass = (node.Parent as TypeDeclarationSyntax);
         var isTypeParameterField = parentClass?.TypeParameterList?.Parameters
@@ -223,7 +226,7 @@ public class ClassDiagramGenerator(
             else if (!createAssociation
                 || node.AttributeLists.HasIgnoreAssociationAttribute()
                 || fieldType == typeof(PredefinedTypeSyntax)
-                || fieldType == typeof(NullableTypeSyntax)
+                || (fieldType == typeof(NullableTypeSyntax) && !isGeneric && !isArray)
                 || isTypeParameterField)
             {
                 var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
@@ -235,10 +238,6 @@ public class ClassDiagramGenerator(
             }
             else
             {
-                if (fieldType == typeof(GenericNameSyntax))
-                {
-                    additionalTypeDeclarationNodes.Add(type);
-                }
                 relationships.AddAssociationFrom(node, field);
             }
         }
