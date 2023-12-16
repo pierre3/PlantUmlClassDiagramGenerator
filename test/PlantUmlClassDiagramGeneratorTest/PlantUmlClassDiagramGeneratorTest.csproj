@@ -1,48 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.msbuild" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="coverlet.collector" Version="6.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.msbuild" Version="6.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+		<PackageReference Include="xunit" Version="2.6.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.4">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj" />
-    <ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj" />
-    <ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator\PlantUmlClassDiagramGenerator.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj" />
+		<ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj" />
+		<ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator\PlantUmlClassDiagramGenerator.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="testData\AtPrefixType.cs" />
-    <Compile Remove="testData\Attributes.cs" />
-    <Compile Remove="testData\DefaultModifierType.cs" />
-    <Compile Remove="testData\GenericsType.cs" />
-    <Compile Remove="testData\InputClasses.cs" />
-    <Compile Remove="testData\CurlyBrackets.cs" />
-    <Compile Remove="testData\NullableType.cs" />
-    <Compile Remove="testData\RecordType.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="testData\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Compile>
+		<Content Include="uml\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-  <ItemGroup>
-	<Content Include="testData\**">
-		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
-	<Content Include="uml\**">
-		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
-  </ItemGroup>
+
+	<ItemGroup>
+		<None Remove="uml\Associations.puml" />
+	</ItemGroup>
 
 </Project>

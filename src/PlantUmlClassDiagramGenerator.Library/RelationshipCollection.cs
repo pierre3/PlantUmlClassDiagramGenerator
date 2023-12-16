@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.Attributes;
@@ -36,12 +37,44 @@ public class RelationshipCollection : IEnumerable<Relationship>
 
     public void AddAssociationFrom(FieldDeclarationSyntax node, VariableDeclaratorSyntax field)
     {
-        if (node.Declaration.Type is not SimpleNameSyntax leafNode 
+        // Just ignore the nullability of the node
+        var realDeclarationType = node.Declaration.Type is NullableTypeSyntax nullableTypeSyntax ? nullableTypeSyntax.ElementType : node.Declaration.Type;
+
+        if ((realDeclarationType is not IdentifierNameSyntax && realDeclarationType is not GenericNameSyntax && realDeclarationType is not ArrayTypeSyntax)
             || node.Parent is not BaseTypeDeclarationSyntax rootNode) return;
+
+        TypeNameText typeNameText = null;
+
+        if(realDeclarationType is IdentifierNameSyntax identifierNameSyntax)
+        {
+            typeNameText = TypeNameText.From(identifierNameSyntax as SimpleNameSyntax); 
+        }
+
+        if(realDeclarationType is GenericNameSyntax genericNameSyntax)
+        {
+            var childNode = genericNameSyntax.TypeArgumentList.ChildNodes().FirstOrDefault();
+            if(childNode is SimpleNameSyntax simpleNameSyntax)
+            {
+                typeNameText = TypeNameText.From(simpleNameSyntax);
+            }
+
+            if(childNode is PredefinedTypeSyntax predefinedTypeSyntax)
+            {
+                typeNameText = TypeNameText.From(predefinedTypeSyntax);
+            }
+        }
+
+        if(realDeclarationType is ArrayTypeSyntax arrayTypeSyntax)
+        {
+            if(arrayTypeSyntax.ElementType is SimpleNameSyntax simpleNameSyntax)
+            {
+                typeNameText = TypeNameText.From(simpleNameSyntax);
+            }
+        }
 
         var symbol = field.Initializer == null ? "-->" : "o->";
         var fieldIdentifier = field.Identifier.ToString();
-        var leafName = TypeNameText.From(leafNode);
+        var leafName = typeNameText;
         var rootName = TypeNameText.From(rootNode);
         AddRelationship(leafName, rootName, symbol, fieldIdentifier);
     }

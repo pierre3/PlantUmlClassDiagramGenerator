@@ -1,4 +1,4 @@
-namespace PlantUmlClassDiagramGeneratorTest;
+namespace PlantUmlClassDiagramGeneratorTest.testData4;
 
 public class CurlyBrackets
 {

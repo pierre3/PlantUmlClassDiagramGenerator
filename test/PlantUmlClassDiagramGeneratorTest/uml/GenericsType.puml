@@ -1,11 +1,11 @@
 ﻿@startuml
-class GenericsType {
+class GenericsType <<partial>> {
     + Value : object <<get>>
 }
-class "GenericsType`1"<T> {
+class "GenericsType2`1"<T> {
     + Value : T <<get>>
 }
-class "GenericsType`2"<T1,T2> {
+class "GenericsType3`2"<T1,T2> {
     + Value1 : T1 <<get>>
     + Value2 : T2
 }
@@ -24,9 +24,9 @@ class "BaseClass`1"<Tx> {
 class GenericsType <<partial>> {
     + Number : int <<get>> <<set>>
 }
-"GenericsType`2" "<string,int>" <|-- SubClass
-"GenericsType`2" "<GenericsType<int>,T>" <|-- "SubClass`1"
-"SubClass`1" --> "Value1<int>" "GenericsType`1"
+"GenericsType3`2" "<string,int>" <|-- SubClass
+"GenericsType3`2" "<GenericsType2<int>,T>" <|-- "SubClass`1"
+"SubClass`1" --> "Value1<int>" "GenericsType2`1"
 "BaseClass`1" "<int>" <|-- SubClassX
 SubClassX --> "Gt" GenericsType
 @enduml

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PlantUmlClassDiagramGenerator;
 using System.IO;
+using Xunit;
 
 namespace PlantUmlClassDiagramGeneratorTest.UnitTests;
 
-[TestClass]
 public class ExcludeFileFilterTest
 {
     private ExcludeFileFilter testObject;
@@ -26,19 +25,18 @@ public class ExcludeFileFilterTest
     private readonly string[] TestFiles =
         {TestFile0, TestFile1, TestFile2, TestFile3, TestFile4, TestFile5, TestFile6};
 
-    [TestInitialize]
-    public void TestInitialize()
+    public ExcludeFileFilterTest()
     {
         testObject = new ExcludeFileFilter();
     }
 
-    [DataTestMethod]
-    [DataRow(new string[] { }, new[] { 0, 1, 2, 3, 4, 5, 6 }, DisplayName = "Exclude path (empty array)")]
-    [DataRow(new[] { "ProjectA\\bin" }, new[] { 0, 1, 3, 4, 5, 6 }, DisplayName = "Exclude path (one)")]
-    [DataRow(new[] { "ProjectA\\bin", "ProjectB\\bin" }, new[] { 0, 1, 3, 4, 6 }, DisplayName = "Exclude path (multiple)")]
-    [DataRow(new[] { "**/bin" }, new[] { 0, 1, 3, 4, 6 }, DisplayName = "Exclude pattern (one)")]
-    [DataRow(new[] { "**/bin", "**/obj" }, new[] { 0, 1, 4 }, DisplayName = "Exclude pattern (multiple)")]
-    [DataRow(new[] { "**/bin", "ProjectB\\", "**/obj" }, new[] { 0, 1 }, DisplayName = "Mixed combination of exclude path and pattern")]
+    [Theory]
+    [InlineData(new string[] { }, new[] { 0, 1, 2, 3, 4, 5, 6 })]
+    [InlineData(new[] { "ProjectA\\bin" }, new[] { 0, 1, 3, 4, 5, 6 })]
+    [InlineData(new[] { "ProjectA\\bin", "ProjectB\\bin" }, new[] { 0, 1, 3, 4, 6 })]
+    [InlineData(new[] { "**/bin" }, new[] { 0, 1, 3, 4, 6 })]
+    [InlineData(new[] { "**/bin", "**/obj" }, new[] { 0, 1, 4 })]
+    [InlineData(new[] { "**/bin", "ProjectB\\", "**/obj" }, new[] { 0, 1 })]
     public void GetFilesToProcessTest(string[] excludePaths, int[] expectedTestFileIndices)
     {
         if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -50,7 +48,8 @@ public class ExcludeFileFilterTest
 
         // Assert
         string[] expected = GetByIndices(TestFiles, expectedTestFileIndices);
-        CollectionAssert.AreEquivalent(expected, result);
+
+        Assert.Equal(expected, result);
     }
 
 

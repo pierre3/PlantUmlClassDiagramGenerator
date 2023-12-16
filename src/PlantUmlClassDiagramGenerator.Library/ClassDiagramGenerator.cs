@@ -206,6 +206,28 @@ public class ClassDiagramGenerator(
         var modifiers = GetMemberModifiersText(node.Modifiers,
                 isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
         var type = node.Declaration.Type;
+        var isGeneric = false;
+        IEnumerable<SyntaxNode> argumentTypesNodes;
+        var isArray = false;
+
+        var embededType = type is NullableTypeSyntax nullableTypeSyntax ? nullableTypeSyntax.ElementType : type;
+
+        if (embededType is GenericNameSyntax genericNameSyntax)
+        {
+            isGeneric = true;
+            argumentTypesNodes = genericNameSyntax.TypeArgumentList.Arguments;
+        }
+        else
+        {
+            argumentTypesNodes = new List<TypeSyntax>();
+        }
+
+        if (embededType is ArrayTypeSyntax arrayTypeSyntax)
+        {
+            isArray = true;
+            argumentTypesNodes = [arrayTypeSyntax.ElementType];
+        }
+
         var variables = node.Declaration.Variables;
         var parentClass = (node.Parent as TypeDeclarationSyntax);
         var isTypeParameterField = parentClass?.TypeParameterList?.Parameters
@@ -223,7 +245,9 @@ public class ClassDiagramGenerator(
             else if (!createAssociation
                 || node.AttributeLists.HasIgnoreAssociationAttribute()
                 || fieldType == typeof(PredefinedTypeSyntax)
-                || fieldType == typeof(NullableTypeSyntax)
+                || (fieldType == typeof(NullableTypeSyntax) && !isGeneric && !isArray)
+                || (isGeneric && argumentTypesNodes.FirstOrDefault() is PredefinedTypeSyntax)
+                || (isArray && argumentTypesNodes.FirstOrDefault() is PredefinedTypeSyntax)
                 || isTypeParameterField)
             {
                 var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
@@ -235,10 +259,6 @@ public class ClassDiagramGenerator(
             }
             else
             {
-                if (fieldType == typeof(GenericNameSyntax))
-                {
-                    additionalTypeDeclarationNodes.Add(type);
-                }
                 relationships.AddAssociationFrom(node, field);
             }
         }

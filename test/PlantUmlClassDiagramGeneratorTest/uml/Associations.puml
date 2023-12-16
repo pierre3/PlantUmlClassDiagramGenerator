@@ -1,0 +1,16 @@
+@startuml
+class Associations {
+    + ListOfInt : IList<int>
+    + ArrayOfInt : int[]
+}
+class AssociatedClass {
+}
+Associations o-> "ListOfA" AssociatedClass
+Associations o-> "ListOfANullable" AssociatedClass
+Associations o-> "CollectionOfA" AssociatedClass
+Associations o-> "CollectionOfANullable" AssociatedClass
+Associations o-> "IEnumarableOfA" AssociatedClass
+Associations o-> "IEnumarableOfANullable" AssociatedClass
+Associations o-> "ArrayOfA" AssociatedClass
+Associations o-> "ArrayOfANullable" AssociatedClass
+@enduml

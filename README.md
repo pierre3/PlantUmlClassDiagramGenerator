@@ -380,7 +380,10 @@ If you specify the "createAssociation" option, object associations is created fr
 
 ```cs
 class ClassA{
+    // With primitive types, does not create association (for readability)
     public IList<string> Strings{get;} = new List<string>();
+    // With reference types, it does create an association
+    public IList<Type1> ListOfType1{get;} = new List<Type1>();
     public Type1 Prop1{get;set;}
     public Type2 field1;
 }
@@ -400,6 +403,7 @@ class Type2{
 ```
 @startuml
 class ClassA {
+    + Strings : IList<string>
 }
 class Type1 {
     + value1 : int <<get>> <<set>>
@@ -407,16 +411,14 @@ class Type1 {
 class Type2 {
     + string1 : string <<get>> <<set>>
 }
-class "IList`1"<T> {
-}
-ClassA o-> "Strings<string>" "IList`1"
+ClassA o-> "ListOfType1" Type1
 ClassA --> "Prop1" Type1
 ClassA --> "field1" Type2
 Type2 --> "Prop2" ExternalType
 @enduml
 ```
 
-![InheritanceRelationsips.png](uml/Associations.png)
+![Associations.png](uml/Associations.png)
 
 
 ### Record types (with parameter list)
@@ -680,10 +682,8 @@ class ClassB {
     + Users : IList<User> <<get>>
     + ClassB(users:IList<User>)
 }
-class "IList`1"<T> {
-}
 ClassA --> "DefaultUser" User
-ClassA --> "Users<User>" "IList`1"
+ClassA --> "Users" User
 @enduml
 ```
 

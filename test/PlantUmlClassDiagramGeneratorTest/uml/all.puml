@@ -5,6 +5,7 @@ class ClassA {
     # X : double = 0
     # Y : double = 1
     # Z : double = 2
+    - list : IList<int>
     # PropA : int <<get>>
     # <<internal>> PropB : string <<get>> <<protected set>>
     <<internal>> PropC : double <<get>> = 3.141592
@@ -14,7 +15,7 @@ class ClassA {
     # <<virtual>> VirtualMethod() : void
     + <<override>> ToString() : string
     + {static} StaticMethod() : string
-    + ExpressonBodiedMethod(x:int) : void
+    + ExpressonBodiedMethod(x:int) : int
 }
 abstract class ClassB {
     - field1 : int
@@ -50,8 +51,6 @@ enum EnumA {
 class NestedClass {
     + A : int <<get>>
 }
-class "IList`1"<T> {
-}
 class InnerClass {
     + X : string <<get>> = "xx"
     + MethodX() : void
@@ -60,9 +59,8 @@ struct InnerStruct {
     + A : int <<get>>
     + InnerStruct(a:int)
 }
-ClassA o-> "list<int>" "IList`1"
 ClassB --> "publicA" ClassA
-ClassB o-> "listOfA<ClassA>" "IList`1"
+ClassB o-> "listOfA" ClassA
 ClassB <|-- ClassC
 INotifyPropertyChanged <|-- ClassC
 ClassC --> "PropB" ClassB

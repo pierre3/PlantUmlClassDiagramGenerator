@@ -1,5 +1,6 @@
-@startuml
+@startuml associations
 class ClassA {
+    + Strings : IList<string>
 }
 class Type1 {
     + value1 : int <<get>> <<set>>
@@ -7,9 +8,7 @@ class Type1 {
 class Type2 {
     + string1 : string <<get>> <<set>>
 }
-class "IList`1"<T> {
-}
-ClassA o-> "Strings<string>" "IList`1"
+ClassA o-> "ListOfType1" Type1
 ClassA --> "Prop1" Type1
 ClassA --> "field1" Type2
 Type2 --> "Prop2" ExternalType
