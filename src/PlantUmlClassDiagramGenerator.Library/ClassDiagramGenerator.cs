@@ -206,21 +206,11 @@ public class ClassDiagramGenerator(
         var modifiers = GetMemberModifiersText(node.Modifiers,
                 isInterfaceMember: node.Parent.IsKind(SyntaxKind.InterfaceDeclaration));
         var type = node.Declaration.Type;
-        TypeSyntax embededType = null;
-        bool isNullable = false;
         var isGeneric = false;
         IEnumerable<SyntaxNode> argumentTypesNodes;
         var isArray = false;
 
-        if (type is NullableTypeSyntax nullableTypeSyntax)
-        {
-            embededType = nullableTypeSyntax.ElementType;
-            isNullable = true;
-        }
-        else
-        {
-            embededType = type;
-        }
+        var embededType = type is NullableTypeSyntax nullableTypeSyntax ? nullableTypeSyntax.ElementType : type;
 
         if (embededType is GenericNameSyntax genericNameSyntax)
         {
