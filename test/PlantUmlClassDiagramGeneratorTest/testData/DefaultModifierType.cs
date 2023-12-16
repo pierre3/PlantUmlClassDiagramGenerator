@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlantUmlClassDiagramGeneratorTest.testData;
+namespace PlantUmlClassDiagramGeneratorTest.testData5;
 
 class ClassA
 {
@@ -14,7 +14,6 @@ class ClassA
     void MethodA() { }
     private int MethodB() => 1;
     public ClassA() { }
-    ClassA() { }
 }
 
 struct StructA
@@ -25,7 +24,6 @@ struct StructA
     static void MethodA() { }
     private static int MethodB() => 2;
     public StructA() { }
-    StructA() { }
 }
 
 interface Interface

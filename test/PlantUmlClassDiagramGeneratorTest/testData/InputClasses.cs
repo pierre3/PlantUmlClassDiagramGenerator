@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace PlantUmlClassDiagramGeneratorTest;
+namespace PlantUmlClassDiagramGeneratorTest.test7;
 
 public class ClassA
 {
@@ -26,13 +26,13 @@ public class ClassA
     }
 
     public static string StaticMethod() { return strField; }
-    public void ExpressonBodiedMethod(int x) => x * x;
+    public int ExpressonBodiedMethod(int x) => x * x;
 }
 
 internal abstract class ClassB
 {
     public ClassA publicA;
-    public IList<ClassA> listOfA = new IList<ClassA>();
+    public IList<ClassA> listOfA = new List<ClassA>();
     private int field1;
     public abstract int PropA { get; protected set; }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlantUmlClassDiagramGeneratorTest.testData;
+namespace PlantUmlClassDiagramGeneratorTest.testData9;
 
 record MyRecord
 {

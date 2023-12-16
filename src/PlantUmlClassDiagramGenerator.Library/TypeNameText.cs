@@ -8,6 +8,16 @@ public class TypeNameText
 
     public string TypeArguments { get; set; }
     
+    public static TypeNameText From(PredefinedTypeSyntax syntax)
+    {
+        
+        return new TypeNameText
+        {
+            Identifier = syntax.Keyword.ValueText,
+            TypeArguments = string.Empty
+        };
+    }
+
     public static TypeNameText From(SimpleNameSyntax syntax)
     {
         var identifier = syntax.Identifier.Text;
