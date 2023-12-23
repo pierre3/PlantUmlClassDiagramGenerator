@@ -3,6 +3,12 @@ class Parameters {
     + A : string <<get>> <<set>>
     + B : string <<get>> <<set>>
 }
+interface IItem {
+}
+class Item {
+}
+interface ILogger {
+}
 class MyClass {
     + ReadOnlyItems : IReadOnlyCollection<Item> <<get>>
     + Run(p:Parameters) : void
@@ -10,6 +16,8 @@ class MyClass {
 }
 struct MyStruct {
     + MyStruct(p:Parameters)
+}
+class Settings {
 }
 class MyRecord <<record>> {
     + name : string <<get>> <<init>>

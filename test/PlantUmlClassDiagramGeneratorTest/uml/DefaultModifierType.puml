@@ -6,7 +6,6 @@ class ClassA {
     - MethodA() : void
     - MethodB() : int
     + ClassA()
-    - ClassA()
 }
 struct StructA {
     - PropA : string <<get>>
@@ -15,7 +14,6 @@ struct StructA {
     {static} - MethodA() : void
     - {static} MethodB() : int
     + StructA()
-    - StructA()
 }
 interface Interface {
     PropA : int <<get>>

@@ -14,7 +14,7 @@ class ClassA {
     # <<virtual>> VirtualMethod() : void
     + <<override>> ToString() : string
     + {static} StaticMethod() : string
-    + ExpressonBodiedMethod(x:int) : void
+    + ExpressonBodiedMethod(x:int) : int
 }
 abstract class ClassB {
     - field1 : int

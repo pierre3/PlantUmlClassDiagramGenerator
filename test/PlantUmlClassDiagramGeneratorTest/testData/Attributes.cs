@@ -1,17 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PlantUmlClassDiagramGenerator.Attributes;
 
-namespace PlantUmlClassDiagramGeneratorTest.testData;
+namespace PlantUmlClassDiagramGeneratorTest.testData3;
 
 
 class Parameters
 {
     public string A { get; set; }
     public string B { get; set; }
+}
+
+interface IItem
+{
+
+}
+class Item
+{
+
+}
+
+interface ILogger
+{
+
 }
 
 class MyClass
@@ -45,24 +56,25 @@ struct MyStruct
     [PlantUmlAssociation(Name = "int", Association = "o--", LeafLabel = "0..*", Label = "intCollection:List<int>")]
     public IList<int> intCollection;
 
-    [PlantUmlAssociation(Name = "Parameters", Association = "-l->")]
     public MyStruct(Parameters p)
     {
     }
 }
 
+class Settings { }
+
 record MyRecord(string name, [PlantUmlAssociation(Association = "o--")] Settings s);
 
 record struct MyStructRecord
 {
-    [PlantUmlAssociation(Name="string", Association = "o--",LeafLabel="Name")]
+    [PlantUmlAssociation(Name = "string", Association = "o--", LeafLabel = "Name")]
     public string Name { get; init; }
-    
+
 }
 
 
 [PlantUmlIgnore]
-class HiddenClass 
+class HiddenClass
 {
     public string PropA { get; set; }
 }
@@ -70,7 +82,7 @@ class HiddenClass
 class ClassA
 {
     private ILogger logger;
-    public ClassA([PlantUmlAssociation(Name = "\"ILogger<ClassA>\"" Association = "-->", Label = "\"\\escape\t\"")] ILogger logger)
+    public ClassA([PlantUmlAssociation(Name = "\"ILogger<ClassA>\"", Association = "-->", Label = "\"\\escape\t\"")] ILogger logger)
     {
         this.logger = logger;
     }
