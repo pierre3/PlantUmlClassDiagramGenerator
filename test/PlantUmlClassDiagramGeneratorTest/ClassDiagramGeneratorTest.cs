@@ -4,11 +4,18 @@ using System.Text;
 using System.IO;
 using PlantUmlClassDiagramGenerator.Library;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PlantUmlClassDiagramGeneratorTest;
 
 public partial class ClassDiagramGeneratorTest
 {
+    private ITestOutputHelper outputHelper;
+    public ClassDiagramGeneratorTest(ITestOutputHelper outputHelper)
+    {
+        this.outputHelper = outputHelper;
+    }
+
     [Theory]
     [InlineData("InputClasses.cs", "all.puml", true, false, false, Accessibilities.None)]
     [InlineData("InputClasses.cs", "public.puml", true, false, false, Accessibilities.Private | Accessibilities.Internal | Accessibilities.Protected | Accessibilities.ProtectedInternal)]
@@ -36,7 +43,7 @@ public partial class ClassDiagramGeneratorTest
 
         var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", outpulPumlFile)), Environment.NewLine);
         var actual = output.ToString();
-        Console.Write(actual);
+        outputHelper.WriteLine(actual);
         Assert.Equal(expected, actual);
     }
 
