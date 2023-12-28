@@ -46,9 +46,9 @@ public class RelationshipCollection : IEnumerable<Relationship>
         AddRelationship(leafName, rootName, symbol, fieldIdentifier);
     }
 
-    public void AddAssociationFrom(PropertyDeclarationSyntax node)
+    public void AddAssociationFrom(PropertyDeclarationSyntax node, TypeSyntax typeIgnoringNullable)
     {
-        if (node.Type is not SimpleNameSyntax leafNode 
+        if (typeIgnoringNullable is not SimpleNameSyntax leafNode 
             || node.Parent is not BaseTypeDeclarationSyntax rootNode) return;
 
         var symbol = node.Initializer == null ? "-->" : "o->";

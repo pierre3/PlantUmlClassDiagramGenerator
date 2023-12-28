@@ -255,6 +255,8 @@ public class ClassDiagramGenerator(
         var isTypeParameterProp = parentClass?.TypeParameterList?.Parameters
             .Any(t => t.Identifier.Text == type.ToString()) ?? false;
 
+        var typeIgnoringNullable = type is NullableTypeSyntax nullableTypeSyntax ? nullableTypeSyntax.ElementType : type;
+
         var associationAttrSyntax = node.AttributeLists.GetAssociationAttributeSyntax();
         if (associationAttrSyntax is not null)
         {
@@ -263,8 +265,7 @@ public class ClassDiagramGenerator(
         }
         else if (!createAssociation
             || node.AttributeLists.HasIgnoreAssociationAttribute()
-            || type.GetType() == typeof(PredefinedTypeSyntax)
-            || type.GetType() == typeof(NullableTypeSyntax)
+            || typeIgnoringNullable is PredefinedTypeSyntax
             || isTypeParameterProp)
         {
             var modifiers = GetMemberModifiersText(node.Modifiers,
@@ -293,7 +294,7 @@ public class ClassDiagramGenerator(
             {
                 additionalTypeDeclarationNodes.Add(type);
             }
-            relationships.AddAssociationFrom(node);
+            relationships.AddAssociationFrom(node, typeIgnoringNullable);
         }
     }
 
