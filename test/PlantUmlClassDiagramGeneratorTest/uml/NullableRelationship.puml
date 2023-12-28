@@ -1,0 +1,9 @@
+﻿@startuml
+class Test {
+}
+class LinkedClass {
+    + Name : string <<get>> <<set>>
+}
+Test --> "AdditionalData" LinkedClass
+Test --> "AdditionalData2" LinkedClass
+@enduml

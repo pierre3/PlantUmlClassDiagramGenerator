@@ -28,6 +28,7 @@ public partial class ClassDiagramGeneratorTest
     [InlineData("AttributeRequired.cs", "NotAttributeRequired.puml", true, false, false, Accessibilities.None)]
     [InlineData("InputClasses.cs", "withoutStartEndUml.puml", true, false, true, Accessibilities.Private)]
     [InlineData("DefaultModifierType.cs", "DefaultModifierType.puml", true, false, false, Accessibilities.None)]
+    [InlineData("NullableRelationship.cs", "NullableRelationship.puml", true, false, false, Accessibilities.None)]
     public void Generate(string inputClassFile, string outpulPumlFile, bool createAssociations, bool attributeRequired, bool excludeUmlBeginEndTags, Accessibilities accessibilities)
     {
         var code = File.ReadAllText(Path.Combine("testData", inputClassFile));
