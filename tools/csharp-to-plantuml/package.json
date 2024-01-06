@@ -2,7 +2,7 @@
     "name": "csharp-to-plantuml",
     "displayName": "CSharp to PlantUML",
     "description": "Generator to create class-diagram of PlantUML from C# source code.",
-    "version": "1.3.4",
+    "version": "1.4.0",
     "preview": false,
     "publisher": "pierre3",
     "license": "MIT",
@@ -22,12 +22,10 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
-        "commands": [
-            {
-                "command": "csharp2plantuml.classDiagram",
-                "title": "C# to PlantUML: Class-diagram"
-            }
-        ],
+        "commands": [{
+            "command": "csharp2plantuml.classDiagram",
+            "title": "C# to PlantUML: Class-diagram"
+        }],
         "configuration": {
             "type": "object",
             "title": "C# to PlantUML configuration",
@@ -101,7 +99,7 @@
         "@types/node": "^18.16.16",
         "tslint": "^5.20.1",
         "typescript": "^4.9.5",
-        "vscode": "^1.1.37"
+        "vscode": "^1.1.34"
     },
     "bugs": {
         "url": "https://github.com/pierre3/PlantUmlClassDiagramGenerator/issues"

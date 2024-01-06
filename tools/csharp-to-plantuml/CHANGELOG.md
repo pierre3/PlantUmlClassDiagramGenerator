@@ -2,6 +2,9 @@
 All notable changes to the "csharp-to-plantuml" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [1.4.0]
+- Updated the target framework to .NET 8.0.
+- Fixed an issue where Nullable types were not being output with the createAssociation option.
 
 ## [1.3.4]
 - Added support for the "struct" keyword in type definitions.

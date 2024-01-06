@@ -3,7 +3,7 @@
 Create class diagrams of PlantUML from C# source code.
 
 ## Requirements
-- [.NET Core 6.0 Runtime](https://dotnet.microsoft.com/download/dotnet-core/6.0/runtime) 
+- [.NET Core 8.0 Runtime](https://dotnet.microsoft.com/download/dotnet-core/8.0/runtime) 
 
 ## Extension Settings
 
@@ -30,6 +30,10 @@ Create class diagrams of PlantUML from C# source code.
 
 
 ## Release Notes
+## 1.4.0
+- Updated the target framework to .NET 8.0.
+- Fixed an issue where Nullable types were not being output with the createAssociation option.
+ 
 ## 1.3.4
 - Added support for the "struct" keyword in type definitions.
 - Added exclude path to consider "**/" syntax (filtering on all folder levels).

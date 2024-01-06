@@ -39,7 +39,27 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="uml\NullableRelationship.puml" />
+	  <Compile Remove="testData\AttributeRequired.cs" />
+	  <Compile Remove="testData\Attributes.cs" />
+	  <Compile Remove="testData\CurlyBrackets.cs" />
+	  <Compile Remove="testData\DefaultModifierType.cs" />
+	  <Compile Remove="testData\GenericsType.cs" />
+	  <Compile Remove="testData\InputClasses.cs" />
+	  <Compile Remove="testData\NullableRelationship.cs" />
+	  <Compile Remove="testData\NullableType.cs" />
+	  <Compile Remove="testData\RecordType.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="testData\AttributeRequired.cs" />
+	  <None Include="testData\Attributes.cs" />
+	  <None Include="testData\CurlyBrackets.cs" />
+	  <None Include="testData\DefaultModifierType.cs" />
+	  <None Include="testData\GenericsType.cs" />
+	  <None Include="testData\InputClasses.cs" />
+	  <None Include="testData\NullableRelationship.cs" />
+	  <None Include="testData\NullableType.cs" />
+	  <None Include="testData\RecordType.cs" />
 	</ItemGroup>
 
 </Project>
