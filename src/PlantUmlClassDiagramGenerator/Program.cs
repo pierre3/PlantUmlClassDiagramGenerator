@@ -265,8 +265,10 @@ class Program
                 }
             }
 
-            parameters.TryAdd("in", arg);
-            parameters.TryAdd("out", arg);
+            if(!parameters.TryAdd("in", arg))
+            {
+                parameters.TryAdd("out", arg);
+            }
         }
         return parameters;
     }
