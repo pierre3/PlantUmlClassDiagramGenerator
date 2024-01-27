@@ -97,7 +97,7 @@ public class PlantUmlDiagramBuilder(
     private string GetTypeDeclaration()
     {
         var typeKind = Symbol.GetTypeKindString();
-        var name = Symbol.MetadataName + Symbol.GetTypeArgumentsString();
+        var name = Symbol.MetadataName + Symbol.GetTypeParamtersString();
         var modifiers = Symbol.GetModifiersString();
         return $"{typeKind} {name} {modifiers}";
     }
@@ -142,7 +142,7 @@ public class PlantUmlDiagramBuilder(
     {
         var targetType = propertySymbol.Type;
         var leafLabel = "";
-        
+
         var ie = propertySymbol.Type.AllInterfaces
             .FirstOrDefault(x => x.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T);
         if (ie != null)
@@ -157,26 +157,33 @@ public class PlantUmlDiagramBuilder(
         }
 
 
-        if (symbols.TryGetValue(targetType, out var propType)
-                && !propType.Equals(Symbol, SymbolEqualityComparer.Default))
+        if (targetType is INamedTypeSymbol typeSymbol
+                && ContainsType(typeSymbol, symbols)
+                && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
             Associations.Add(AssociationKind.Aggregation.Create(
                 Symbol,
-                propType,
+                typeSymbol,
                 label: propertySymbol.Name,
                 leafLabel: leafLabel));
-            IncludeItems.Add(propType.MetadataName);
+            IncludeItems.Add(typeSymbol.MetadataName);
         }
 
     }
 
     private void SetFieldAssociation(IFieldSymbol fieldSymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
     {
-        if (symbols.TryGetValue(fieldSymbol.Type, out var fieldType)
-                && !fieldType.Equals(Symbol, SymbolEqualityComparer.Default))
+        if (fieldSymbol.Type is INamedTypeSymbol typeSymbol
+            && ContainsType(typeSymbol, symbols)
+            && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
-            Associations.Add(AssociationKind.Aggregation.Create(Symbol, fieldType, label: fieldSymbol.Name));
-            IncludeItems.Add(fieldType.MetadataName);
+            var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
+            Associations.Add(AssociationKind.Aggregation.Create(
+                Symbol,
+                typeSymbol,
+                label: fieldSymbol.Name,
+                leafLabel: leafLabel));
+            IncludeItems.Add(typeSymbol.MetadataName);
         }
     }
 
@@ -184,11 +191,13 @@ public class PlantUmlDiagramBuilder(
     {
         foreach (var parameter in methodSymbol.Parameters)
         {
-            if (symbols.TryGetValue(parameter.Type, out var parameterType)
-                && !parameterType.Equals(Symbol, SymbolEqualityComparer.Default))
+            if (parameter.Type is INamedTypeSymbol typeSymbol
+                && ContainsType(typeSymbol, symbols)
+                && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
             {
-                Associations.Add(AssociationKind.Dependency.Create(Symbol, parameterType));
-                IncludeItems.Add(parameterType.MetadataName);
+                var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
+                Associations.Add(AssociationKind.Dependency.Create(Symbol, typeSymbol, leafLabel: leafLabel));
+                IncludeItems.Add(typeSymbol.MetadataName);
             }
         }
     }
@@ -197,11 +206,12 @@ public class PlantUmlDiagramBuilder(
     {
         if (Symbol.BaseType is not null
             && Symbol.BaseType.SpecialType != SpecialType.System_Object
-            && Symbol.BaseType.SpecialType != SpecialType.System_Enum)
+            && Symbol.BaseType.SpecialType != SpecialType.System_Enum
+            && Symbol.BaseType.SpecialType != SpecialType.System_ValueType)
         {
-            Associations.Add(AssociationKind.Inheritance.Create(Symbol.BaseType, Symbol));
-            if (symbols.ContainsKey(Symbol.BaseType)
-                && !Symbol.BaseType.Equals(Symbol, SymbolEqualityComparer.Default))
+            var rootLabel = Symbol.BaseType.IsGenericType ? Symbol.BaseType.GetTypeArgumentsString() : "";
+            Associations.Add(AssociationKind.Inheritance.Create(Symbol.BaseType, Symbol, rootLabel: rootLabel));
+            if (ContainsType(Symbol.BaseType, symbols))
             {
                 IncludeItems.Add(Symbol.BaseType.MetadataName);
             }
@@ -212,13 +222,21 @@ public class PlantUmlDiagramBuilder(
     {
         foreach (var type in Symbol.Interfaces)
         {
-            Associations.Add(AssociationKind.Realization.Create(type, Symbol));
-            if (symbols.ContainsKey(type)
-                && !type.Equals(Symbol, SymbolEqualityComparer.Default))
+            var rootLabel = type.IsGenericType ? type.GetTypeArgumentsString() : "";
+            Associations.Add(AssociationKind.Realization.Create(type, Symbol, rootLabel: rootLabel));
+            if (ContainsType(type, symbols))
             {
                 IncludeItems.Add(type.MetadataName);
             }
         }
+    }
+
+    private static bool ContainsType(INamedTypeSymbol symbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    {
+        var target = symbol.IsGenericType
+                ? symbol.OriginalDefinition
+                : symbol;
+        return symbols.ContainsKey(target);
     }
 }
 

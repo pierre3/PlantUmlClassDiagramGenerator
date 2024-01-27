@@ -1,5 +1,6 @@
 ﻿using PlantUmlClassDiagramGenerator.SourceGenerator.Attributes;
 
+
 namespace SourceGeneratorTest.Classes
 {
     [PlantUmlDiagram]
@@ -23,17 +24,17 @@ namespace SourceGeneratorTest.Classes
         Alpha = 0x01,
         Beta = 0x02,
         Gamma = 0x04,
-        delta = 0x08
+        Delta = 0x08
     }
 
     [PlantUmlDiagram]
-    interface ILogger
+    interface ILogger<in T>
     {
         string WriteLog(LogLevel level, string message);
     }
 
     [PlantUmlDiagram]
-    class Logger : ILogger
+    class Logger : ILogger<DerivedClass>
     {
         public string WriteLog(LogLevel level, string message)
         {
@@ -43,11 +44,20 @@ namespace SourceGeneratorTest.Classes
     }
 
     [PlantUmlDiagram]
+    readonly record struct Vector(double X, double Y, double Z)
+    {
+        public double X { get; } = X;
+        public double Y { get; } = Y;
+        public double Z { get; } = Z;
+        public double Norm() => Math.Sqrt(X * X + Y * Y + Z * Z);
+    }
+
+    [PlantUmlDiagram]
 
     class Item
     {
         public string Name { get; set; } = "";
-        public int Value { get; set; } = 0;
+        public Vector Value { get; set; }
     }
 
     [PlantUmlDiagram]
@@ -58,17 +68,17 @@ namespace SourceGeneratorTest.Classes
     }
 
     [PlantUmlDiagram]
-    abstract class BaseClass
+    abstract class BaseClass<T1, T2>
     {
-        public abstract string Name { get; }
-        public abstract int Value { get; }
+        public abstract T1 Name { get; }
+        public abstract T2 Value { get; }
         public abstract string GetNameValue();
     }
 
     [PlantUmlDiagram]
-    class DerivedClass : BaseClass, IInterface
+    class DerivedClass : BaseClass<string, int>, IInterface
     {
-        private ILogger Logger { get; }
+        private ILogger<DerivedClass> Logger { get; }
         public override string Name => throw new NotImplementedException();
 
         public override int Value => throw new NotImplementedException();
@@ -76,7 +86,7 @@ namespace SourceGeneratorTest.Classes
         public IList<Item> Item1 { get; set; } = new List<Item>();
         public Item[] Item2 { get; set; } = [new Item()];
 
-        public DerivedClass(ILogger logger)
+        public DerivedClass(ILogger<DerivedClass> logger)
         {
             Logger = logger;
         }
@@ -101,7 +111,6 @@ namespace SourceGeneratorTest.Classes
             throw new NotImplementedException();
         }
     }
-
 
 
 

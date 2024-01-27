@@ -18,7 +18,7 @@
 		<Title>PlantUmlClassDiagramGenerator.SourceGenerator</Title>
 		<Authors>pierre3</Authors>
 		<PackageProjectUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator/tree/feature/source-generator/src/PlantUmlClassDiagramGenerator.SourceGenerator</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator</RepositoryUrl>
+		<RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator/tree/feature/source-generator/src/PlantUmlClassDiagramGenerator.SourceGenerator</RepositoryUrl>
 		<Description>This tool is designed to generate PlantUML class diagrams from C# source code. Leveraging SourceGenerator functionality, it analyzes the source code and produces PlantUML class diagrams.</Description>
 		<Copyright>© 2024 pierre3</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -26,9 +26,9 @@
 		<PackageTags>plantuml;SourceGenerator</PackageTags>
 		<PackageReleaseNotes>alpha test version</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<AssemblyVersion>0.1.0.0</AssemblyVersion>
-		<FileVersion>0.1.0.0</FileVersion>
-		<Version>0.1.0-alpha</Version>
+		<AssemblyVersion>0.1.8.0</AssemblyVersion>
+		<FileVersion>0.1.8.0</FileVersion>
+		<Version>0.1.8-alpha</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
@@ -43,7 +43,6 @@
 	    <PackagePath>\</PackagePath>
 	  </None>
 	</ItemGroup>
-	<!-- for nuget publish -->
 	<Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
 		<ItemGroup>
 			<TfmSpecificPackageFile Include="$(TargetDir)\*.dll" PackagePath="analyzers\dotnet\cs" />

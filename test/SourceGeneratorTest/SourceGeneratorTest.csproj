@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);GENERATE_PLANTMUL</DefineConstants>
+    <DefineConstants>$(DefineConstants);GENERATE_PLANTUML</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +31,10 @@
 		  <OutputItemType>Analyzer</OutputItemType>
 		  <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	  </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="generated-uml\" />
   </ItemGroup>
 
 </Project>

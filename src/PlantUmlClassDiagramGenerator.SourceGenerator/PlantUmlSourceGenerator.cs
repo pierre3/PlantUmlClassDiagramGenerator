@@ -17,7 +17,7 @@ public partial class PlantUmlSourceGenerator : IIncrementalGenerator
     {
         var options = context.AnalyzerConfigOptionsProvider
             .Select(static (configOptions, _) => configOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var path) ? path : null)
-            .Combine(context.ParseOptionsProvider.Select(static (options,_)=> options.PreprocessorSymbolNames));
+            .Combine(context.ParseOptionsProvider.Select(static (options, _) => options.PreprocessorSymbolNames));
 
         var typeDeclarations = context.SyntaxProvider.ForAttributeWithMetadataName(
             "PlantUmlClassDiagramGenerator.SourceGenerator.Attributes.PlantUmlDiagramAttribute",
@@ -30,13 +30,18 @@ public partial class PlantUmlSourceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(generateSource, static (context, source) =>
         {
             var ((projectDir, preprocessors), targetSymbols) = source;
-            if(!preprocessors.Any(s=>s == "GENERATE_PLANTMUL")) 
-            { 
-                return; 
+            if (!preprocessors.Any(s => s == "GENERATE_PLANTUML"))
+            {
+                return;
             }
+
             var outputDir = Path.Combine(projectDir, "generated-uml");
-            Directory.Delete(outputDir, true);
             Directory.CreateDirectory(outputDir);
+            var info = new DirectoryInfo(outputDir);
+            foreach (var file in info.GetFiles())
+            {
+                file.Delete();
+            }
             var symbols = targetSymbols
                 .OfType<INamedTypeSymbol>()
                 .ToDictionary(
@@ -50,9 +55,9 @@ public partial class PlantUmlSourceGenerator : IIncrementalGenerator
 
                 var builder = new PlantUmlDiagramBuilder(item.Value);
                 builder.Build(symbols);
-                
+
                 if (context.CancellationToken.IsCancellationRequested) { break; }
-                
+
                 File.WriteAllText(
                     Path.Combine(outputDir, item.Value.MetadataName + ".puml"),
                     builder.UmlString);

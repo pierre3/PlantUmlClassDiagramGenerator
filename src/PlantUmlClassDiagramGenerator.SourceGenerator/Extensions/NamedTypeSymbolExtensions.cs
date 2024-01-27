@@ -10,6 +10,10 @@ public static class NamedTypeSymbolExtensions
         {
             return "abstract class";
         }
+        else if (symbol.TypeKind is TypeKind.Struct or TypeKind.Structure)
+        {
+            return "struct";
+        }
         return symbol.TypeKind.ToString().ToLower();
 
     }
@@ -20,7 +24,7 @@ public static class NamedTypeSymbolExtensions
             new[]
             {
                 symbol.GetAttributes()
-                    .Any(a=>a.AttributeClass?.ContainingNamespace.Name=="System" 
+                    .Any(a=>a.AttributeClass?.ContainingNamespace.Name=="System"
                         && a.AttributeClass?.Name == "FlagsAttribute") ? "<<Flags>>" : "",
                 symbol.IsStatic ? "<<static>>" : "",
                 symbol.IsSealed ? "<<sealed>>" : "",
@@ -35,9 +39,16 @@ public static class NamedTypeSymbolExtensions
         return modifiers;
     }
 
-    public static string GetTypeArgumentsString(this INamedTypeSymbol symbol)
+    public static string GetTypeParamtersString(this INamedTypeSymbol symbol)
     {
         return symbol.IsGenericType && symbol.TypeArguments.Any()
+            ? $"<{string.Join(", ", symbol.TypeParameters.Select(arg => arg.Name))}>"
+            : "";
+    }
+
+    public static string GetTypeArgumentsString(this INamedTypeSymbol symbol)
+    {
+        return symbol.IsGenericType && symbol.TypeArguments.Where(arg => arg.Kind != SymbolKind.TypeParameter).Any()
             ? $"<{string.Join(", ", symbol.TypeArguments.Select(arg => arg.Name))}>"
             : "";
     }
