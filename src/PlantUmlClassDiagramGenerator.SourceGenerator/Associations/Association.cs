@@ -1,48 +1,30 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Associations;
 
-public abstract class Association(ITypeSymbol root, ITypeSymbol leaf) : IEquatable<Association>
+
+public record Association(ITypeSymbol RootSymbol, ITypeSymbol LeafSymbol, AssociationKind Kind,
+    string Label = "", string RootLabel = "", string LeafLabel = "")
 {
-    protected ITypeSymbol RootSymbol { get; set; } = root;
-    protected ITypeSymbol LeafSymbol { get; set; } = leaf;
-    protected string Node { get; set; } = "-";
-    public string NodeLabel { get; set; } = "";
-    public string RootLabel { get; set; } = "";
-    public string LeafLabel { get; set; } = "";
+    protected ITypeSymbol RootSymbol { get; } = RootSymbol;
+    protected ITypeSymbol LeafSymbol { get; } = LeafSymbol;
+    protected AssociationKind Kind { get; } = Kind;
+    public string Label { get; } = Label;
+    public string RootLabel { get; } = RootLabel;
+    public string LeafLabel { get; } = LeafLabel;
 
     public override string ToString()
     {
-        var nodeLabel = NodeLabel == "" ? "" : $" : {NodeLabel}";
+        var nodeLabel = Label == "" ? "" : $" : {Label}";
         var rootLabel = RootLabel == "" ? "" : $" \"{RootLabel}\"";
-        var leafLabel = LeafLabel == "" ? "" : $" \"{LeafLabel}\"";
+        var leafLabel = LeafLabel == "" ? "" : $"\"{LeafLabel}\" ";
         var rootName = RootSymbol.MetadataName.Contains('`')
             ? $"\"{RootSymbol.MetadataName}\""
             : RootSymbol.MetadataName;
         var leafName = LeafSymbol.MetadataName.Contains('`')
             ? $"\"{LeafSymbol.MetadataName}\""
             : LeafSymbol.MetadataName;
-        return $"{rootName}{rootLabel} {Node} {leafName}{leafLabel}{nodeLabel}";
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is Association association && Equals(association);
-    }
-
-    public override int GetHashCode()
-    {
-        int hashCode = 821845719;
-        hashCode = hashCode * -1521134295 + EqualityComparer<ITypeSymbol>.Default.GetHashCode(RootSymbol);
-        hashCode = hashCode * -1521134295 + EqualityComparer<ITypeSymbol>.Default.GetHashCode(LeafSymbol);
-        hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Node);
-        return hashCode;
-    }
-
-    public bool Equals(Association other)
-    {
-        return EqualityComparer<ITypeSymbol>.Default.Equals(RootSymbol, other.RootSymbol) &&
-               EqualityComparer<ITypeSymbol>.Default.Equals(LeafSymbol, other.LeafSymbol) &&
-               Node == other.Node;
+        return $"{rootName}{rootLabel} {Kind.Node} {leafLabel}{leafName}{nodeLabel}";
     }
 }

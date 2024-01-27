@@ -57,7 +57,8 @@ public class PlantUmlDiagramBuilder(
                     if (methodSymbol.MethodKind is not MethodKind.PropertyGet
                         and not MethodKind.PropertySet
                         and not MethodKind.EventAdd
-                        and not MethodKind.EventRemove) //skip property Getter/Setter & event Add/Remove
+                        and not MethodKind.EventRemove
+                        && !methodSymbol.Name.StartsWith("<")) //skip property Getter/Setter & event Add/Remove & <Clone>
                     {
                         SetMethodDeclaration(methodSymbol);
                         SetMethodAssociation(methodSymbol, symbols);
@@ -139,12 +140,34 @@ public class PlantUmlDiagramBuilder(
 
     private void SetPropertyAssociation(IPropertySymbol propertySymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
     {
-        if (symbols.TryGetValue(propertySymbol.Type, out var propType)
+        var targetType = propertySymbol.Type;
+        var leafLabel = "";
+        
+        var ie = propertySymbol.Type.AllInterfaces
+            .FirstOrDefault(x => x.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T);
+        if (ie != null)
+        {
+            targetType = ie.TypeArguments[0];
+            leafLabel = "*";
+        }
+        else if (propertySymbol.Type is IArrayTypeSymbol arrayType)
+        {
+            targetType = arrayType.ElementType;
+            leafLabel = "*";
+        }
+
+
+        if (symbols.TryGetValue(targetType, out var propType)
                 && !propType.Equals(Symbol, SymbolEqualityComparer.Default))
         {
-            Associations.Add(new Aggregation(Symbol, propType) { NodeLabel = propertySymbol.Name });
+            Associations.Add(AssociationKind.Aggregation.Create(
+                Symbol,
+                propType,
+                label: propertySymbol.Name,
+                leafLabel: leafLabel));
             IncludeItems.Add(propType.MetadataName);
         }
+
     }
 
     private void SetFieldAssociation(IFieldSymbol fieldSymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
@@ -152,7 +175,7 @@ public class PlantUmlDiagramBuilder(
         if (symbols.TryGetValue(fieldSymbol.Type, out var fieldType)
                 && !fieldType.Equals(Symbol, SymbolEqualityComparer.Default))
         {
-            Associations.Add(new Aggregation(Symbol, fieldType) { NodeLabel = fieldSymbol.Name });
+            Associations.Add(AssociationKind.Aggregation.Create(Symbol, fieldType, label: fieldSymbol.Name));
             IncludeItems.Add(fieldType.MetadataName);
         }
     }
@@ -164,7 +187,7 @@ public class PlantUmlDiagramBuilder(
             if (symbols.TryGetValue(parameter.Type, out var parameterType)
                 && !parameterType.Equals(Symbol, SymbolEqualityComparer.Default))
             {
-                Associations.Add(new Dependency(Symbol, parameterType));
+                Associations.Add(AssociationKind.Dependency.Create(Symbol, parameterType));
                 IncludeItems.Add(parameterType.MetadataName);
             }
         }
@@ -173,11 +196,15 @@ public class PlantUmlDiagramBuilder(
     private void SetInheritance(IDictionary<ISymbol?, INamedTypeSymbol> symbols)
     {
         if (Symbol.BaseType is not null
-            && symbols.ContainsKey(Symbol.BaseType)
-            && !Symbol.BaseType.Equals(Symbol, SymbolEqualityComparer.Default))
+            && Symbol.BaseType.SpecialType != SpecialType.System_Object
+            && Symbol.BaseType.SpecialType != SpecialType.System_Enum)
         {
-            Associations.Add(new Inheritance(Symbol.BaseType, Symbol));
-            IncludeItems.Add(Symbol.BaseType.MetadataName);
+            Associations.Add(AssociationKind.Inheritance.Create(Symbol.BaseType, Symbol));
+            if (symbols.ContainsKey(Symbol.BaseType)
+                && !Symbol.BaseType.Equals(Symbol, SymbolEqualityComparer.Default))
+            {
+                IncludeItems.Add(Symbol.BaseType.MetadataName);
+            }
         }
     }
 
@@ -185,10 +212,10 @@ public class PlantUmlDiagramBuilder(
     {
         foreach (var type in Symbol.Interfaces)
         {
+            Associations.Add(AssociationKind.Realization.Create(type, Symbol));
             if (symbols.ContainsKey(type)
                 && !type.Equals(Symbol, SymbolEqualityComparer.Default))
             {
-                Associations.Add(new Realization(type, Symbol));
                 IncludeItems.Add(type.MetadataName);
             }
         }

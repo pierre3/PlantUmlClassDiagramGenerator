@@ -16,6 +16,17 @@ namespace SourceGeneratorTest.Classes
     }
 
     [PlantUmlDiagram]
+    [Flags]
+    enum ItemFlags
+    {
+        None = 0x00,
+        Alpha = 0x01,
+        Beta = 0x02,
+        Gamma = 0x04,
+        delta = 0x08
+    }
+
+    [PlantUmlDiagram]
     interface ILogger
     {
         string WriteLog(LogLevel level, string message);
@@ -29,6 +40,14 @@ namespace SourceGeneratorTest.Classes
             throw new NotImplementedException();
         }
 
+    }
+
+    [PlantUmlDiagram]
+
+    class Item
+    {
+        public string Name { get; set; } = "";
+        public int Value { get; set; } = 0;
     }
 
     [PlantUmlDiagram]
@@ -53,6 +72,9 @@ namespace SourceGeneratorTest.Classes
         public override string Name => throw new NotImplementedException();
 
         public override int Value => throw new NotImplementedException();
+
+        public IList<Item> Item1 { get; set; } = new List<Item>();
+        public Item[] Item2 { get; set; } = [new Item()];
 
         public DerivedClass(ILogger logger)
         {

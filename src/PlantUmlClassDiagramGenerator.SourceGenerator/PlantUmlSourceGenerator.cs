@@ -9,74 +9,55 @@ public partial class PlantUmlSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        //RegisterPlantUmlClassDiagramGenerator(context);
         RegisterAttributes(context);
         RegisterClassDiagram(context);
     }
 
     private static void RegisterClassDiagram(IncrementalGeneratorInitializationContext context)
     {
-        var projectDir = context.AnalyzerConfigOptionsProvider
-            .Select(static (configOptions, _) => configOptions.GlobalOptions
-                .TryGetValue("build_property.projectdir", out var path) ? path : null);
+        var options = context.AnalyzerConfigOptionsProvider
+            .Select(static (configOptions, _) => configOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var path) ? path : null)
+            .Combine(context.ParseOptionsProvider.Select(static (options,_)=> options.PreprocessorSymbolNames));
+
         var typeDeclarations = context.SyntaxProvider.ForAttributeWithMetadataName(
             "PlantUmlClassDiagramGenerator.SourceGenerator.Attributes.PlantUmlDiagramAttribute",
-            predicate: static (node, token) => node is BaseTypeDeclarationSyntax,
-            transform: static (context, token) => (BaseTypeDeclarationSyntax)context.TargetNode)
+            predicate: static (node, token) => true,
+            transform: static (context, token) => context.TargetSymbol)
             .Collect();
-        var generateSource = projectDir
-            .Combine(context.CompilationProvider)
-            .Combine(typeDeclarations);
+
+        var generateSource = options.Combine(typeDeclarations);
 
         context.RegisterSourceOutput(generateSource, static (context, source) =>
         {
-            var ((projectDir, compilation), typeDeclarations) = source;
-            var outputDir = Path.Combine(projectDir, "GeneratedUml");
+            var ((projectDir, preprocessors), targetSymbols) = source;
+            if(!preprocessors.Any(s=>s == "GENERATE_PLANTMUL")) 
+            { 
+                return; 
+            }
+            var outputDir = Path.Combine(projectDir, "generated-uml");
+            Directory.Delete(outputDir, true);
             Directory.CreateDirectory(outputDir);
-            var symbols = typeDeclarations
-                .Select(syntax =>
-                {
-                    var symbol = compilation.GetSemanticModel(syntax.SyntaxTree).GetDeclaredSymbol(syntax);
-                    return symbol;
-                })
-                .Where(symbol => symbol is not null)
+            var symbols = targetSymbols
+                .OfType<INamedTypeSymbol>()
                 .ToDictionary(
                     symbol => symbol,
-                    symbol => symbol!,
+                    symbol => symbol,
                     SymbolEqualityComparer.Default);
 
             foreach (var item in symbols)
             {
+                if (context.CancellationToken.IsCancellationRequested) { break; }
+
                 var builder = new PlantUmlDiagramBuilder(item.Value);
+                builder.Build(symbols);
+                
+                if (context.CancellationToken.IsCancellationRequested) { break; }
+                
                 File.WriteAllText(
                     Path.Combine(outputDir, item.Value.MetadataName + ".puml"),
-                    builder.Build(symbols));
+                    builder.UmlString);
             }
         });
 
     }
-
-    //private static void RegisterPlantUmlClassDiagramGenerator(IncrementalGeneratorInitializationContext context)
-    //{
-    //    var projectDir = context.AnalyzerConfigOptionsProvider
-    //            .Select(static (configOptions, _) => configOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var path) ? path : null);
-    //    var generateSource = context.CompilationProvider
-    //        .SelectMany(static (context, _) => context.SyntaxTrees)
-    //        .Combine(projectDir);
-
-    //    context.RegisterSourceOutput(generateSource, static (context, item) =>
-    //    {
-    //        var (syntaxTree, projectDir) = item;
-    //        var outputDir = Path.Combine(projectDir, "generatedUml");
-    //        Directory.CreateDirectory(outputDir);
-    //        var root = syntaxTree.GetRoot(context.CancellationToken);
-    //        using var writer = new StreamWriter(
-    //            Path.Combine(
-    //                outputDir,
-    //                Path.GetFileNameWithoutExtension(syntaxTree.FilePath) + ".puml"));
-    //        var generator = new ClassDiagramGenerator(writer, "    ");
-    //        generator.Visit(root);
-    //    });
-    //}
-
 }

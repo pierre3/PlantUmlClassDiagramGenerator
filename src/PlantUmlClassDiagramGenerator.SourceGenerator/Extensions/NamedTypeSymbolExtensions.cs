@@ -19,6 +19,9 @@ public static class NamedTypeSymbolExtensions
         var modifiers = string.Join(" ",
             new[]
             {
+                symbol.GetAttributes()
+                    .Any(a=>a.AttributeClass?.ContainingNamespace.Name=="System" 
+                        && a.AttributeClass?.Name == "FlagsAttribute") ? "<<Flags>>" : "",
                 symbol.IsStatic ? "<<static>>" : "",
                 symbol.IsSealed ? "<<sealed>>" : "",
                 symbol.IsFileLocal ? "<<file>>" : "",
