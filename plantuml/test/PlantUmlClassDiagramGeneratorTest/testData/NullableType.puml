@@ -1,5 +1,0 @@
-@startuml
-class NullableType1 {
-    + NullableLong : long?
-}
-@enduml
