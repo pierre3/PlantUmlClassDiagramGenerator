@@ -13,8 +13,7 @@ Please note that this is an alpha test version, and we appreciate your feedback 
 ## How to Use
 
 ### 1. Installing the NuGet Package
-
-[PlantUmlClassDiagramGenerator.SourceGenerator](https://www.nuget.org/packages/PlantUmlClassDiagramGenerator.SourceGenerator) パッケージを NuGet Gallery から取得し、.NET プロジェクトにインストールします。
+Obtain the [PlantUmlClassDiagramGenerator.SourceGenerator](https://www.nuget.org/packages/PlantUmlClassDiagramGenerator.SourceGenerator) package from NuGet Gallery and install it in your .NET project.
 
 ### 2. Include the "GENERATE_PLANTUML" Conditional Compilation Symbol
   
