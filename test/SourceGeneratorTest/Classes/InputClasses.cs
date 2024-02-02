@@ -4,6 +4,31 @@
 namespace SourceGeneratorTest.Classes;
 
 [PlantUmlDiagram]
+class ClassA
+{
+    public int X { get; }
+    public ClassB B { get; } = new();
+    public ClassC C { get; }
+    public ClassD? D { get; init; }
+    public ClassA()
+    {
+        C = new ClassC();
+    }
+}
+
+[PlantUmlDiagram]
+class ClassB { }
+
+[PlantUmlDiagram]
+class ClassC { }
+
+[PlantUmlDiagram]
+class ClassD { }
+
+
+
+
+[PlantUmlDiagram]
 struct Point
 {
     public Point(int x, int y) => (X, Y) = (x, y);

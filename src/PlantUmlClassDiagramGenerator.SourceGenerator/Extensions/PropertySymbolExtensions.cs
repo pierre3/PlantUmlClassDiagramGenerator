@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
@@ -42,5 +43,13 @@ public static class PropertySymbolExtensions
             modifiers += " ";
         }
         return modifiers;
+    }
+
+    public static bool HasPropertyInitializer(this IPropertySymbol symbol)
+    {
+        return symbol.DeclaringSyntaxReferences
+            .Select(syntaxRef => syntaxRef.GetSyntax())
+            .OfType<PropertyDeclarationSyntax>()
+            .Any(syntax => syntax.Initializer is not null);
     }
 }

@@ -33,8 +33,4 @@
 	  </ProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="generated-uml\" />
-  </ItemGroup>
-
 </Project>

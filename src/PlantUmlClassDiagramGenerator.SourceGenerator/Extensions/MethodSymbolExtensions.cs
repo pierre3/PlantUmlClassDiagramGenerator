@@ -17,7 +17,11 @@ public static class MethodSymbolExtensions
     }
     public static string GetReturnTypeString(this IMethodSymbol symbol)
     {
-        return symbol.ReturnsVoid ? "void" : symbol.ReturnType.GetTypeName();
+        if(symbol.MethodKind is MethodKind.Constructor 
+            or MethodKind.SharedConstructor 
+            or MethodKind.StaticConstructor)
+        { return ""; }
+        return symbol.ReturnsVoid ? " : void" : $" : {symbol.ReturnType.GetTypeName()}";
     }
 
     public static string GetModifiersString(this IMethodSymbol symbol)

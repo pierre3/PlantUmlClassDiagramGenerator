@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
@@ -16,7 +17,7 @@ public static class FieldSymbolExtensions
         var modifiers = string.Join(" ",
             new[]
             {
-                symbol.ContainingType.TypeKind is not TypeKind.Interface 
+                symbol.ContainingType.TypeKind is not TypeKind.Interface
                     && symbol.IsAbstract ? "{abstract}" : "",
                 symbol.IsStatic ? "{static}" : "",
                 symbol.IsSealed ? "<<sealed>>" : "",
@@ -30,6 +31,14 @@ public static class FieldSymbolExtensions
             modifiers += " ";
         }
         return modifiers;
+    }
+
+    public static bool HasFieldInitializer(this IFieldSymbol symbol)
+    {
+        return symbol.DeclaringSyntaxReferences
+            .Select(syntaxRef => syntaxRef.GetSyntax())
+            .OfType<PropertyDeclarationSyntax>()
+            .Any(syntax => syntax.Initializer is not null);
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.SourceGenerator.Associations;
 using PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 using System.Text;
@@ -135,7 +136,7 @@ public class PlantUmlDiagramBuilder(
         var returnType = methodSymbol.GetReturnTypeString();
         var parameters = methodSymbol.GetParametersString();
         var name = methodSymbol.GetName();
-        MemberDeclarations.Add($"{accessibility}{modifiers}{name}({parameters}) : {returnType}");
+        MemberDeclarations.Add($"{accessibility}{modifiers}{name}({parameters}){returnType}");
     }
 
     private void SetPropertyAssociation(IPropertySymbol propertySymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
@@ -156,19 +157,29 @@ public class PlantUmlDiagramBuilder(
             leafLabel = "*";
         }
 
-
         if (targetType is INamedTypeSymbol typeSymbol
                 && ContainsType(typeSymbol, symbols)
                 && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
-            Associations.Add(AssociationKind.Aggregation.Create(
-                Symbol,
-                typeSymbol,
-                label: propertySymbol.Name,
-                leafLabel: leafLabel));
+            if (propertySymbol.HasPropertyInitializer()
+                || Symbol.ContainsObjectCreationInConstructor(propertySymbol.Type))
+            {
+                Associations.Add(AssociationKind.Composition.Create(
+                    Symbol,
+                    typeSymbol,
+                    label: propertySymbol.Name,
+                    leafLabel: leafLabel));
+            }
+            else
+            {
+                Associations.Add(AssociationKind.Aggregation.Create(
+                    Symbol,
+                    typeSymbol,
+                    label: propertySymbol.Name,
+                    leafLabel: leafLabel));
+            }
             IncludeItems.Add(typeSymbol.MetadataName);
         }
-
     }
 
     private void SetFieldAssociation(IFieldSymbol fieldSymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
@@ -178,11 +189,25 @@ public class PlantUmlDiagramBuilder(
             && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
             var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
-            Associations.Add(AssociationKind.Aggregation.Create(
-                Symbol,
-                typeSymbol,
-                label: fieldSymbol.Name,
-                leafLabel: leafLabel));
+
+
+            if (fieldSymbol.HasFieldInitializer()
+                || Symbol.ContainsObjectCreationInConstructor(fieldSymbol.Type))
+            {
+                Associations.Add(AssociationKind.Composition.Create(
+                    Symbol,
+                    typeSymbol,
+                    label: fieldSymbol.Name,
+                    leafLabel: leafLabel));
+            }
+            else
+            {
+                Associations.Add(AssociationKind.Aggregation.Create(
+                    Symbol,
+                    typeSymbol,
+                    label: fieldSymbol.Name,
+                    leafLabel: leafLabel));
+            }
             IncludeItems.Add(typeSymbol.MetadataName);
         }
     }

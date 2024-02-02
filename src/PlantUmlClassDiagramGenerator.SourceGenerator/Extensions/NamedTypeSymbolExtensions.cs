@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
@@ -51,5 +52,16 @@ public static class NamedTypeSymbolExtensions
         return symbol.IsGenericType && symbol.TypeArguments.Where(arg => arg.Kind != SymbolKind.TypeParameter).Any()
             ? $"<{string.Join(", ", symbol.TypeArguments.Select(arg => arg.Name))}>"
             : "";
+    }
+
+    public static bool ContainsObjectCreationInConstructor(this INamedTypeSymbol symbol, ITypeSymbol type)
+    {
+        return symbol.Constructors
+            .SelectMany(x => x.DeclaringSyntaxReferences)
+            .Select(syntaxRef => syntaxRef.GetSyntax())
+            .OfType<ConstructorDeclarationSyntax>()
+            .SelectMany(syntax => syntax.Body?.DescendantNodes())
+            .OfType<ObjectCreationExpressionSyntax>()
+            .Any(node => node.Type.ToString() == type.Name);
     }
 }
