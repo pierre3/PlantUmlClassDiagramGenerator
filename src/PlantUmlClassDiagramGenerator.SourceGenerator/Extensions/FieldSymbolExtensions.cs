@@ -37,7 +37,7 @@ public static class FieldSymbolExtensions
     {
         return symbol.DeclaringSyntaxReferences
             .Select(syntaxRef => syntaxRef.GetSyntax())
-            .OfType<PropertyDeclarationSyntax>()
+            .OfType<VariableDeclaratorSyntax>()
             .Any(syntax => syntax.Initializer is not null);
     }
 }

@@ -64,4 +64,17 @@ public static class NamedTypeSymbolExtensions
             .OfType<ObjectCreationExpressionSyntax>()
             .Any(node => node.Type.ToString() == type.Name);
     }
+
+    public static IEnumerable<INamedTypeSymbol> ToSingleEnumerable(this INamedTypeSymbol symbol)
+    {
+        yield return symbol;
+    }
+
+    public static IEnumerable<INamedTypeSymbol> EnumerateNestedTypeSymbols(this INamedTypeSymbol symbol)
+    {
+        return symbol.ToSingleEnumerable().Concat(symbol
+            .GetMembers()
+            .OfType<INamedTypeSymbol>()
+            .SelectMany(s => s.EnumerateNestedTypeSymbols()));
+    }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
+using System.Collections.Immutable;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator;
 
@@ -35,34 +37,37 @@ public partial class PlantUmlSourceGenerator : IIncrementalGenerator
                 return;
             }
 
-            var outputDir = Path.Combine(projectDir, "generated-uml");
-            Directory.CreateDirectory(outputDir);
-            var info = new DirectoryInfo(outputDir);
-            foreach (var file in info.GetFiles())
-            {
-                file.Delete();
-            }
+            string outputDir = InitiarizeOutputDirectory(projectDir);
             var symbols = targetSymbols
                 .OfType<INamedTypeSymbol>()
-                .ToDictionary(
-                    symbol => symbol,
-                    symbol => symbol,
-                    SymbolEqualityComparer.Default);
+                .SelectMany(symbol => symbol.EnumerateNestedTypeSymbols()) //Include nested types
+                .ToImmutableHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 
-            foreach (var item in symbols)
+            foreach (var symbol in symbols)
             {
                 if (context.CancellationToken.IsCancellationRequested) { break; }
 
-                var builder = new PlantUmlDiagramBuilder(item.Value);
+                var builder = new PlantUmlDiagramBuilder(symbol);
                 builder.Build(symbols);
 
                 if (context.CancellationToken.IsCancellationRequested) { break; }
 
                 File.WriteAllText(
-                    Path.Combine(outputDir, item.Value.MetadataName + ".puml"),
+                    Path.Combine(outputDir, symbol.MetadataName + ".puml"),
                     builder.UmlString);
             }
         });
 
+    }
+
+    private static string InitiarizeOutputDirectory(string? projectDir)
+    {
+        var outputDir = Path.Combine(projectDir, "generated-uml");
+        var info = Directory.CreateDirectory(outputDir);
+        foreach (var file in info.EnumerateFiles())
+        {
+            file.Delete();
+        }
+        return outputDir;
     }
 }

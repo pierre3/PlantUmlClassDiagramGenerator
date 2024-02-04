@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.SourceGenerator.Associations;
 using PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
+using System.Collections.Immutable;
 using System.Text;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator;
@@ -19,7 +20,7 @@ public class PlantUmlDiagramBuilder(
     public string UmlString { get; private set; } = "";
 
 
-    public string Build(IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    public string Build(IImmutableSet<INamedTypeSymbol> symbols)
     {
         Clear();
         SetInheritance(symbols);
@@ -37,7 +38,7 @@ public class PlantUmlDiagramBuilder(
         UmlString = "";
     }
 
-    private void ProcessMembersSymbol(IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    private void ProcessMembersSymbol(IImmutableSet<INamedTypeSymbol> symbols)
     {
         foreach (var member in Symbol.GetMembers())
         {
@@ -64,6 +65,12 @@ public class PlantUmlDiagramBuilder(
                         SetMethodDeclaration(methodSymbol);
                         SetMethodAssociation(methodSymbol, symbols);
                     }
+                    break;
+                case IEventSymbol eventSymbol:
+                    SetEventDeclaration(eventSymbol);
+                    break;
+                case INamedTypeSymbol nestedType:
+                    SetNest(nestedType);
                     break;
             }
         }
@@ -112,6 +119,14 @@ public class PlantUmlDiagramBuilder(
         MemberDeclarations.Add($"{accessibility}{modifiers}{propertySymbol.Name} : {typeName} {accessors}");
     }
 
+    private void SetEventDeclaration(IEventSymbol eventSymbol) 
+    {
+        var accessibility = eventSymbol.DeclaredAccessibility.GetMemberAccessibilityString();
+        var modifiers = eventSymbol.GetModifiersString();
+        var typeName = eventSymbol.GetTypeString();
+        MemberDeclarations.Add($"{accessibility}{modifiers}<<event>> {eventSymbol.Name} : {typeName}");
+    }
+
     private void SetFieldDeclaration(IFieldSymbol fieldSymbol)
     {
         if (Symbol.TypeKind == TypeKind.Enum)
@@ -139,7 +154,7 @@ public class PlantUmlDiagramBuilder(
         MemberDeclarations.Add($"{accessibility}{modifiers}{name}({parameters}){returnType}");
     }
 
-    private void SetPropertyAssociation(IPropertySymbol propertySymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    private void SetPropertyAssociation(IPropertySymbol propertySymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
         var targetType = propertySymbol.Type;
         var leafLabel = "";
@@ -182,7 +197,7 @@ public class PlantUmlDiagramBuilder(
         }
     }
 
-    private void SetFieldAssociation(IFieldSymbol fieldSymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    private void SetFieldAssociation(IFieldSymbol fieldSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
         if (fieldSymbol.Type is INamedTypeSymbol typeSymbol
             && ContainsType(typeSymbol, symbols)
@@ -212,7 +227,7 @@ public class PlantUmlDiagramBuilder(
         }
     }
 
-    private void SetMethodAssociation(IMethodSymbol methodSymbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    private void SetMethodAssociation(IMethodSymbol methodSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
         foreach (var parameter in methodSymbol.Parameters)
         {
@@ -227,7 +242,7 @@ public class PlantUmlDiagramBuilder(
         }
     }
 
-    private void SetInheritance(IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    private void SetInheritance(IImmutableSet<INamedTypeSymbol> symbols)
     {
         if (Symbol.BaseType is not null
             && Symbol.BaseType.SpecialType != SpecialType.System_Object
@@ -243,7 +258,7 @@ public class PlantUmlDiagramBuilder(
         }
     }
 
-    private void SetRealization(IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    private void SetRealization(IImmutableSet<INamedTypeSymbol> symbols)
     {
         foreach (var type in Symbol.Interfaces)
         {
@@ -256,12 +271,18 @@ public class PlantUmlDiagramBuilder(
         }
     }
 
-    private static bool ContainsType(INamedTypeSymbol symbol, IDictionary<ISymbol?, INamedTypeSymbol> symbols)
+    private static bool ContainsType(INamedTypeSymbol symbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
         var target = symbol.IsGenericType
                 ? symbol.OriginalDefinition
                 : symbol;
-        return symbols.ContainsKey(target);
+        return symbols.Contains(target);
+    }
+
+    private void SetNest(INamedTypeSymbol nestedTypeSymbol)
+    {
+        Associations.Add(AssociationKind.Nest.Create(Symbol, nestedTypeSymbol));
+        IncludeItems.Add(nestedTypeSymbol.MetadataName);
     }
 }
 

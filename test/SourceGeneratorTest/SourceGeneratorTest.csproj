@@ -27,10 +27,15 @@
   </ItemGroup>
 
   <ItemGroup>
+	  <ProjectReference Include="..\..\src\PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj" />
 	  <ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator.SourceGenerator\PlantUmlClassDiagramGenerator.SourceGenerator.csproj">
 		  <OutputItemType>Analyzer</OutputItemType>
 		  <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 	  </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="generated-uml\" />
   </ItemGroup>
 
 </Project>

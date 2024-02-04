@@ -10,6 +10,7 @@ public record AssociationKind(string Node)
     public static AssociationKind Dependency = new("..>");
     public static AssociationKind Inheritance = new("<|--");
     public static AssociationKind Realization = new("<|..");
+    public static AssociationKind Nest = new("+..");
 
     public string Node { get; } = Node;
 
