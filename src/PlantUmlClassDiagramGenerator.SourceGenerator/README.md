@@ -249,12 +249,27 @@ DerivedClass ..> Paramters
 
 ![associations](/uml/source-generator/associations.png)
 
+## Release Note
+
+### [0.1.9-alpha]
+
+- Nested Class Association:  
+  It is possible to associate nested classes. 
+- Event Member Output:  
+  The capability to output event members has been added. 
+- Composition Representation for Initialized Properties and Fields:  
+  When properties or fields are initialized within an initializer or constructor, their associated types are now expressed using composition. 
+
+### [0.1.8-alpha]
+- Alpha Test Release
+
 ## ToDo
+- [x] Differentiation between Aggregation and Composition. If initialized with new () in constructors or property initializers, is it Composition?
+- [x] Representation of nested classes.
 - [ ] Control visibility of members based on access modifiers.
 - [ ] Treatment of type access modifiers. Currently not supported.
-- [ ] Differentiation between Aggregation and Composition. If initialized with new () in constructors or property initializers, is it Composition?
 - [ ] Hide automatically implemented methods for record types.
-- [ ] Representation of nested classes.
+
 
 ## Feedback
 As an alpha tester, your input is invaluable in shaping the future of this tool. Please share your thoughts, report bugs, and suggest enhancements on our [discussions page](https://github.com/pierre3/PlantUmlClassDiagramGenerator/discussions).

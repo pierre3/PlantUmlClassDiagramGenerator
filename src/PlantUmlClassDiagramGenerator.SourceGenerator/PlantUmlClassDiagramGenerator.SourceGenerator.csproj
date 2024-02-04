@@ -24,11 +24,19 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>plantuml;SourceGenerator</PackageTags>
-		<PackageReleaseNotes>alpha test version</PackageReleaseNotes>
+		<PackageReleaseNotes>[0.1.9-alpha]
+- Nested Class Association:  
+  Now it is possible to associate nested classes. 
+
+- Event Member Output:  
+  The capability to output event members has been added. 
+
+- Composition Representation for Initialized Properties and Fields:  
+  When properties or fields are initialized within an initializer or constructor, their associated types are now expressed using composition. </PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<AssemblyVersion>0.1.8.0</AssemblyVersion>
-		<FileVersion>0.1.8.0</FileVersion>
-		<Version>0.1.8-alpha</Version>
+		<AssemblyVersion>0.1.9.0</AssemblyVersion>
+		<FileVersion>0.1.9.0</FileVersion>
+		<Version>0.1.9-alpha</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
