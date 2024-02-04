@@ -21,7 +21,7 @@
 		<RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator/tree/feature/source-generator/src/PlantUmlClassDiagramGenerator.SourceGenerator</RepositoryUrl>
 		<Description>This tool is designed to generate PlantUML class diagrams from C# source code. Leveraging SourceGenerator functionality, it analyzes the source code and produces PlantUML class diagrams.</Description>
 		<Copyright>© 2024 pierre3</Copyright>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReadmeFile>README.nuget.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>plantuml;SourceGenerator</PackageTags>
 		<PackageReleaseNotes>[0.1.9-alpha]
@@ -46,6 +46,10 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
+	  <None Update="README.nuget.md">
+	    <PackagePath>\</PackagePath>
+	    <Pack>True</Pack>
+	  </None>
 	  <None Update="README.md">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
