@@ -73,7 +73,7 @@ public class ClassDiagramGenerator(
         var name = typeName.Identifier;
         var typeParam = typeName.TypeArguments;
         var type = $"{name}{typeParam}";
-        var typeParams = typeParam.TrimStart('<').TrimEnd('>').Split(',', StringSplitOptions.TrimEntries);
+        var typeParams = typeParam.TrimStart('<').TrimEnd('>').Split([','], StringSplitOptions.RemoveEmptyEntries);
         types.Add(name);
 
         var typeKeyword = (node.Kind() == SyntaxKind.RecordStructDeclaration) ? "struct" : "class";

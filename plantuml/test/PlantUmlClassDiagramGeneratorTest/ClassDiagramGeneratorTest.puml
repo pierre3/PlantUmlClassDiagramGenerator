@@ -1,9 +1,0 @@
-@startuml
-class ClassDiagramGeneratorTest {
-    + GenerateTest_All() : void
-    + GenerateTest_Public() : void
-    + GenerateTest_WithoutPrivate() : void
-    + GenerateTest_GenericsTypes() : void
-    + NullableTest_NullableTypes() : void
-}
-@enduml

@@ -18,7 +18,7 @@ public class TypeNameText
             identifier = $"\"{identifier}`{count}\"";
             typeArgs = "<" + string.Join(",", genericName.TypeArgumentList.Arguments) + ">";
         }
-        else if (identifier.StartsWith('@'))
+        else if (identifier.StartsWith("@"))
         {
             identifier = $"\"{identifier}\"";
         }
@@ -62,7 +62,7 @@ public class TypeNameText
             identifier = $"\"{identifier}`{count}\"";
             typeArgs = "<" + string.Join(",", typeDeclaration.TypeParameterList.Parameters) + ">";
         }
-        else if (identifier.StartsWith('@'))
+        else if (identifier.StartsWith("@"))
         {
             identifier = $"\"{identifier}\"";
         }

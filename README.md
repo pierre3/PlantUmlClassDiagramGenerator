@@ -14,6 +14,12 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 | 1.1     | [e73b4fe](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/e73b4feed9cd261271eb990a9c859f53536e8d7c) | Add "-excludeUmlBeginEndTags" option |
 | 1.0     | [70bb820](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/70bb8202f7f489aa2d85ce9c25c58121c8f63aed) | Because the README.md for other languages is not always updated at the same time, a version number is needed |
 
+## New Feature in Development
+
+- [PlantUmlClassDiagramGenerator.SourceGenerator](/src/PlantUmlClassDiagramGenerator.SourceGenerator)
+
+This feature is currently in alpha testing phase. Please test it out and provide your feedback. We greatly appreciate it.
+
 ## Visual Studio Code Extension
 
 - [C# to PlantUML](https://marketplace.visualstudio.com/items?itemName=pierre3.csharp-to-plantuml)
