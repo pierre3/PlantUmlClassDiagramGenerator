@@ -9,6 +9,7 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator;
 [Generator(LanguageNames.CSharp)]
 public partial class PlantUmlSourceGenerator : IIncrementalGenerator
 {
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         RegisterAttributes(context);
@@ -17,57 +18,55 @@ public partial class PlantUmlSourceGenerator : IIncrementalGenerator
 
     private static void RegisterClassDiagram(IncrementalGeneratorInitializationContext context)
     {
-        var options = context.AnalyzerConfigOptionsProvider
-            .Select(static (configOptions, _) => configOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var path) ? path : null)
-            .Combine(context.ParseOptionsProvider.Select(static (options, _) => options.PreprocessorSymbolNames));
+        var assemblyName = context.CompilationProvider
+            .Select((compilation, _) => compilation.AssemblyName);
 
-        var typeDeclarations = context.SyntaxProvider.ForAttributeWithMetadataName(
-            "PlantUmlClassDiagramGenerator.SourceGenerator.Attributes.PlantUmlDiagramAttribute",
-            predicate: static (node, token) => true,
-            transform: static (context, token) => context.TargetSymbol)
+        var options = context.AnalyzerConfigOptionsProvider
+            .Combine(assemblyName)
+            .Select(static (config, _) => new GeneratorOptions(config.Left, config.Right??""))
+            .Combine(context.ParseOptionsProvider
+                .Select(static (options, _) => options.PreprocessorSymbolNames));
+                
+        var typeDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => node is BaseTypeDeclarationSyntax,
+                transform: static (context, _) => context.SemanticModel.GetDeclaredSymbol(context.Node))
             .Collect();
 
         var generateSource = options.Combine(typeDeclarations);
 
-        context.RegisterSourceOutput(generateSource, static (context, source) =>
+        context.RegisterImplementationSourceOutput(generateSource, static (context, source) =>
         {
-            var ((projectDir, preprocessors), targetSymbols) = source;
+            var ((options, preprocessors), targetSymbols) = source;
             if (!preprocessors.Any(s => s == "GENERATE_PLANTUML"))
             {
                 return;
             }
-
-            string outputDir = InitiarizeOutputDirectory(projectDir);
+            InitiarizeOutputDirectory(Path.Combine(options.OutputDir, options.AssemblyName));
             var symbols = targetSymbols
                 .OfType<INamedTypeSymbol>()
+                .Where(predicate: options.DeclaredTypeFilter)
                 .SelectMany(symbol => symbol.EnumerateNestedTypeSymbols()) //Include nested types
                 .ToImmutableHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 
             foreach (var symbol in symbols)
             {
-                if (context.CancellationToken.IsCancellationRequested) { break; }
-
-                var builder = new PlantUmlDiagramBuilder(symbol);
+                context.CancellationToken.ThrowIfCancellationRequested();
+                var builder = new PlantUmlDiagramBuilder(symbol, options);
                 builder.Build(symbols);
-
-                if (context.CancellationToken.IsCancellationRequested) { break; }
-
-                File.WriteAllText(
-                    Path.Combine(outputDir, symbol.MetadataName + ".puml"),
-                    builder.UmlString);
+                context.CancellationToken.ThrowIfCancellationRequested();
+                builder.Write();
             }
         });
-
     }
 
-    private static string InitiarizeOutputDirectory(string? projectDir)
+    private static void InitiarizeOutputDirectory(string baseDir)
     {
-        var outputDir = Path.Combine(projectDir, "generated-uml");
-        var info = Directory.CreateDirectory(outputDir);
-        foreach (var file in info.EnumerateFiles())
+        var info = Directory.CreateDirectory(baseDir);
+        foreach (var dir in info.GetDirectories())
         {
-            file.Delete();
+            dir.Delete(true);
         }
-        return outputDir;
     }
+
 }

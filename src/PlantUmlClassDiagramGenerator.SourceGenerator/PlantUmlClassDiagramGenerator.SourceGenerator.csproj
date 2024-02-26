@@ -50,10 +50,6 @@
 	    <PackagePath>\</PackagePath>
 	    <Pack>True</Pack>
 	  </None>
-	  <None Update="README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
 	</ItemGroup>
 	<Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
 		<ItemGroup>

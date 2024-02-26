@@ -1,6 +1,10 @@
 {
   "profiles": {
-    "RoslynComponent": {
+    "SourceGeneratorTest.Library": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\..\\test\\SourceGeneratorTest.Library\\SourceGeneratorTest.Library.csproj"
+    },
+    "SourceGeneratorTest": {
       "commandName": "DebugRoslynComponent",
       "targetProject": "..\\..\\test\\SourceGeneratorTest\\SourceGeneratorTest.csproj"
     }

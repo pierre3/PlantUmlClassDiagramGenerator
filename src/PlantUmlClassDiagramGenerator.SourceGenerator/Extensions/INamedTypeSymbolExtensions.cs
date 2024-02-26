@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
-public static class NamedTypeSymbolExtensions
+public static class INamedTypeSymbolExtensions
 {
     public static string GetTypeKindString(this INamedTypeSymbol symbol)
     {

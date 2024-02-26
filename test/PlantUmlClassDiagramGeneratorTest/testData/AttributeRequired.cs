@@ -11,7 +11,7 @@ class ClassA
     public int Prop2 { get; set; }
 }
 
-[PlantUmlDiagram]
+
 class ClassB
 {
     [PlantUmlAssociation(Association = "*--")]
@@ -27,7 +27,7 @@ interface IInterfaceA
     double Num2 { get; }
 }
 
-[PlantUmlDiagram]
+
 interface IInterfaceB
 {
     [PlantUmlAssociation(Association = "--", Label = "double property")]
@@ -43,7 +43,7 @@ record RecordA
     
 }
 
-[PlantUmlDiagram]
+
 record RecordB
 {
     public string Prop1 { get; }
@@ -60,7 +60,7 @@ struct StructA
     }
 }
 
-[PlantUmlDiagram]
+
 struct StructB
 {
     private RecordB field1;
@@ -72,7 +72,7 @@ struct StructB
 
 record struct RecordStructA(int X,int Y);
 
-[PlantUmlDiagram]
+
 record struct RecordStructB(int X,int Y);
 
 enum EnumA
@@ -82,7 +82,7 @@ enum EnumA
     C
 }
 
-[PlantUmlDiagram]
+
 enum EnumB
 {
     A,

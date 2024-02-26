@@ -9,8 +9,10 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator;
 
 public class PlantUmlDiagramBuilder(
     INamedTypeSymbol symbol,
+    GeneratorOptions options,
     string indent = "    ")
 {
+    private GeneratorOptions Options { get; } = options;
     private INamedTypeSymbol Symbol { get; } = symbol;
     private IList<string> MemberDeclarations { get; } = new List<string>();
     private ISet<Association> Associations { get; } = new HashSet<Association>();
@@ -30,6 +32,13 @@ public class PlantUmlDiagramBuilder(
         return UmlString;
     }
 
+    public void Write()
+    {
+        var file = Symbol.GetOutputFilePath(Options.OutputDir);
+        Directory.CreateDirectory(Path.GetDirectoryName(file));
+        File.WriteAllText(file, UmlString);
+    }
+
     private void Clear()
     {
         MemberDeclarations.Clear();
@@ -40,7 +49,7 @@ public class PlantUmlDiagramBuilder(
 
     private void ProcessMembersSymbol(IImmutableSet<INamedTypeSymbol> symbols)
     {
-        foreach (var member in Symbol.GetMembers())
+        foreach (var member in Symbol.GetMembers().Where(memberSymbol => Options.MemberTypeFilter(memberSymbol, Symbol)))
         {
             switch (member)
             {
@@ -70,7 +79,7 @@ public class PlantUmlDiagramBuilder(
                     SetEventDeclaration(eventSymbol);
                     break;
                 case INamedTypeSymbol nestedType:
-                    SetNest(nestedType);
+                    SetNest(nestedType, symbols);
                     break;
             }
         }
@@ -80,11 +89,11 @@ public class PlantUmlDiagramBuilder(
     {
         var sb = new StringBuilder();
         //@startuml
-        sb.AppendLine($"@startuml {Symbol.MetadataName}");
+        sb.AppendLine($"@startuml {Symbol.GetMetadataName()}");
         //!include section
         if (IncludeItems.Count > 0)
         {
-            sb.AppendLine(string.Join(Environment.NewLine, IncludeItems.Select(s => $"!include {s}.puml")));
+            sb.AppendLine(string.Join(Environment.NewLine, IncludeItems.Select(s => $"!include {s}")));
         }
         //type declare
         sb.AppendLine($$"""
@@ -105,7 +114,7 @@ public class PlantUmlDiagramBuilder(
     private string GetTypeDeclaration()
     {
         var typeKind = Symbol.GetTypeKindString();
-        var name = Symbol.MetadataName + Symbol.GetTypeParamtersString();
+        var name = Symbol.GetMetadataName() + Symbol.GetTypeParamtersString();
         var modifiers = Symbol.GetModifiersString();
         return $"{typeKind} {name} {modifiers}";
     }
@@ -119,7 +128,7 @@ public class PlantUmlDiagramBuilder(
         MemberDeclarations.Add($"{accessibility}{modifiers}{propertySymbol.Name} : {typeName} {accessors}");
     }
 
-    private void SetEventDeclaration(IEventSymbol eventSymbol) 
+    private void SetEventDeclaration(IEventSymbol eventSymbol)
     {
         var accessibility = eventSymbol.DeclaredAccessibility.GetMemberAccessibilityString();
         var modifiers = eventSymbol.GetModifiersString();
@@ -139,8 +148,6 @@ public class PlantUmlDiagramBuilder(
         var accessibility = fieldSymbol.DeclaredAccessibility.GetMemberAccessibilityString();
         var modifiers = fieldSymbol.GetModifiersString();
         var typeName = fieldSymbol.GetTypeString();
-        var parts = fieldSymbol.ToDisplayParts(new SymbolDisplayFormat(memberOptions: SymbolDisplayMemberOptions.IncludeConstantValue));
-        var value = parts.FirstOrDefault(p => p.Kind is SymbolDisplayPartKind.StringLiteral or SymbolDisplayPartKind.NumericLiteral);
         MemberDeclarations.Add($"{accessibility}{modifiers}{fieldSymbol.Name} : {typeName}");
     }
 
@@ -173,7 +180,7 @@ public class PlantUmlDiagramBuilder(
         }
 
         if (targetType is INamedTypeSymbol typeSymbol
-                && ContainsType(typeSymbol, symbols)
+                && HasReference(typeSymbol, symbols)
                 && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
             if (propertySymbol.HasPropertyInitializer()
@@ -193,14 +200,14 @@ public class PlantUmlDiagramBuilder(
                     label: propertySymbol.Name,
                     leafLabel: leafLabel));
             }
-            IncludeItems.Add(typeSymbol.MetadataName);
+            AddToIncludeItems(typeSymbol, symbols);
         }
     }
 
     private void SetFieldAssociation(IFieldSymbol fieldSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
         if (fieldSymbol.Type is INamedTypeSymbol typeSymbol
-            && ContainsType(typeSymbol, symbols)
+            && HasReference(typeSymbol, symbols)
             && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
             var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
@@ -223,7 +230,8 @@ public class PlantUmlDiagramBuilder(
                     label: fieldSymbol.Name,
                     leafLabel: leafLabel));
             }
-            IncludeItems.Add(typeSymbol.MetadataName);
+
+            AddToIncludeItems(typeSymbol, symbols);
         }
     }
 
@@ -232,12 +240,12 @@ public class PlantUmlDiagramBuilder(
         foreach (var parameter in methodSymbol.Parameters)
         {
             if (parameter.Type is INamedTypeSymbol typeSymbol
-                && ContainsType(typeSymbol, symbols)
+                && HasReference(typeSymbol, symbols)
                 && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
             {
                 var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
                 Associations.Add(AssociationKind.Dependency.Create(Symbol, typeSymbol, leafLabel: leafLabel));
-                IncludeItems.Add(typeSymbol.MetadataName);
+                AddToIncludeItems(typeSymbol, symbols);
             }
         }
     }
@@ -251,10 +259,7 @@ public class PlantUmlDiagramBuilder(
         {
             var rootLabel = Symbol.BaseType.IsGenericType ? Symbol.BaseType.GetTypeArgumentsString() : "";
             Associations.Add(AssociationKind.Inheritance.Create(Symbol.BaseType, Symbol, rootLabel: rootLabel));
-            if (ContainsType(Symbol.BaseType, symbols))
-            {
-                IncludeItems.Add(Symbol.BaseType.MetadataName);
-            }
+            AddToIncludeItems(Symbol.BaseType, symbols);
         }
     }
 
@@ -264,11 +269,26 @@ public class PlantUmlDiagramBuilder(
         {
             var rootLabel = type.IsGenericType ? type.GetTypeArgumentsString() : "";
             Associations.Add(AssociationKind.Realization.Create(type, Symbol, rootLabel: rootLabel));
-            if (ContainsType(type, symbols))
-            {
-                IncludeItems.Add(type.MetadataName);
-            }
+            AddToIncludeItems(type, symbols);
         }
+    }
+    private void SetNest(INamedTypeSymbol nestedTypeSymbol, IImmutableSet<INamedTypeSymbol> symbols)
+    {
+        Associations.Add(AssociationKind.Nest.Create(Symbol, nestedTypeSymbol));
+        AddToIncludeItems(nestedTypeSymbol, symbols);
+    }
+
+    private void AddToIncludeItems(INamedTypeSymbol symbol, IImmutableSet<INamedTypeSymbol> symbols)
+    {
+        if (HasReference(symbol, symbols))
+        {
+            IncludeItems.Add(MakeIncludePath(symbol));
+        }
+    }
+
+    private bool HasReference(INamedTypeSymbol symbol, IImmutableSet<INamedTypeSymbol> symbols)
+    {
+        return ContainsType(symbol, symbols) || File.Exists(symbol.GetOutputFilePath(Options.OutputDir));
     }
 
     private static bool ContainsType(INamedTypeSymbol symbol, IImmutableSet<INamedTypeSymbol> symbols)
@@ -279,10 +299,26 @@ public class PlantUmlDiagramBuilder(
         return symbols.Contains(target);
     }
 
-    private void SetNest(INamedTypeSymbol nestedTypeSymbol)
+    private string MakeIncludePath(ITypeSymbol targetSymbol)
     {
-        Associations.Add(AssociationKind.Nest.Create(Symbol, nestedTypeSymbol));
-        IncludeItems.Add(nestedTypeSymbol.MetadataName);
+        string[] self = [Symbol.ContainingAssembly.Name, .. Symbol.ContainingNamespace.ToString().Split('.')];
+        string[] target = [targetSymbol.ContainingAssembly.Name, .. targetSymbol.ContainingNamespace.ToString().Split('.')];
+        return GetRelativeIncludePath(self, target) + $"/{targetSymbol.GetMetadataName(".")}.puml";
+    }
+
+    private static string GetRelativeIncludePath(string[] self, string[] target)
+    {
+        if (self.SequenceEqual(target))
+        {
+            return ".";
+        }
+        int i;
+        for (i = 0; i < Math.Min(self.Length, target.Length); i++)
+        {
+            if (self[i] != target[i]) { break; }
+        }
+        string[] values = [.. Enumerable.Repeat("..", self.Length - i), .. target.AsSpan(i)];
+        return string.Join("/", values);
     }
 }
 

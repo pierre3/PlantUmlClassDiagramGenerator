@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Associations;
 
@@ -19,12 +19,16 @@ public record Association(ITypeSymbol RootSymbol, ITypeSymbol LeafSymbol, Associ
         var nodeLabel = Label == "" ? "" : $" : {Label}";
         var rootLabel = RootLabel == "" ? "" : $" \"{RootLabel}\"";
         var leafLabel = LeafLabel == "" ? "" : $"\"{LeafLabel}\" ";
-        var rootName = RootSymbol.MetadataName.Contains('`')
-            ? $"\"{RootSymbol.MetadataName}\""
-            : RootSymbol.MetadataName;
-        var leafName = LeafSymbol.MetadataName.Contains('`')
-            ? $"\"{LeafSymbol.MetadataName}\""
-            : LeafSymbol.MetadataName;
+        var rootName = RootSymbol.GetMetadataName();
+        if (rootName.Contains('`'))
+        {
+            rootName = $"\"{rootName}\"";
+        }
+        var leafName = LeafSymbol.GetMetadataName();
+        if (leafName.Contains('`'))
+        {
+            leafName = $"\"{leafName}\"";
+        }
         return $"{rootName}{rootLabel} {Kind.Node} {leafLabel}{leafName}{nodeLabel}";
     }
 }

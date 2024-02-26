@@ -1,0 +1,7 @@
+@startuml Parent::ChildeB::GrandchildA
+!include ./Parent.ChildeB.GrandchildA.GreatGrandchild.puml
+class Parent::ChildeB::GrandchildA  {
+    + GrandchildA()
+}
+Parent::ChildeB::GrandchildA +.. Parent::ChildeB::GrandchildA::GreatGrandchild
+@enduml

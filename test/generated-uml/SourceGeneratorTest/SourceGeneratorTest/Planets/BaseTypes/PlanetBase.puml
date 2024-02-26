@@ -1,0 +1,18 @@
+@startuml PlanetBase
+!include ../Moon.puml
+abstract class PlanetBase  {
+    # PlanetBase(name : string)
+    + Name : string <<get>> <<set>>
+    + Diameter : double <<get>> <<protected set>>
+    + Mass : double <<get>> <<protected set>>
+    + DistanceFromSun : double <<get>> <<protected set>>
+    + OrbitalPeriod : double <<get>> <<protected set>>
+    + SurfaceTemperature : double <<get>> <<protected set>>
+    + <<readonly>> Moons : IList<Moon> <<get>>
+    # AddMoon(moon : Moon) : void
+    + {abstract} Orbit() : Task
+    + {abstract} Rotate() : Task
+}
+PlanetBase *-- "*" Moon : Moons
+PlanetBase ..> Moon
+@enduml

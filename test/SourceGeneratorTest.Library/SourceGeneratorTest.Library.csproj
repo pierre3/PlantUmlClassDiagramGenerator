@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>$(DefineConstants);GENERATE_PLANTUML</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<CompilerVisibleProperty Include="PlantUmlGenerator_OutputDir" />
+		<CompilerVisibleProperty Include="PlantUmlGenerator_AttributeRequierd" />
+		<CompilerVisibleProperty Include="PlantUmlGenerator_IncludeAccessibilities" />
+		<CompilerVisibleProperty Include="PlantUmlGenerator_ExcludeAccessibilities" />
+	</ItemGroup>
+	<PropertyGroup>
+		<PlantUmlGenerator_OutputDir>$(SolutionDir)test\generated-uml</PlantUmlGenerator_OutputDir>
+		<PlantUmlGenerator_AttributeRequierd>true</PlantUmlGenerator_AttributeRequierd>
+		<PlantUmlGenerator_IncludeAccessibilities>Public,Protected</PlantUmlGenerator_IncludeAccessibilities>
+		<PlantUmlGenerator_ExcludeAccessibilities>None</PlantUmlGenerator_ExcludeAccessibilities>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator.SourceGenerator\PlantUmlClassDiagramGenerator.SourceGenerator.csproj">
+			<OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
+	</ItemGroup>
+</Project>
