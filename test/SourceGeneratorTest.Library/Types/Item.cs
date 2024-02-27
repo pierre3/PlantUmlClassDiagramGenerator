@@ -3,4 +3,4 @@
 namespace SourceGeneratorTest.Library.Types;
 
 [PlantUmlDiagram]
-public record RecordA(string Name, double Value);
+public record Item(string Name, double Value);

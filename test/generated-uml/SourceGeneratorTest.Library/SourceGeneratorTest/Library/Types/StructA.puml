@@ -1,0 +1,12 @@
+@startuml StructA
+struct StructA <<sealed>>  {
+    + StructA(name : string)
+    - {static} value1 : int
+    + <<readonly>> Name : string <<get>>
+    + intValue : int <<get>> <<private set>>
+    + MethodA() : void
+    + MethodB() : int
+    + StructA()
+    - {static} StructA()
+}
+@enduml

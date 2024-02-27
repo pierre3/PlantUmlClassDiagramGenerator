@@ -1,0 +1,13 @@
+@startuml ILogger
+!include ./LogLevel.puml
+interface ILogger  {
+    + Write(message : string, logLevel : LogLevel, exception : Exception) : void
+    + WriteTrace(message : string) : void
+    + WriteDebug(message : string) : void
+    + WriteInfo(message : string) : void
+    + WriteWarn(message : string) : void
+    + WriteError(message : string, exception : Exception) : void
+    + WriteFatal(message : string, exception : Exception) : void
+}
+ILogger ..> LogLevel
+@enduml

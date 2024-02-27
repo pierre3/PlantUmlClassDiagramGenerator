@@ -11,3 +11,4 @@ public record Parameters
 
     public int Area() => X * Y;
 }
+

@@ -27,12 +27,12 @@ public class GeneratorOptions(AnalyzerConfigOptionsProvider config, string assem
 
     public static Accessibilities GetIncludeAccessibilities(AnalyzerConfigOptionsProvider config)
     {
-        return GetAccessibilities(config, "build_property.PlantUmlGenerator_IncludeAccessibilities", Accessibilities.All);
+        return GetAccessibilities(config, "build_property.PlantUmlGenerator_IncludeMemberAccessibilities", Accessibilities.All);
     }
 
     public static Accessibilities GetExcludeAccessibilities(AnalyzerConfigOptionsProvider config)
     {
-        return GetAccessibilities(config, "build_property.PlantUmlGenerator_ExcludeAccessibilities", Accessibilities.None);
+        return GetAccessibilities(config, "build_property.PlantUmlGenerator_ExcludeMemberAccessibilities", Accessibilities.None);
     }
 
     private static Accessibilities GetAccessibilities(AnalyzerConfigOptionsProvider config, string optionName, Accessibilities defaultValue)

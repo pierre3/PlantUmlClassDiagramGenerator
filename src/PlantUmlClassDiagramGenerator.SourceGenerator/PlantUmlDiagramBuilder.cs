@@ -183,6 +183,10 @@ public class PlantUmlDiagramBuilder(
                 && HasReference(typeSymbol, symbols)
                 && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
+            if (leafLabel == "")
+            {
+                leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
+            }
             if (propertySymbol.HasPropertyInitializer()
                 || Symbol.ContainsObjectCreationInConstructor(propertySymbol.Type))
             {
@@ -206,12 +210,30 @@ public class PlantUmlDiagramBuilder(
 
     private void SetFieldAssociation(IFieldSymbol fieldSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
-        if (fieldSymbol.Type is INamedTypeSymbol typeSymbol
+        var targetType = fieldSymbol.Type;
+        var leafLabel = "";
+
+        var ie = fieldSymbol.Type.AllInterfaces
+            .FirstOrDefault(x => x.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T);
+        if (ie != null)
+        {
+            targetType = ie.TypeArguments[0];
+            leafLabel = "*";
+        }
+        else if (fieldSymbol.Type is IArrayTypeSymbol arrayType)
+        {
+            targetType = arrayType.ElementType;
+            leafLabel = "*";
+        }
+
+        if (targetType is INamedTypeSymbol typeSymbol
             && HasReference(typeSymbol, symbols)
             && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
-            var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
-
+            if(leafLabel == "")
+            {
+                leafLabel = typeSymbol.IsGenericType? typeSymbol.GetTypeArgumentsString() : "";
+            }
 
             if (fieldSymbol.HasFieldInitializer()
                 || Symbol.ContainsObjectCreationInConstructor(fieldSymbol.Type))

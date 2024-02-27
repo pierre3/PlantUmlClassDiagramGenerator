@@ -1,0 +1,8 @@
+@startuml ReadonlyStruct
+struct ReadonlyStruct <<sealed>> <<readonly>>  {
+    + StringA : string <<get>> <<set>>
+    + IntA : int <<get>> <<set>>
+    + IntB : int <<get>> <<set>>
+    + ReadonlyStruct()
+}
+@enduml
