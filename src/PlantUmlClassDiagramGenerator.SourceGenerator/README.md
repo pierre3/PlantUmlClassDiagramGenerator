@@ -925,16 +925,15 @@ class Parameters <<record>>  {
 ## Release Note
 ### [0.5.1-beta]
 
-- Added project settings for enhanced customization:  
-  - PlantUmlGenerator_OutputDir
-  - PlantUmlGenerator_AttributeRequierd
-  - PlantUmlGenerator_IncludeMemberAccessibilities
-  - PlantUmlGenerator_ExcludeMemberAccessibilities
-- Extended properties for PlantUmlDiagramAttribute:  
-  - IncludeMemberAccessibilities
-  - ExcludeMemberAccessibilities
-- Introduced PlantUmlIgnoreAttribute.
-- Modified folder structure for output files.
+1. Added the following csproj properties:
+  - OutputDir: Specifies the output directory.
+  - AttributeRequired: A flag to indicate whether attributes are required. When set to false, classes without the PlantUmlDiagram attribute will be included in the output.
+  - IncludeMemberAccessibilities: Specifies the accessibility of members to include in the output.
+  - ExcludeMemberAccessibilities: Specifies the accessibility of members to exclude from the output.
+2. Added PlantUmlIgnore attribute:  
+  This attribute can be applied to types, properties, methods, etc., to exclude them from the output.
+3. Changed the output folder structure:  
+  Created folders based on namespaces and placed PlantUML files within them.
 
 ### [0.1.9-alpha]
 
