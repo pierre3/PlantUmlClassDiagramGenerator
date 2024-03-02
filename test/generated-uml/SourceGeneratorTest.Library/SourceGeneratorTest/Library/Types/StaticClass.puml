@@ -1,0 +1,7 @@
+@startuml StaticClass
+class StaticClass <<static>>  {
+    + {static} SpecificName : string
+    + {static} Piyo(count : int) : string
+    - {static} StaticClass()
+}
+@enduml

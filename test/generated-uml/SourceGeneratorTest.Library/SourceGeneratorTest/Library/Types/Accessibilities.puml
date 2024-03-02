@@ -1,0 +1,13 @@
+@startuml Accessibilities
+enum Accessibilities <<Flags>> <<sealed>>  {
+    None = 0
+    Public = 1
+    Protected = 2
+    Internal = 4
+    ProtectedInternal = 8
+    PrivateProtected = 16
+    Private = 32
+    All = Public | Protected | Internal | ProtectedInternal | PrivateProtected | Private
+    + Accessibilities()
+}
+@enduml

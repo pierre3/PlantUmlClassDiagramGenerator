@@ -1,15 +1,14 @@
 ﻿using PlantUmlClassDiagramGenerator.SourceGenerator.Attributes;
 
-namespace SourceGeneratorTest.Library.Logs
+namespace SourceGeneratorTest.Library.Logs;
+
+[PlantUmlDiagram]
+public enum LogLevel
 {
-    [PlantUmlDiagram]
-    public enum LogLevel
-    {
-        Trace,
-        Debug,
-        Info,
-        Warn,
-        Error,
-        Fatal
-    }
+    Trace,
+    Debug,
+    Info,
+    Warn,
+    Error,
+    Fatal
 }

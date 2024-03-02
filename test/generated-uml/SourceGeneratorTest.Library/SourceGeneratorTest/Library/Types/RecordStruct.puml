@@ -5,6 +5,7 @@ struct RecordStruct <<sealed>> <<record>>  {
     + Y : float <<get>> <<set>>
     + Z : float <<get>> <<set>>
     + <<readonly>> <<override>> ToString() : string
+    - <<readonly>> PrintMembers(builder : StringBuilder) : bool
     + {static} operator !=(left : RecordStruct, right : RecordStruct) : bool
     + {static} operator ==(left : RecordStruct, right : RecordStruct) : bool
     + <<readonly>> <<override>> GetHashCode() : int

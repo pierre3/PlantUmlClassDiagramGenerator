@@ -188,7 +188,7 @@ public class PlantUmlDiagramBuilder(
                 leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
             }
             if (propertySymbol.HasPropertyInitializer()
-                || Symbol.ContainsObjectCreationInConstructor(propertySymbol.Type))
+                || Symbol.ContainsObjectCreationInConstructor(propertySymbol.Name))
             {
                 Associations.Add(AssociationKind.Composition.Create(
                     Symbol,
@@ -236,7 +236,7 @@ public class PlantUmlDiagramBuilder(
             }
 
             if (fieldSymbol.HasFieldInitializer()
-                || Symbol.ContainsObjectCreationInConstructor(fieldSymbol.Type))
+                || Symbol.ContainsObjectCreationInConstructor(fieldSymbol.Name))
             {
                 Associations.Add(AssociationKind.Composition.Create(
                     Symbol,
