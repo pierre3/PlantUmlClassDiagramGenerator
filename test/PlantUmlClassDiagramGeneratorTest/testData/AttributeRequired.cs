@@ -1,18 +1,6 @@
 ﻿using PlantUmlClassDiagramGenerator.Attributes;
-
 namespace PlantUmlClassDiagramGeneratorTest.testData;
-
-
 class ClassA
-{
-    [PlantUmlAssociation(Association ="*--")]
-    public string Prop1 { get; set; }
-    [PlantUmlIgnore]
-    public int Prop2 { get; set; }
-}
-
-
-class ClassB
 {
     [PlantUmlAssociation(Association = "*--")]
     public string Prop1 { get; set; }
@@ -20,37 +8,44 @@ class ClassB
     public int Prop2 { get; set; }
 }
 
-interface IInterfaceA
+[PlantUmlDiagram]
+class ClassB
 {
-    [PlantUmlAssociation(Association ="--",Label ="double property")]
-    double Num1 { get; }
-    double Num2 { get; }
+    [PlantUmlAssociation(Association = "*--")]
+    public string Prop1 { get; set; }
+    [PlantUmlIgnore]
+    public int Prop2 { get; set; }
 }
-
-
-interface IInterfaceB
+interface IInterfaceA
 {
     [PlantUmlAssociation(Association = "--", Label = "double property")]
     double Num1 { get; }
     double Num2 { get; }
 }
 
+[PlantUmlDiagram]
+interface IInterfaceB
+{
+    [PlantUmlAssociation(Association = "--", Label = "double property")]
+    double Num1 { get; }
+    double Num2 { get; }
+}
 record RecordA
 {
     public string Prop1 { get; }
     public string Prop2 { get; }
     public RecordA(string prop1, string prop2) => (Prop1, Prop2) = (prop1, prop2);
-    
+
 }
 
-
+[PlantUmlDiagram]
 record RecordB
 {
     public string Prop1 { get; }
     public string Prop2 { get; }
     public RecordB(string prop1, string prop2) => (Prop1, Prop2) = (prop1, prop2);
 }
-    
+
 struct StructA
 {
     private RecordA field1;
@@ -60,20 +55,20 @@ struct StructA
     }
 }
 
-
+[PlantUmlDiagram]
 struct StructB
 {
     private RecordB field1;
-    public StructB([PlantUmlAssociation(Association ="-->",Label ="use")]RecordB field1)
+    public StructB([PlantUmlAssociation(Association = "-->", Label = "use")] RecordB field1)
     {
         this.field1 = field1;
     }
 }
 
-record struct RecordStructA(int X,int Y);
+record struct RecordStructA(int X, int Y);
 
-
-record struct RecordStructB(int X,int Y);
+[PlantUmlDiagram]
+record struct RecordStructB(int X, int Y);
 
 enum EnumA
 {
@@ -82,7 +77,7 @@ enum EnumA
     C
 }
 
-
+[PlantUmlDiagram]
 enum EnumB
 {
     A,
