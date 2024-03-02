@@ -1,0 +1,15 @@
+@startuml SampleClass
+class SampleClass  {
+    + {static} <<readonly>> ValueX : string
+    - value1 : int
+    # Value2 : int
+    ~ Value3 : int <<get>> <<set>>
+    <<protected internal>> Value4 : int <<get>> <<set>>
+    + <<event>> EventA : Action<string>
+    + SampleClass()
+    - {static} SampleClass()
+    <<private protected>> MethodA() : void
+    # <<virtual>> VirtualMethod() : void
+    + MethodB() : int
+}
+@enduml

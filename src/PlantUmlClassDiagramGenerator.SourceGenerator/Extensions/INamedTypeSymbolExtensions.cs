@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
-public static class NamedTypeSymbolExtensions
+public static class INamedTypeSymbolExtensions
 {
     public static string GetTypeKindString(this INamedTypeSymbol symbol)
     {
@@ -54,15 +54,18 @@ public static class NamedTypeSymbolExtensions
             : "";
     }
 
-    public static bool ContainsObjectCreationInConstructor(this INamedTypeSymbol symbol, ITypeSymbol type)
+    public static bool ContainsObjectCreationInConstructor(this INamedTypeSymbol symbol, string memberName)
     {
         return symbol.Constructors
             .SelectMany(x => x.DeclaringSyntaxReferences)
             .Select(syntaxRef => syntaxRef.GetSyntax())
             .OfType<ConstructorDeclarationSyntax>()
             .SelectMany(syntax => syntax.Body?.DescendantNodes())
-            .OfType<ObjectCreationExpressionSyntax>()
-            .Any(node => node.Type.ToString() == type.Name);
+            .OfType<AssignmentExpressionSyntax>()
+            .Any(node => 
+                node.Left is IdentifierNameSyntax left
+                && left.Identifier.Text == memberName
+                && node.Right is ObjectCreationExpressionSyntax);
     }
 
     public static IEnumerable<INamedTypeSymbol> ToSingleEnumerable(this INamedTypeSymbol symbol)

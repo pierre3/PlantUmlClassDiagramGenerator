@@ -1,0 +1,8 @@
+@startuml ReadonlyStruct
+struct ReadonlyStruct <<sealed>> <<readonly>>  {
+    + X : float <<get>> <<set>>
+    + Y : float <<get>> <<set>>
+    + Z : float <<get>> <<set>>
+    + ReadonlyStruct()
+}
+@enduml

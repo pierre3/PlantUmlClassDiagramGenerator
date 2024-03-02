@@ -2,7 +2,7 @@
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
-public static class EventSymbolExtensions
+public static class IEventSymbolExtensions
 {
 
     public static string GetTypeString(this IEventSymbol symbol)

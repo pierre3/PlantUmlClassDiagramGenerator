@@ -1,0 +1,7 @@
+@startuml AbstractClass
+abstract class AbstractClass  {
+    + {abstract} MethodA() : void
+    + {abstract} MethodB() : void
+    # AbstractClass()
+}
+@enduml

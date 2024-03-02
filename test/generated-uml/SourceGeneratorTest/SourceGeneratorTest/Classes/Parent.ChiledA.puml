@@ -1,0 +1,9 @@
+@startuml Parent::ChiledA
+!include ./Parent.ChiledA.GrandchildA.puml
+!include ./Parent.ChiledA.GrandchildB.puml
+class Parent::ChiledA  {
+    + ChiledA()
+}
+Parent::ChiledA +.. Parent::ChiledA::GrandchildA
+Parent::ChiledA +.. Parent::ChiledA::GrandchildB
+@enduml

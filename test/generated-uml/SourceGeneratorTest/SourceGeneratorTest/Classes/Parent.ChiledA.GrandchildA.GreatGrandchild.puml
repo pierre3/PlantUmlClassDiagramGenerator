@@ -1,0 +1,5 @@
+@startuml Parent::ChiledA::GrandchildA::GreatGrandchild
+class Parent::ChiledA::GrandchildA::GreatGrandchild  {
+    + GreatGrandchild()
+}
+@enduml

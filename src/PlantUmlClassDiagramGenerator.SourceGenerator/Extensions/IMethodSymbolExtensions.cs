@@ -2,7 +2,7 @@
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
-public static class MethodSymbolExtensions
+public static class IMethodSymbolExtensions
 {
     public static string GetName(this IMethodSymbol symbol)
     {
