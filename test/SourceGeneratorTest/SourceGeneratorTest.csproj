@@ -1,41 +1,49 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);GENERATE_PLANTUML</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>$(DefineConstants);GENERATE_PLANTUML</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
-    <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<CompilerVisibleProperty Include="PlantUmlGenerator_OutputDir" />
+		<CompilerVisibleProperty Include="PlantUmlGenerator_AttributeRequierd" />
+		<CompilerVisibleProperty Include="PlantUmlGenerator_IncludeMemberAccessibilities" />
+		<CompilerVisibleProperty Include="PlantUmlGenerator_ExcludeMemberAccessibilities" />
+	</ItemGroup>
+	<PropertyGroup>
+		<PlantUmlGenerator_OutputDir>$(SolutionDir)test\generated-uml</PlantUmlGenerator_OutputDir>
+		<PlantUmlGenerator_AttributeRequierd>false</PlantUmlGenerator_AttributeRequierd>
+		<PlantUmlGenerator_IncludeMemberAccessibilities>All</PlantUmlGenerator_IncludeMemberAccessibilities>
+		<PlantUmlGenerator_ExcludeMemberAccessibilities>None</PlantUmlGenerator_ExcludeMemberAccessibilities>
+	</PropertyGroup>
 
-  <ItemGroup>
-	  <ProjectReference Include="..\..\src\PlantUmlClassDiagramgenerator.Attributes\PlantUmlClassDiagramGenerator.Attributes.csproj" />
-	  <ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator.SourceGenerator\PlantUmlClassDiagramGenerator.SourceGenerator.csproj">
-		  <OutputItemType>Analyzer</OutputItemType>
-		  <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-	  </ProjectReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+		<PackageReference Include="xunit" Version="2.4.2" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="coverlet.collector" Version="6.0.0">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="generated-uml\" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\PlantUmlClassDiagramGenerator.SourceGenerator\PlantUmlClassDiagramGenerator.SourceGenerator.csproj">
+			<OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
+		<ProjectReference Include="..\SourceGeneratorTest.Library\SourceGeneratorTest.Library.csproj" />
+	</ItemGroup>
 </Project>

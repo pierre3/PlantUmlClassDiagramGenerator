@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceGeneratorTest", "test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantUmlClassDiagramGenerator.SourceGenerator", "src\PlantUmlClassDiagramGenerator.SourceGenerator\PlantUmlClassDiagramGenerator.SourceGenerator.csproj", "{26525450-7352-470B-B556-34269D828BD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGeneratorTest.Library", "test\SourceGeneratorTest.Library\SourceGeneratorTest.Library.csproj", "{CB61E9FE-757A-4BED-BD45-1E6D6180740F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{26525450-7352-470B-B556-34269D828BD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26525450-7352-470B-B556-34269D828BD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26525450-7352-470B-B556-34269D828BD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB61E9FE-757A-4BED-BD45-1E6D6180740F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB61E9FE-757A-4BED-BD45-1E6D6180740F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB61E9FE-757A-4BED-BD45-1E6D6180740F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB61E9FE-757A-4BED-BD45-1E6D6180740F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{73621E9E-991E-4930-A78A-B6BEAADF15B6} = {BA69B69C-C802-4077-B693-8845A154AD13}
 		{BC099683-E481-4BA2-9278-6ABDB28534DC} = {D0EC41DE-8A29-463D-8915-CB623E02CDA0}
 		{26525450-7352-470B-B556-34269D828BD8} = {BA69B69C-C802-4077-B693-8845A154AD13}
+		{CB61E9FE-757A-4BED-BD45-1E6D6180740F} = {D0EC41DE-8A29-463D-8915-CB623E02CDA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8F6C51C-3BD1-44B3-803A-176BCC69458E}

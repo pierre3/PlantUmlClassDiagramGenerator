@@ -5,8 +5,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
-		<EnforceExtendedAnalyzerRules>false</EnforceExtendedAnalyzerRules>		
-	    <IsRoslynComponent>true</IsRoslynComponent>
+		<EnforceExtendedAnalyzerRules>false</EnforceExtendedAnalyzerRules>
+		<IsRoslynComponent>true</IsRoslynComponent>
 		<AnalyzerLanguage>cs</AnalyzerLanguage>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<DevelopmentDependency>true</DevelopmentDependency>
@@ -14,29 +14,30 @@
 		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
 		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		
+
 		<Title>PlantUmlClassDiagramGenerator.SourceGenerator</Title>
 		<Authors>pierre3</Authors>
 		<PackageProjectUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator/tree/feature/source-generator/src/PlantUmlClassDiagramGenerator.SourceGenerator</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/pierre3/PlantUmlClassDiagramGenerator/tree/feature/source-generator/src/PlantUmlClassDiagramGenerator.SourceGenerator</RepositoryUrl>
 		<Description>This tool is designed to generate PlantUML class diagrams from C# source code. Leveraging SourceGenerator functionality, it analyzes the source code and produces PlantUML class diagrams.</Description>
 		<Copyright>© 2024 pierre3</Copyright>
-		<PackageReadmeFile>README.nuget.md</PackageReadmeFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>plantuml;SourceGenerator</PackageTags>
-		<PackageReleaseNotes>[0.1.9-alpha]
-- Nested Class Association:  
-  Now it is possible to associate nested classes. 
-
-- Event Member Output:  
-  The capability to output event members has been added. 
-
-- Composition Representation for Initialized Properties and Fields:  
-  When properties or fields are initialized within an initializer or constructor, their associated types are now expressed using composition. </PackageReleaseNotes>
+		<PackageReleaseNotes> [0.5.1-beta]
+ 1. Added the following csproj properties:
+   - OutputDir: Specifies the output directory.
+   - AttributeRequired: A flag to indicate whether attributes are required. When set to false, classes without the PlantUmlDiagram attribute will be included in the output.
+   - IncludeMemberAccessibilities: Specifies the accessibility of members to include in the output.
+   - ExcludeMemberAccessibilities: Specifies the accessibility of members to exclude from the output.
+ 2. Added PlantUmlIgnore attribute:
+   This attribute can be applied to types, properties, methods, etc., to exclude them from the output.
+ 3. Changed the output folder structure:
+   Created folders based on namespaces and placed PlantUML files within them.</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<AssemblyVersion>0.1.9.0</AssemblyVersion>
-		<FileVersion>0.1.9.0</FileVersion>
-		<Version>0.1.9-alpha</Version>
+		<AssemblyVersion>0.5.1.0</AssemblyVersion>
+		<FileVersion>0.5.1.0</FileVersion>
+		<Version>0.5.1-beta</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
@@ -46,14 +47,10 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-	  <None Update="README.nuget.md">
-	    <PackagePath>\</PackagePath>
-	    <Pack>True</Pack>
-	  </None>
-	  <None Update="README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
+		<None Update="README.md">
+			<PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+		</None>
 	</ItemGroup>
 	<Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
 		<ItemGroup>

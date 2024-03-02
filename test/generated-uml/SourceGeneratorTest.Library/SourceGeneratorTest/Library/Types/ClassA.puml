@@ -1,0 +1,7 @@
+@startuml ClassA
+class ClassA  {
+    + <<readonly>> Name : string <<get>>
+    + <<readonly>> Value : int <<get>>
+    + ClassA(name : string, value : int)
+}
+@enduml

@@ -1,0 +1,16 @@
+@startuml Logger
+!include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Logs/ILogger.puml
+!include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Logs/LogLevel.puml
+class Logger  {
+    + Write(message : string, logLevel : LogLevel, exception : Exception?) : void
+    + WriteDebug(message : string) : void
+    + WriteInfo(message : string) : void
+    + WriteTrace(message : string) : void
+    + WriteWarn(message : string) : void
+    + WriteError(message : string, exception : Exception?) : void
+    + WriteFatal(message : string, exception : Exception?) : void
+    + Logger()
+}
+ILogger <|.. Logger
+Logger ..> LogLevel
+@enduml

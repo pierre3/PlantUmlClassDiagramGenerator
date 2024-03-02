@@ -3,33 +3,21 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 
-public static class PropertySymbolExtensions
+public static class IFieldSymbolExtensions
 {
-
-    public static string GetTypeString(this IPropertySymbol symbol)
+    public static string GetTypeString(this IFieldSymbol symbol)
     {
         var fieldTag = symbol.Type.Name == nameof(ValueTuple) ? "{field} " : "";
         var typeName = symbol.Type.GetTypeName();
         return $"{fieldTag}{typeName}";
     }
 
-    public static string GetAccessorString(this IPropertySymbol symbol)
-    {
-        var getter = symbol.GetMethod is null
-            ? ""
-            : $"<<{symbol.GetMethod.DeclaredAccessibility.GetAccessorAccessibilityString(symbol.DeclaredAccessibility)}get>>";
-        var setter = symbol.SetMethod is null
-            ? ""
-            : $"<<{symbol.SetMethod.DeclaredAccessibility.GetAccessorAccessibilityString(symbol.DeclaredAccessibility)}set>>";
-        return string.Join(" ", new[] { getter, setter }.Where(s => !string.IsNullOrEmpty(s)));
-    }
-
-    public static string GetModifiersString(this IPropertySymbol symbol)
+    public static string GetModifiersString(this IFieldSymbol symbol)
     {
         var modifiers = string.Join(" ",
             new[]
             {
-                symbol.ContainingType.TypeKind is not TypeKind.Interface 
+                symbol.ContainingType.TypeKind is not TypeKind.Interface
                     && symbol.IsAbstract ? "{abstract}" : "",
                 symbol.IsStatic ? "{static}" : "",
                 symbol.IsSealed ? "<<sealed>>" : "",
@@ -45,11 +33,14 @@ public static class PropertySymbolExtensions
         return modifiers;
     }
 
-    public static bool HasPropertyInitializer(this IPropertySymbol symbol)
+    public static bool HasFieldInitializer(this IFieldSymbol symbol)
     {
         return symbol.DeclaringSyntaxReferences
             .Select(syntaxRef => syntaxRef.GetSyntax())
-            .OfType<PropertyDeclarationSyntax>()
+            .OfType<VariableDeclaratorSyntax>()
             .Any(syntax => syntax.Initializer is not null);
     }
 }
+
+
+

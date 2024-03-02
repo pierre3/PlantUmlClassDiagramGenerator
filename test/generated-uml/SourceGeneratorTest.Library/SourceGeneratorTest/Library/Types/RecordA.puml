@@ -1,0 +1,18 @@
+@startuml RecordA
+class RecordA <<record>>  {
+    + RecordA(Name : string, Value : int)
+    # <<readonly>> <<virtual>> EqualityContract : Type <<get>>
+    + Name : string <<get>> <<set>>
+    + Value : int <<get>> <<set>>
+    + <<override>> ToString() : string
+    # <<virtual>> PrintMembers(builder : StringBuilder) : bool
+    + {static} operator !=(left : RecordA?, right : RecordA?) : bool
+    + {static} operator ==(left : RecordA?, right : RecordA?) : bool
+    + <<override>> GetHashCode() : int
+    + <<override>> Equals(obj : object?) : bool
+    + <<virtual>> Equals(other : RecordA?) : bool
+    # RecordA(original : RecordA)
+    + Deconstruct(Name : string, Value : int) : void
+}
+"IEquatable`1" "<RecordA>" <|.. RecordA
+@enduml
