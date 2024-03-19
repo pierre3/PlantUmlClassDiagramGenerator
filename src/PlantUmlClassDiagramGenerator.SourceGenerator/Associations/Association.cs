@@ -4,12 +4,12 @@ using PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
 namespace PlantUmlClassDiagramGenerator.SourceGenerator.Associations;
 
 
-public record Association(ITypeSymbol RootSymbol, ITypeSymbol LeafSymbol, AssociationKind Kind,
+public record Association(ITypeSymbol RootSymbol, ITypeSymbol LeafSymbol, AssociationNode Node,
     string Label = "", string RootLabel = "", string LeafLabel = "")
 {
     protected ITypeSymbol RootSymbol { get; } = RootSymbol;
     protected ITypeSymbol LeafSymbol { get; } = LeafSymbol;
-    protected AssociationKind Kind { get; } = Kind;
+    protected AssociationNode Node { get; } = Node;
     public string Label { get; } = Label;
     public string RootLabel { get; } = RootLabel;
     public string LeafLabel { get; } = LeafLabel;
@@ -29,6 +29,6 @@ public record Association(ITypeSymbol RootSymbol, ITypeSymbol LeafSymbol, Associ
         {
             leafName = $"\"{leafName}\"";
         }
-        return $"{rootName}{rootLabel} {Kind.Node} {leafLabel}{leafName}{nodeLabel}";
+        return $"{rootName}{rootLabel} {Node.Node} {leafLabel}{leafName}{nodeLabel}";
     }
 }
