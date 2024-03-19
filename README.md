@@ -18,7 +18,7 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 
 - [PlantUmlClassDiagramGenerator.SourceGenerator](/src/PlantUmlClassDiagramGenerator.SourceGenerator)
 
-This feature is currently in alpha testing phase. Please test it out and provide your feedback. We greatly appreciate it.
+This feature is currently in beta testing phase. Please test it out and provide your feedback. We greatly appreciate it.
 
 ## Visual Studio Code Extension
 
