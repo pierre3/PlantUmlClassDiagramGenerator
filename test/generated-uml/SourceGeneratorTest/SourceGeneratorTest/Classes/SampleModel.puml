@@ -1,7 +1,6 @@
 @startuml SampleModel
 !include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Logs/ILogger.puml
 !include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/StructA.puml
-!include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/Item.puml
 !include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/Parameters.puml
 class SampleModel  {
     - <<readonly>> logger : ILogger
@@ -12,7 +11,7 @@ class SampleModel  {
 }
 SampleModel o-- ILogger : logger
 SampleModel o-- "*" StructA : structures
-SampleModel *-- "*" Item : Items
-SampleModel ..> ILogger
+SampleModel "root" o-- "leaf" "IReadOnlyList`1" : node
+SampleModel --> ILogger : Injection
 SampleModel ..> Parameters
 @enduml

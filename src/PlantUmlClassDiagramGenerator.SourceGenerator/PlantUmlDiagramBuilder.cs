@@ -163,6 +163,15 @@ public class PlantUmlDiagramBuilder(
 
     private void SetPropertyAssociation(IPropertySymbol propertySymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (propertySymbol.HasPlantUmlIgnoreAssociationAttribute())
+        {
+            return;
+        }
+        if (propertySymbol.HasPlantUmlAssociationAttribute())
+        {
+            SetCustomAssociation(propertySymbol, propertySymbol.Type, symbols);
+            return;
+        }
         var targetType = propertySymbol.Type;
         var leafLabel = "";
 
@@ -190,7 +199,7 @@ public class PlantUmlDiagramBuilder(
             if (propertySymbol.HasPropertyInitializer()
                 || Symbol.ContainsObjectCreationInConstructor(propertySymbol.Name))
             {
-                Associations.Add(AssociationKind.Composition.Create(
+                Associations.Add(AssociationNode.Composition.Create(
                     Symbol,
                     typeSymbol,
                     label: propertySymbol.Name,
@@ -198,7 +207,7 @@ public class PlantUmlDiagramBuilder(
             }
             else
             {
-                Associations.Add(AssociationKind.Aggregation.Create(
+                Associations.Add(AssociationNode.Aggregation.Create(
                     Symbol,
                     typeSymbol,
                     label: propertySymbol.Name,
@@ -208,8 +217,38 @@ public class PlantUmlDiagramBuilder(
         }
     }
 
+    private void SetCustomAssociation(ISymbol targetSymbol, ITypeSymbol targetTypeSymbol, IImmutableSet<INamedTypeSymbol> symbols)
+    {
+        var leafTypeSymbol = targetSymbol.GetPlantUmlAssociationAttributeArg("LeafType") as INamedTypeSymbol
+            ?? targetTypeSymbol;
+        var node = targetSymbol.GetPlantUmlAssociationAttributeArg(0) as string ?? AssociationNode.Association.Node;
+        var lLabel = targetSymbol.GetPlantUmlAssociationAttributeArg("LeafLabel") as string ?? "";
+        var nLabel = targetSymbol.GetPlantUmlAssociationAttributeArg("NodeLabel") as string ?? "";
+        var rLabel = targetSymbol.GetPlantUmlAssociationAttributeArg("RootLabel") as string ?? "";
+        Associations.Add(new Association(
+            Symbol,
+            leafTypeSymbol,
+            new AssociationNode(node),
+            nLabel,
+            rLabel,
+            lLabel));
+        if (leafTypeSymbol is INamedTypeSymbol namedTypeSymbol)
+        {
+            AddToIncludeItems(namedTypeSymbol, symbols);
+        }
+    }
+
     private void SetFieldAssociation(IFieldSymbol fieldSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (fieldSymbol.HasPlantUmlIgnoreAssociationAttribute())
+        {
+            return;
+        }
+        if (fieldSymbol.HasPlantUmlAssociationAttribute())
+        {
+            SetCustomAssociation(fieldSymbol, fieldSymbol.Type, symbols);
+            return;
+        }
         var targetType = fieldSymbol.Type;
         var leafLabel = "";
 
@@ -238,7 +277,7 @@ public class PlantUmlDiagramBuilder(
             if (fieldSymbol.HasFieldInitializer()
                 || Symbol.ContainsObjectCreationInConstructor(fieldSymbol.Name))
             {
-                Associations.Add(AssociationKind.Composition.Create(
+                Associations.Add(AssociationNode.Composition.Create(
                     Symbol,
                     typeSymbol,
                     label: fieldSymbol.Name,
@@ -246,7 +285,7 @@ public class PlantUmlDiagramBuilder(
             }
             else
             {
-                Associations.Add(AssociationKind.Aggregation.Create(
+                Associations.Add(AssociationNode.Aggregation.Create(
                     Symbol,
                     typeSymbol,
                     label: fieldSymbol.Name,
@@ -261,12 +300,21 @@ public class PlantUmlDiagramBuilder(
     {
         foreach (var parameter in methodSymbol.Parameters)
         {
+            if(parameter.HasPlantUmlIgnoreAssociationAttribute())
+            {
+                 continue;
+            }
+            if (parameter.HasPlantUmlAssociationAttribute())
+            {
+                SetCustomAssociation(parameter, parameter.Type, symbols);
+                continue;
+            }
             if (parameter.Type is INamedTypeSymbol typeSymbol
                 && HasReference(typeSymbol, symbols)
                 && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
             {
                 var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
-                Associations.Add(AssociationKind.Dependency.Create(Symbol, typeSymbol, leafLabel: leafLabel));
+                Associations.Add(AssociationNode.Dependency.Create(Symbol, typeSymbol, leafLabel: leafLabel));
                 AddToIncludeItems(typeSymbol, symbols);
             }
         }
@@ -280,7 +328,7 @@ public class PlantUmlDiagramBuilder(
             && Symbol.BaseType.SpecialType != SpecialType.System_ValueType)
         {
             var rootLabel = Symbol.BaseType.IsGenericType ? Symbol.BaseType.GetTypeArgumentsString() : "";
-            Associations.Add(AssociationKind.Inheritance.Create(Symbol.BaseType, Symbol, rootLabel: rootLabel));
+            Associations.Add(AssociationNode.Inheritance.Create(Symbol.BaseType, Symbol, rootLabel: rootLabel));
             AddToIncludeItems(Symbol.BaseType, symbols);
         }
     }
@@ -290,13 +338,17 @@ public class PlantUmlDiagramBuilder(
         foreach (var type in Symbol.Interfaces)
         {
             var rootLabel = type.IsGenericType ? type.GetTypeArgumentsString() : "";
-            Associations.Add(AssociationKind.Realization.Create(type, Symbol, rootLabel: rootLabel));
+            Associations.Add(AssociationNode.Realization.Create(type, Symbol, rootLabel: rootLabel));
             AddToIncludeItems(type, symbols);
         }
     }
     private void SetNest(INamedTypeSymbol nestedTypeSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
-        Associations.Add(AssociationKind.Nest.Create(Symbol, nestedTypeSymbol));
+        if (nestedTypeSymbol.HasPlantUmlIgnoreAssociationAttribute())
+        {
+            return;
+        }
+        Associations.Add(AssociationNode.Nest.Create(Symbol, nestedTypeSymbol));
         AddToIncludeItems(nestedTypeSymbol, symbols);
     }
 
