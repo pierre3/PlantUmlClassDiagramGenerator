@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
+using PlantUmlClassDiagramGenerator.SourceGenerator.Options;
 using System.Collections.Immutable;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator;
@@ -45,7 +46,7 @@ public partial class PlantUmlSourceGenerator : IIncrementalGenerator
             InitiarizeOutputDirectory(Path.Combine(options.OutputDir, options.AssemblyName));
             var symbols = targetSymbols
                 .OfType<INamedTypeSymbol>()
-                .Where(predicate: options.DeclaredTypeFilter)
+                .Where(predicate: GeneratorAttributes.DeclaredTypeFilter)
                 .SelectMany(symbol => symbol.EnumerateNestedTypeSymbols()) //Include nested types
                 .ToImmutableHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 

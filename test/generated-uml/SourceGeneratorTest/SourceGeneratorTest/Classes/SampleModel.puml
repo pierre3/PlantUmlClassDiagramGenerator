@@ -1,17 +1,17 @@
 @startuml SampleModel
 !include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Logs/ILogger.puml
-!include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/StructA.puml
+!include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/Item.puml
 !include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/Parameters.puml
 class SampleModel  {
     - <<readonly>> logger : ILogger
-    - <<readonly>> structures : IList<StructA>
-    + <<readonly>> Items : IReadOnlyList<Item> <<get>>
-    + SampleModel(logger : ILogger, structures : IList<StructA>)
+    + <<readonly>> Items : IDictionary<string, Item> <<get>>
+    + SampleModel(logger : ILogger)
+    + Write(writer : TextWriter) : void
     + <<async>> Execute(parameters : Parameters) : ValueTask
 }
 SampleModel o-- ILogger : logger
-SampleModel o-- "*" StructA : structures
-SampleModel "root" o-- "leaf" "IReadOnlyList`1" : node
-SampleModel --> ILogger : Injection
+SampleModel "IDictionary<string,Item>" *-- "*" Item : Items
+SampleModel ..> ILogger : Injection
+SampleModel ..> TextWriter
 SampleModel ..> Parameters
 @enduml
