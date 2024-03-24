@@ -4,7 +4,6 @@ using System.Text;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator
 {
-
     public partial class PlantUmlSourceGenerator
     {
         public void RegisterAttributes(IncrementalGeneratorInitializationContext context)
@@ -28,7 +27,8 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
                     }
                 
                     [global::System.AttributeUsage(
-                        global::System.AttributeTargets.Class
+                        global::System.AttributeTargets.Assembly
+                        | global::System.AttributeTargets.Class
                         | global::System.AttributeTargets.Interface
                         | global::System.AttributeTargets.Enum
                         | global::System.AttributeTargets.Struct)]
@@ -86,12 +86,20 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
                         | global::System.AttributeTargets.Parameter)]
                     internal class PlantUmlIgnoreAssociationAttribute : global::System.Attribute
                     { }
+                    
+                    [global::System.AttributeUsage(
+                        global::System.AttributeTargets.Assembly
+                        | global::System.AttributeTargets.Class
+                        | global::System.AttributeTargets.Interface
+                        | global::System.AttributeTargets.Enum
+                        | global::System.AttributeTargets.Struct)]
+                    internal class PlantUmlExtraAssociationTargetsAttribute(params global::System.Type[] types ) : global::System.Attribute
+                    {
+                        public global::System.Type[] Types { get; } = types;
+                    }
                     """;
                 context.AddSource("Attributes", SourceText.From(source, Encoding.UTF8));
             });
-
-
-
         }
     }
 }

@@ -11,15 +11,9 @@
 
 	<ItemGroup>
 		<CompilerVisibleProperty Include="PlantUmlGenerator_OutputDir" />
-		<CompilerVisibleProperty Include="PlantUmlGenerator_AttributeRequierd" />
-		<CompilerVisibleProperty Include="PlantUmlGenerator_IncludeAccessibilities" />
-		<CompilerVisibleProperty Include="PlantUmlGenerator_ExcludeMemberAccessibilities" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PlantUmlGenerator_OutputDir>$(SolutionDir)test\generated-uml</PlantUmlGenerator_OutputDir>
-		<PlantUmlGenerator_AttributeRequierd>true</PlantUmlGenerator_AttributeRequierd>
-		<PlantUmlGenerator_IncludeAccessibilities>Public,Protected</PlantUmlGenerator_IncludeAccessibilities>
-		<PlantUmlGenerator_ExcludeMemberAccessibilities>None</PlantUmlGenerator_ExcludeMemberAccessibilities>
 	</PropertyGroup>
 
 	<ItemGroup>

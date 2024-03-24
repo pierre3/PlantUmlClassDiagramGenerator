@@ -1,13 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.SourceGenerator.Associations;
 using PlantUmlClassDiagramGenerator.SourceGenerator.Extensions;
+using PlantUmlClassDiagramGenerator.SourceGenerator.Options;
 using System.Collections.Immutable;
 using System.Text;
 
 namespace PlantUmlClassDiagramGenerator.SourceGenerator;
 
-public class PlantUmlDiagramBuilder(
+internal class PlantUmlDiagramBuilder(
     INamedTypeSymbol symbol,
     GeneratorOptions options,
     string indent = "    ")
@@ -17,6 +17,7 @@ public class PlantUmlDiagramBuilder(
     private IList<string> MemberDeclarations { get; } = new List<string>();
     private ISet<Association> Associations { get; } = new HashSet<Association>();
     private ISet<string> IncludeItems { get; } = new HashSet<string>();
+    private IImmutableSet<INamedTypeSymbol> ExtraAssociationTargets { get; } = symbol.GetExtraAssociationTargets();
 
     public string Indent { get; set; } = indent;
     public string UmlString { get; private set; } = "";
@@ -49,7 +50,7 @@ public class PlantUmlDiagramBuilder(
 
     private void ProcessMembersSymbol(IImmutableSet<INamedTypeSymbol> symbols)
     {
-        foreach (var member in Symbol.GetMembers().Where(memberSymbol => Options.MemberTypeFilter(memberSymbol, Symbol)))
+        foreach (var member in Symbol.GetMembers().Where(memberSymbol => GeneratorAttributes.MemberTypeFilter(memberSymbol, Symbol)))
         {
             switch (member)
             {
@@ -189,7 +190,7 @@ public class PlantUmlDiagramBuilder(
         }
 
         if (targetType is INamedTypeSymbol typeSymbol
-                && HasReference(typeSymbol, symbols)
+                && (HasReference(typeSymbol, symbols) || IsExtraAssociationTarget(typeSymbol, ExtraAssociationTargets))
                 && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
             if (leafLabel == "")
@@ -266,12 +267,12 @@ public class PlantUmlDiagramBuilder(
         }
 
         if (targetType is INamedTypeSymbol typeSymbol
-            && HasReference(typeSymbol, symbols)
+            && (HasReference(typeSymbol, symbols) || IsExtraAssociationTarget(typeSymbol, ExtraAssociationTargets))
             && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
         {
-            if(leafLabel == "")
+            if (leafLabel == "")
             {
-                leafLabel = typeSymbol.IsGenericType? typeSymbol.GetTypeArgumentsString() : "";
+                leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
             }
 
             if (fieldSymbol.HasFieldInitializer()
@@ -300,17 +301,18 @@ public class PlantUmlDiagramBuilder(
     {
         foreach (var parameter in methodSymbol.Parameters)
         {
-            if(parameter.HasPlantUmlIgnoreAssociationAttribute())
+            if (parameter.HasPlantUmlIgnoreAssociationAttribute())
             {
-                 continue;
+                continue;
             }
             if (parameter.HasPlantUmlAssociationAttribute())
             {
                 SetCustomAssociation(parameter, parameter.Type, symbols);
                 continue;
             }
+
             if (parameter.Type is INamedTypeSymbol typeSymbol
-                && HasReference(typeSymbol, symbols)
+                && (HasReference(typeSymbol, symbols) || IsExtraAssociationTarget(typeSymbol, ExtraAssociationTargets))
                 && !typeSymbol.Equals(Symbol, SymbolEqualityComparer.Default))
             {
                 var leafLabel = typeSymbol.IsGenericType ? typeSymbol.GetTypeArgumentsString() : "";
@@ -371,6 +373,14 @@ public class PlantUmlDiagramBuilder(
                 ? symbol.OriginalDefinition
                 : symbol;
         return symbols.Contains(target);
+    }
+
+    private static bool IsExtraAssociationTarget(INamedTypeSymbol symbol, IImmutableSet<INamedTypeSymbol> extraAssociationTargets)
+    {
+        var target = symbol.IsGenericType
+                ? symbol.OriginalDefinition
+                : symbol;
+        return extraAssociationTargets.Contains(target);
     }
 
     private string MakeIncludePath(ITypeSymbol targetSymbol)
