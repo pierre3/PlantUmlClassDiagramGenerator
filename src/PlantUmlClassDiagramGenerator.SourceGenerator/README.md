@@ -37,31 +37,25 @@ Add the following section to your project file (.csproj):
 ```xml
 <ItemGroup>
 	<CompilerVisibleProperty Include="PlantUmlGenerator_OutputDir" />
-	<CompilerVisibleProperty Include="PlantUmlGenerator_AttributeRequierd" />
-	<CompilerVisibleProperty Include="PlantUmlGenerator_IncludeMemberAccessibilities" />
-	<CompilerVisibleProperty Include="PlantUmlGenerator_ExcludeMemberAccessibilities" />
 </ItemGroup>
 <PropertyGroup>
 	<PlantUmlGenerator_OutputDir>$(ProjectDir)generated-uml</PlantUmlGenerator_OutputDir>
-	<PlantUmlGenerator_AttributeRequierd>false</PlantUmlGenerator_AttributeRequierd>
-	<PlantUmlGenerator_IncludeMemberAccessibilities>All</PlantUmlGenerator_IncludeMemberAccessibilities>
-	<PlantUmlGenerator_ExcludeMemberAccessibilities>None</PlantUmlGenerator_ExcludeMemberAccessibilities>
 </PropertyGroup>
 ```
 
 |Property|Description|Default|
 |--|--|--|
 |PlantUmlGenerator_OutputDir|Specifies the directory where the generated UML files will be placed. If you want to establish associations between different projects, specify the same directory for all related projects.|$(ProjectDir)generated_uml|
-|PlantUmlGenerator_AttributeRequierd|Set to true if you want to output only types with the PlantUmlDiagramAttribute, or false if you want to output all types defined within the project.|true|
-|PlantUmlGenerator_IncludeMemberAccessibilities|Specifies the accessibilities of members to include in the output. Possible values are as follows: <br>・None<br>・Public<br>・Protected<br>・Internal<br>・ProtectedInternal<br>・PrivateProtected<br>・Private<br>・All<br>You can specify multiple values separated by commas. <br>Example: Public,Protected|All|
-|PlantUmlGenerator_ExcludeMemberAccessibilities|Specifies the accessibilities of members to exclude from the output. The format of specification is the same as PlantUmlGenerator_IncludeMemberAccessibilities.|None|
-
 
 ### 3. Setting Attribute Values
 Set attribute values for types and their members as needed.
 
 #### 3.1 PlantUmlDiagramAttribute
-If the project setting `PlantUmlGenerator_AttributeRequierd` is set to true, you need to add this attribute to the types you want to include in the output.
+You can apply this attribute to assembly and type definitions (such as classes, structures, interfaces, and enumerations). Types that have this attribute will be included in the class diagram output. If applied to an assembly, it includes all types defined within that assembly.
+
+```cs
+[assembly:PlantUmlDiagram]
+```
 
 ```cs
 [PlantUmlDiagram]
@@ -100,7 +94,7 @@ class ClassA
 
 #### 3.2 PlantUmlIgnoreAttribute
 
-If the project setting `PlantUmlGenerator_AttributeRequierd` is set to false, all types defined within the project will be included in the output. If you want to exclude certain types from the output, you can apply the `PlantUmlIgnoreAttribute` to those types.
+If you define the `PlantUmlDiagramAttribute` at the assembly level, all types defined within that assembly will be included in the class diagram output. However, if you want to exclude specific types from the output, you can apply the `PlantUmlIgnoreAttribute` to those types.
 
 ```csharp
 [PlantUmlIgnore]
@@ -131,9 +125,137 @@ class ClassA
     public void MethodB(){}
 }
 ```
-
-
 ![classA](/uml/source-generator/0302-003.svg)
+
+#### PlantUmlAssociationAttribute
+This attribute is used to annotate members or method parameters to create custom associations. The properties below specify the details of the association to be created. Here, the type to which the attribute is attached is referred to as the "Root Type," and the type associated with it is referred to as the "Leaf Type."
+
+|プロパティ|型|説明|
+|--|--|--|
+|Node|string|Specifies a string corresponding to the type of association (e.g., o--, ..>).|
+|LeafType|System.Type|Specifies the type on the leaf side.|
+|RootLabel|string|Specifies the label to be added on the root side.|
+|NodeLabel|string|Specifies the label to be added on the line connecting the root and leaf.|
+|LeafLabel|string|Specifies the label to be added on the leaf side.|
+
+
+```cs
+internal class SampleModel
+{
+    private readonly ILogger logger;
+
+    [PlantUmlAssociation("*--",
+        LeafType = typeof(Item),
+        RootLabel = "IDictionary<string,Item>",
+        LeafLabel = "*",
+        NodeLabel = nameof(Items))]
+    public IDictionary<string, Item> Items { get; } = new Dictionary<string, Item>();
+
+    public SampleModel([PlantUmlAssociation("..>", NodeLabel = "Injection")] ILogger logger)
+    {
+        this.logger = logger;
+    }
+}
+```
+
+```
+@startuml SampleModel
+class SampleModel {
+    - <<readonly>> logger : ILogger
+    + <<readonly>> Items : IDictionary<string, Item> <<get>>
+    + SampleModel(logger : ILogger)
+}
+SampleModel o-l- ILogger : logger
+SampleModel "IDictionary<string,Item>" *-- "*" Item : Items
+SampleModel ..> ILogger : Injection
+@enduml
+```
+
+![0414-001](/uml/source-generator/0414-001.svg)
+
+#### PlantUmlIgnoreAssociationAttribute
+By attaching it to members you don't want to create associations with, this attribute suppresses the automatic generation of associations.
+
+```csharp
+internal class SampleModel
+{
+    [PlantUmlIgnoreAssociation]
+    private readonly ILogger logger;
+
+    [PlantUmlAssociation("*--",
+        LeafType = typeof(Item),
+        RootLabel = "IDictionary<string,Item>",
+        LeafLabel = "*",
+        NodeLabel = nameof(Items))]
+    public IDictionary<string, Item> Items { get; } = new Dictionary<string, Item>();
+
+    public SampleModel([PlantUmlIgnoreAssociation] ILogger logger)
+    {
+        this.logger = logger;
+    }
+}
+```
+
+```
+@startuml SampleModel
+class SampleModel  {
+    - <<readonly>> logger : ILogger
+    + <<readonly>> Items : IDictionary<string, Item> <<get>>
+    + SampleModel(logger : ILogger)
+}
+SampleModel "IDictionary<string,Item>" *-- "*" Item : Items
+@enduml
+```
+
+![0414-002](/uml/source-generator/0414-002.svg)
+
+#### PlantUmlExtraAssociationTargetsAttribute
+Specify additional types to be targeted for association.
+In this tool, the following conditions determine which types are targeted for association:
+- Types that are output targets within the project.
+- Types for which a .puml file exists in the output folder.
+
+To create associations with types other than those mentioned above, register them using the `PlantUmlExtraAssociationTargetsAttribute`. This attribute can be applied to both assemblies and type definitions.
+
+```csharp
+[assembly: PlantUmlExtraAssociationTargets(
+    typeof(KeyValuePair<,>),
+    typeof(System.Net.Http.HttpClient))]
+
+[PlantUmlExtraAssociationTargets(typeof(System.IO.Textwriter))]
+internal class SampleModel
+{
+    private HttpClient httpClient;
+    public IDictionary<string, Item> Items { get; set; } = new Dictionary<string, Item>();
+    
+    public SampleModel(HttpClient httpClient)
+    {
+        this.httpClient = httpClient;
+    }
+
+    public void Write(TextWriter writer)
+    {
+        writer.Write("hoge");
+    }
+}
+```
+
+```
+@startuml SampleModel
+class SampleModel  {
+    - httpClient : HttpClient
+    + Items : IDictionary<string, Item> <<get>> <<set>>
+    + SampleModel(httpClient : HttpClient)
+    + Write(writer : TextWriter) : void
+}
+SampleModel o-- HttpClient : httpClient
+SampleModel *-- "*" "KeyValuePair`2" : Items
+SampleModel ..> HttpClient
+SampleModel ..> TextWriter
+@enduml
+```
+
+![0414-003](/uml/source-generator/0414-003.svg)
 
 ## Specification
 
@@ -922,7 +1044,20 @@ class Parameters <<record>>  {
 
 ![Example2](/uml/source-generator/0302-014.svg)
 
-## Release Note
+## Release Notes
+
+### [0.6.0-beta]
+- Partially deprecated properties that can be configured in project files (.csproj).   
+  From this version onwards, only `PlantUmlGenerator_OutputDir` is configurable.
+- Modified the `PlantUmlDiagramAttribute` to be applicable at the assembly level.   
+  When applied at the assembly level, it targets all types defined within it for output.
+- Added the `PlantUmlAssociationAttribute`.  
+  This allows for the definition of custom associations.
+- Added the `PlantUmlIgnoreAssociationAttribute`.  
+  Attach this attribute to members or method parameters where associations are not desired, thereby excluding them from association creation.
+- Introduced the `PlantUmlExtraAssociationTargetsAttribute`.   
+  This allows for additional specification of types targeted for association creation.
+
 ### [0.5.1-beta]
 
 1. Added the following csproj properties:
