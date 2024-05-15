@@ -1,0 +1,19 @@
+@startuml DisableField
+!include ../Types/ClassA.puml
+!include ../Types/IInterfaceA.puml
+!include ../Types/Item.puml
+!include ../Types/Parameters.puml
+!include ./DisableField.InnerClass.puml
+class DisableField  {
+    - item : Item
+    + <<readonly>> Item : Item <<get>>
+    + DisableField()
+    + Execute(parameters : Parameters) : void
+    + MethodA() : void
+}
+ClassA <|-- DisableField
+IInterfaceA <|.. DisableField
+DisableField o-- Item : Item
+DisableField ..> Parameters
+DisableField +.. DisableField::InnerClass
+@enduml

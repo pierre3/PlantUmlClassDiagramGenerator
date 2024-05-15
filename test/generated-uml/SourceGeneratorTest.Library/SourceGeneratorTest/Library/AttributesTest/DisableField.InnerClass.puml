@@ -1,0 +1,6 @@
+@startuml DisableField::InnerClass
+class DisableField::InnerClass  {
+    + Value : int <<get>> <<set>>
+    + InnerClass()
+}
+@enduml

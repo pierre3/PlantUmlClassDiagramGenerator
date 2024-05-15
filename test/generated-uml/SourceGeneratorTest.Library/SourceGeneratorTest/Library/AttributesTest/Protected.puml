@@ -1,0 +1,7 @@
+@startuml Protected
+class Protected  {
+    # fiedlC : int
+    # PropC : string <<get>> <<set>>
+    # MethodC() : void
+}
+@enduml

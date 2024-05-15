@@ -1,6 +1,5 @@
 @startuml SampleModel
 !include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Logs/ILogger.puml
-!include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/Item.puml
 !include ../../../SourceGeneratorTest.Library/SourceGeneratorTest/Library/Types/Parameters.puml
 class SampleModel  {
     - <<readonly>> logger : ILogger
@@ -9,9 +8,8 @@ class SampleModel  {
     + Write(writer : TextWriter) : void
     + <<async>> Execute(parameters : Parameters) : ValueTask
 }
-SampleModel o-- ILogger : logger
-SampleModel "IDictionary<string,Item>" *-- "*" Item : Items
-SampleModel ..> ILogger : Injection
+SampleModel *-- "*" "KeyValuePair`2" : Items
+SampleModel ..> ILogger
 SampleModel ..> TextWriter
 SampleModel ..> Parameters
 @enduml

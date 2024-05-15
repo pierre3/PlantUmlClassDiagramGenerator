@@ -1,0 +1,9 @@
+@startuml DisableAll
+class DisableAll  {
+    - item : Item
+    + <<readonly>> Item : Item <<get>>
+    + DisableAll()
+    + Execute(parameters : Parameters) : void
+    + MethodA() : void
+}
+@enduml

@@ -1,0 +1,11 @@
+@startuml PrivateInternal
+class PrivateInternal  {
+    - fieldB : int
+    ~ fieldF : int
+    - PropB : string <<get>> <<set>>
+    ~ PropF : string <<get>> <<set>>
+    - MethodB() : void
+    ~ MethodF() : void
+    - {static} PrivateInternal()
+}
+@enduml

@@ -1,0 +1,16 @@
+@startuml DisableInhelit
+!include ../Types/Item.puml
+!include ../Types/Parameters.puml
+!include ./DisableInhelit.InnerClass.puml
+class DisableInhelit  {
+    - item : Item
+    + <<readonly>> Item : Item <<get>>
+    + DisableInhelit()
+    + Execute(parameters : Parameters) : void
+    + MethodA() : void
+}
+DisableInhelit *-- Item : item
+DisableInhelit o-- Item : Item
+DisableInhelit ..> Parameters
+DisableInhelit +.. DisableInhelit::InnerClass
+@enduml

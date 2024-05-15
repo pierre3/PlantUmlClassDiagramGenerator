@@ -1,0 +1,11 @@
+@startuml PublicProtected
+class PublicProtected  {
+    + {static} <<readonly>> FieldA : int
+    # fiedlC : int
+    + PropA : string <<get>> <<set>>
+    # PropC : string <<get>> <<set>>
+    + PublicProtected()
+    + MethodA() : void
+    # MethodC() : void
+}
+@enduml

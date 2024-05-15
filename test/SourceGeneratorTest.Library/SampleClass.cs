@@ -1,5 +1,6 @@
 ﻿using PlantUmlClassDiagramGenerator.SourceGenerator.Attributes;
 using System;
+using System.Reflection.Metadata;
 
 namespace SourceGeneratorTest.Library
 {
@@ -34,6 +35,5 @@ namespace SourceGeneratorTest.Library
 
         protected virtual void VirtualMethod() => throw new NotImplementedException();
         public int MethodB() => value1;
-
     }
 }

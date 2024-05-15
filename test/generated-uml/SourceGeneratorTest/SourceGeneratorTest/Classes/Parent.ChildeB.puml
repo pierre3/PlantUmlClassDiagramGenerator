@@ -1,9 +1,5 @@
 @startuml Parent::ChildeB
-!include ./Parent.ChildeB.GrandchildA.puml
-!include ./Parent.ChildeB.GrandchildB.puml
 class Parent::ChildeB  {
     + ChildeB()
 }
-Parent::ChildeB +.. Parent::ChildeB::GrandchildA
-Parent::ChildeB +.. Parent::ChildeB::GrandchildB
 @enduml

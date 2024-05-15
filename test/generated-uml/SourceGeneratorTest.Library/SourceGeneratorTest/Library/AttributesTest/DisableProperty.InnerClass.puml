@@ -1,0 +1,6 @@
+@startuml DisableProperty::InnerClass
+class DisableProperty::InnerClass  {
+    + Value : int <<get>> <<set>>
+    + InnerClass()
+}
+@enduml

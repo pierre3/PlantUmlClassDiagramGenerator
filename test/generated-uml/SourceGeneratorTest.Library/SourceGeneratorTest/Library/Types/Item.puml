@@ -14,5 +14,4 @@ class Item <<record>>  {
     # Item(original : Item)
     + Deconstruct(Name : string, Value : double) : void
 }
-"IEquatable`1" "<Item>" <|.. Item
 @enduml

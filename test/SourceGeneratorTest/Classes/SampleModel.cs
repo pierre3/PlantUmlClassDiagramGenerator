@@ -4,20 +4,16 @@ using SourceGeneratorTest.Library.Types;
 
 namespace SourceGeneratorTest.Classes;
 
-[PlantUmlDiagram(IncludeMemberAccessibilities = Accessibilities.All)]
+[PlantUmlDiagram(IncludeMemberAccessibilities = Accessibilities.All,
+    DisableAssociationTypes = AssociationTypes.Field)]
 [PlantUmlExtraAssociationTargets(typeof(System.IO.TextWriter))]
 internal class SampleModel
 {
     private readonly ILogger logger;
 
-    [PlantUmlAssociation("*--",
-        LeafType = typeof(Item),
-        RootLabel = "IDictionary<string,Item>",
-        LeafLabel = "*",
-        NodeLabel = nameof(Items))]
     public IDictionary<string, Item> Items { get; } = new Dictionary<string, Item>();
 
-    public SampleModel([PlantUmlAssociation("..>", NodeLabel = "Injection")] ILogger logger)
+    public SampleModel(ILogger logger)
     {
         this.logger = logger;
     }

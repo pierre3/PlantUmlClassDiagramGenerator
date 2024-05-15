@@ -1,0 +1,18 @@
+@startuml DisableNest
+!include ../Types/ClassA.puml
+!include ../Types/IInterfaceA.puml
+!include ../Types/Item.puml
+!include ../Types/Parameters.puml
+class DisableNest  {
+    - item : Item
+    + <<readonly>> Item : Item <<get>>
+    + DisableNest()
+    + Execute(parameters : Parameters) : void
+    + MethodA() : void
+}
+ClassA <|-- DisableNest
+IInterfaceA <|.. DisableNest
+DisableNest *-- Item : item
+DisableNest o-- Item : Item
+DisableNest ..> Parameters
+@enduml
