@@ -1,0 +1,13 @@
+@startuml ItemProviderA
+!include ./IItemProvider.puml
+!include ./Item.puml
+class ItemProviderA  {
+    - _item : Item
+    + <<readonly>> Item : Item <<get>>
+    + ItemProviderA(item : Item)
+}
+IItemProvider <|.. ItemProviderA
+ItemProviderA o-- Item : _item
+ItemProviderA o-- Item : Item
+ItemProviderA ..> Item
+@enduml

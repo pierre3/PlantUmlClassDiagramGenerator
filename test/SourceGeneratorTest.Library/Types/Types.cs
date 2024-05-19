@@ -13,6 +13,12 @@ class ClassA
 }
 
 [PlantUmlDiagram]
+interface IInterfaceA
+{
+    void MethodA();
+}
+
+[PlantUmlDiagram]
 static class StaticClass
 {
     public static string SpecificName = "Hoge";

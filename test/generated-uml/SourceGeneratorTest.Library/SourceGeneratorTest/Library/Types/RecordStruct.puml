@@ -14,5 +14,4 @@ struct RecordStruct <<sealed>> <<record>>  {
     + <<readonly>> Deconstruct(X : float, Y : float, Z : float) : void
     + RecordStruct()
 }
-"IEquatable`1" "<RecordStruct>" <|.. RecordStruct
 @enduml

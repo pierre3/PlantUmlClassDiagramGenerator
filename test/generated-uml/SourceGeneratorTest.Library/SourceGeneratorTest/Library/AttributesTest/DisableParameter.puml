@@ -1,0 +1,18 @@
+@startuml DisableParameter
+!include ../Types/ClassA.puml
+!include ../Types/IInterfaceA.puml
+!include ../Types/Item.puml
+!include ./DisableParameter.InnerClass.puml
+class DisableParameter  {
+    - item : Item
+    + <<readonly>> Item : Item <<get>>
+    + DisableParameter()
+    + Execute(parameters : Parameters) : void
+    + MethodA() : void
+}
+ClassA <|-- DisableParameter
+IInterfaceA <|.. DisableParameter
+DisableParameter *-- Item : item
+DisableParameter o-- Item : Item
+DisableParameter +.. DisableParameter::InnerClass
+@enduml

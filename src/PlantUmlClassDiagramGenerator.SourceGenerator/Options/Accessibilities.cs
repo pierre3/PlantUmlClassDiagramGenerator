@@ -3,6 +3,7 @@
 [Flags]
 internal enum Accessibilities
 {
+    NotSet = 0x8000,
     None = 0,
     Public = 0x01,
     Protected = 0x02,

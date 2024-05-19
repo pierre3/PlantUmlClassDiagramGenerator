@@ -24,22 +24,14 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>plantuml;SourceGenerator</PackageTags>
-		<PackageReleaseNotes>[0.6.0-beta]
-- Partially deprecated properties that can be configured in project files (.csproj).
-  From this version onwards, only `PlantUmlGenerator_OutputDir` is configurable.
-- Modified the `PlantUmlDiagramAttribute` to be applicable at the assembly level.
-  When applied at the assembly level, it targets all types defined within it for output.
-- Added the `PlantUmlAssociationAttribute`.
-  This allows for the definition of custom associations.
-- Added the `PlantUmlIgnoreAssociationAttribute`.
-  Attach this attribute to members or method parameters where associations are not desired, thereby excluding them from association creation.
-- Introduced the `PlantUmlExtraAssociationTargetsAttribute`.
-  This allows for additional specification of types targeted for association creation.
+		<PackageReleaseNotes>[1.0.0]
+- Added `DisableAssociationTypes` property to `PlantUmlDiagramAttribute`.
+- Fixed behavior when setting `IncludeMemberAccessibilities` and `ExcludeMemberAccessibilities` properties of `PlantUmlDiagramAttribute`.
 		</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<AssemblyVersion>0.6.0.0</AssemblyVersion>
-		<FileVersion>0.6.0.0</FileVersion>
-		<Version>0.6.0-beta</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Version>1.0.0</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />

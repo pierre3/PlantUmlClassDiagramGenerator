@@ -1,0 +1,7 @@
+@startuml PrivateProtected
+class PrivateProtected  {
+    <<private protected>> fiedlE : int
+    <<private protected>> PropE : string <<get>> <<set>>
+    <<private protected>> MethodE() : void
+}
+@enduml

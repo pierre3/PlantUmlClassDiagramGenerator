@@ -14,5 +14,4 @@ class RecordA <<record>>  {
     # RecordA(original : RecordA)
     + Deconstruct(Name : string, Value : int) : void
 }
-"IEquatable`1" "<RecordA>" <|.. RecordA
 @enduml

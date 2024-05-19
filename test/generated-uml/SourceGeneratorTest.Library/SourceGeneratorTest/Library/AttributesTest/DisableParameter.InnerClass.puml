@@ -1,0 +1,6 @@
+@startuml DisableParameter::InnerClass
+class DisableParameter::InnerClass  {
+    + Value : int <<get>> <<set>>
+    + InnerClass()
+}
+@enduml

@@ -164,6 +164,10 @@ internal class PlantUmlDiagramBuilder(
 
     private void SetPropertyAssociation(IPropertySymbol propertySymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (Symbol.DisableAssociationTypes().HasFlag(AssociationTypes.Property))
+        {
+            return;
+        }
         if (propertySymbol.HasPlantUmlIgnoreAssociationAttribute())
         {
             return;
@@ -241,6 +245,10 @@ internal class PlantUmlDiagramBuilder(
 
     private void SetFieldAssociation(IFieldSymbol fieldSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (Symbol.DisableAssociationTypes().HasFlag(AssociationTypes.Field))
+        {
+            return;
+        }
         if (fieldSymbol.HasPlantUmlIgnoreAssociationAttribute())
         {
             return;
@@ -299,6 +307,10 @@ internal class PlantUmlDiagramBuilder(
 
     private void SetMethodAssociation(IMethodSymbol methodSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (Symbol.DisableAssociationTypes().HasFlag(AssociationTypes.MethodParameter))
+        {
+            return;
+        }
         foreach (var parameter in methodSymbol.Parameters)
         {
             if (parameter.HasPlantUmlIgnoreAssociationAttribute())
@@ -324,10 +336,13 @@ internal class PlantUmlDiagramBuilder(
 
     private void SetInheritance(IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (Symbol.DisableAssociationTypes().HasFlag(AssociationTypes.Inheritance))
+        {
+            return;
+        }
         if (Symbol.BaseType is not null
-            && Symbol.BaseType.SpecialType != SpecialType.System_Object
-            && Symbol.BaseType.SpecialType != SpecialType.System_Enum
-            && Symbol.BaseType.SpecialType != SpecialType.System_ValueType)
+            && (HasReference(Symbol.BaseType, symbols)
+            || IsExtraAssociationTarget(Symbol.BaseType, ExtraAssociationTargets)))
         {
             var rootLabel = Symbol.BaseType.IsGenericType ? Symbol.BaseType.GetTypeArgumentsString() : "";
             Associations.Add(AssociationNode.Inheritance.Create(Symbol.BaseType, Symbol, rootLabel: rootLabel));
@@ -337,15 +352,27 @@ internal class PlantUmlDiagramBuilder(
 
     private void SetRealization(IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (Symbol.DisableAssociationTypes().HasFlag(AssociationTypes.Realization))
+        {
+            return;
+        }
         foreach (var type in Symbol.Interfaces)
         {
-            var rootLabel = type.IsGenericType ? type.GetTypeArgumentsString() : "";
-            Associations.Add(AssociationNode.Realization.Create(type, Symbol, rootLabel: rootLabel));
-            AddToIncludeItems(type, symbols);
+            if (HasReference(type, symbols)
+                || IsExtraAssociationTarget(type, ExtraAssociationTargets))
+            {
+                var rootLabel = type.IsGenericType ? type.GetTypeArgumentsString() : "";
+                Associations.Add(AssociationNode.Realization.Create(type, Symbol, rootLabel: rootLabel));
+                AddToIncludeItems(type, symbols);
+            }
         }
     }
     private void SetNest(INamedTypeSymbol nestedTypeSymbol, IImmutableSet<INamedTypeSymbol> symbols)
     {
+        if (Symbol.DisableAssociationTypes().HasFlag(AssociationTypes.Nest))
+        {
+            return;
+        }
         if (nestedTypeSymbol.HasPlantUmlIgnoreAssociationAttribute())
         {
             return;
