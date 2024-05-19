@@ -10,16 +10,16 @@ Please note that this is a beta test version, and we appreciate your feedback to
 - SourceGenerator Integration: Utilizing SourceGenerator, this tool seamlessly integrates with the C# compilation process to automatically generate PlantUML class diagrams.
 - Improved Analysis with Symbols: In contrast to the previous version, PlantUmlClassDiagramGenerator, which relied on SyntaxTree for class analysis, the SourceGenerator version utilizes Symbols for a more efficient and accurate parsing of the source code.
 
-## Usage
+# Usage
 
-### 1. Installing the NuGet Package
+## 1. Installing the NuGet Package
 
 Retrieve the [PlantUmlClassDiagramGenerator.SourceGenerator](https://www.nuget.org/packages/PlantUmlClassDiagramGenerator.SourceGenerator) package from NuGet Gallery and install it into your .NET project.
 
 
-### 2. Editing the Project File
+## 2. Editing the Project File
 
-#### 2.1 Including "GENERATE_PLANTUML" in Conditional Compilation Symbols
+### 2.1 Including "GENERATE_PLANTUML" in Conditional Compilation Symbols
   
 This tool operates only when the preprocessor symbol "GENERATE_PLANTUML" is defined. The tool does not need to run constantly during coding; running it once when necessary is sufficient. Therefore, it is set up to operate only during specific build configurations.
 Add "GENERATE_PLANTUML" to the conditional compilation symbols of your project build configurations.
@@ -31,7 +31,7 @@ To configure the tool to run during release builds, add the following section to
 </PropertyGroup>
 ```
 
-#### 2.2 Adding Project Settings
+### 2.2 Adding Project Settings
 
 Add the following section to your project file (.csproj):
 ```xml
@@ -47,10 +47,10 @@ Add the following section to your project file (.csproj):
 |--|--|--|
 |PlantUmlGenerator_OutputDir|Specifies the directory where the generated UML files will be placed. If you want to establish associations between different projects, specify the same directory for all related projects.|$(ProjectDir)generated_uml|
 
-### 3. Setting Attribute Values
+## 3. Setting Attribute Values
 Set attribute values for types and their members as needed.
 
-#### 3.1 PlantUmlDiagramAttribute
+### 3.1 PlantUmlDiagramAttribute
 You can apply this attribute to assembly and type definitions (such as classes, structures, interfaces, and enumerations). Types that have this attribute will be included in the class diagram output. If applied to an assembly, it includes all types defined within that assembly.
 
 ```cs
@@ -66,10 +66,62 @@ class ClassA
 }
 ```
 
-You can also specify the accessibility of members to be displayed by setting the `IncludeMemberAccessibilities` property. This property takes precedence over the project setting (`PlantUmlGenerator_IncludeMemberAccessibilities`).
+### Properties
+The following properties can be specified for `PlantUmlDiagramAttribute`.
+
+| Property | Type | Overview |
+| --- | --- | --- |
+| `IncludeMemberAccessibilities` | Accessibilities Enum | Specifies the member accessibilities to include in the class diagram |
+| `ExcludeMemberAccessibilities` | Accessibilities Enum | Specifies the member accessibilities to exclude from the class diagram |
+| `DisableAssociationTypes` | AssociationTypes Enum | Specifies the association types to exclude from the association |
 
 ```cs
-[PlantUmlDiagram(IncludeMemberAccessibilities = Accessibilities.Public| Accessibilities.Protected)]
+[Flags]
+internal enum Accessibilities
+{
+    NotSet = 0x8000,
+    None = 0,
+    Public = 0x01,
+    Protected = 0x02,
+    Internal = 0x04,
+    ProtectedInternal = 0x08,
+    PrivateProtected = 0x10,
+    Private = 0x20,
+    All = Public | Protected | Internal | ProtectedInternal | PrivateProtected | Private
+}
+```
+
+```cs
+[Flags]
+internal enum AssociationTypes
+{
+    NotSet = 0x8000,
+    None = 0,
+    Inheritance = 0x01,
+    Realization = 0x02,
+    Property = 0x04,
+    Field = 0x08,
+    MethodParameter = 0x10,
+    Nest = 0x20,
+    All = Inheritance | Realization | Property | Field | MethodParameter | Nest
+}
+```
+##### `IncludeMemberAccessibilities` Property
+
+Specifies the member accessibilities to include in the class diagram.
+
+- If `None` is specified, all members will be excluded from the output.
+- If `All` is specified, all members will be included in the output.
+- If not specified (`NotSet`), it is the same as `All`, and all members will be included in the output.
+- If both the assembly and individual type definitions are specified, the settings of the type definition take precedence.
+
+
+```cs
+[assembly:PlantUmlDiagram(
+    IncludeMemberAccessibilities = Accessibilities.All)]
+
+[PlantUmlDiagram(IncludeMemberAccessibilities = Accessibilities.Public
+    | Accessibilities.Protected)]
 class ClassA
 {
     private int n = 0;
@@ -78,11 +130,23 @@ class ClassA
 }
 ```
 
-![classA](/uml/source-generator/0302-001.svg)
+![includeMemberAccessibilities](/uml/source-generator/0519-001.png)
 
-Conversely, you can also specify members to be excluded from the display using the `ExcludeMemberAccessibilities` property.
+##### `ExcludeMemberAccessibilities` Property
+Specifies the accessibilities to exclude from the class diagram. The accessibilities specified here will be excluded from the output, regardless of the settings of `IncludeMemberAccessibilities`.
+
+- If `None` is specified, the accessibilities specified in `IncludeMemberAccessibilities` will be included in the output as is.
+- If `All` is specified, all members will be excluded from the output.
+- If not specified (`NotSet`), the result will be the same as if `None` was specified.
+- If both the assembly and individual type definitions are specified, the settings of the type definition take precedence.
+
 
 ```cs
+[assembly:PlantUmlDiagram(
+    IncludeMemberAccessibilities = Accessibilities.Protected 
+    | IncludeMemberAccessibilities = Accessibilities.Private,
+)]
+
 [PlantUmlDiagram(ExcludeMemberAccessibilities = Accessibilities.Private)]
 class ClassA
 {
@@ -92,7 +156,53 @@ class ClassA
 }
 ```
 
-#### 3.2 PlantUmlIgnoreAttribute
+![excludeMemberAccessibilities](/uml/source-generator/0519-002.png)
+
+##### `DisableAssociationTypes` Property
+Specifies the association types to exclude from the association.
+
+- If `None` is specified, no exclusions are made, and all automatically assigned associations are valid.
+- If `All` is specified, all automatically assigned associations are disabled.
+- If not specified (`NotSet`), the result will be the same as if `None` was specified.
+- If both the assembly and individual type definitions are specified, the settings of the type definition take precedence.
+
+```cs
+[PlantUmlDiagram]
+public record Item(string Name, double Value);
+
+[PlantUmlDiagram] 
+interface IItemProvider
+{
+    Item Item { get; }
+}
+
+[PlantUmlDiagram]
+class ItemProviderA : IItemProvider
+{
+    private Item _item;
+    public Item Item { get; }
+    public Item(Item item)
+    {
+        _item = item;
+    }
+}
+
+[PlantUmlDiagram(DisableAssociationTypes = AssociationTypes.Field 
+    | DisableAssociationTypes.Realization)]
+class ItemProviderB : IItemProvider
+{
+    private Item _item;
+    public Item Item { get; }
+    public Item(Item item)
+    {
+        _item = item;
+    }
+}
+```
+
+![disableAssociationTypes](/uml/source-generator/0519-003.png)
+
+### 3.2 PlantUmlIgnoreAttribute
 
 If you define the `PlantUmlDiagramAttribute` at the assembly level, all types defined within that assembly will be included in the class diagram output. However, if you want to exclude specific types from the output, you can apply the `PlantUmlIgnoreAttribute` to those types.
 
@@ -127,7 +237,7 @@ class ClassA
 ```
 ![classA](/uml/source-generator/0302-003.svg)
 
-#### PlantUmlAssociationAttribute
+### 3.3 PlantUmlAssociationAttribute
 This attribute is used to annotate members or method parameters to create custom associations. The properties below specify the details of the association to be created. Here, the type to which the attribute is attached is referred to as the "Root Type," and the type associated with it is referred to as the "Leaf Type."
 
 |プロパティ|型|説明|
@@ -173,7 +283,7 @@ SampleModel ..> ILogger : Injection
 
 ![0414-001](/uml/source-generator/0414-001.svg)
 
-#### PlantUmlIgnoreAssociationAttribute
+### 3.4 PlantUmlIgnoreAssociationAttribute
 By attaching it to members you don't want to create associations with, this attribute suppresses the automatic generation of associations.
 
 ```csharp
@@ -209,7 +319,7 @@ SampleModel "IDictionary<string,Item>" *-- "*" Item : Items
 
 ![0414-002](/uml/source-generator/0414-002.svg)
 
-#### PlantUmlExtraAssociationTargetsAttribute
+### 3.5 PlantUmlExtraAssociationTargetsAttribute
 Specify additional types to be targeted for association.
 In this tool, the following conditions determine which types are targeted for association:
 - Types that are output targets within the project.
@@ -257,9 +367,9 @@ SampleModel ..> TextWriter
 
 ![0414-003](/uml/source-generator/0414-003.svg)
 
-## Specification
+# Specification
 
-### Output of UML Files
+## 1. Output of UML Files
 Under the directory specified by `PlantUmlGenerator_OutputDir`, folders named after the "Assembly Name" will be created, and within each of these folders, folders named after the "Namespace" will be created.
 
 Example:
@@ -274,7 +384,7 @@ For each project, if the `PlantUmlClassDiagramGenerator.SourceGenerator` package
 
 ![dir](/uml/source-generator/0302-004.svg)
 
-### Representation of Types
+## 2. Representation of Types
 The keywords for types available in PlantUML are as follows:
 - class
 - struct
@@ -424,10 +534,10 @@ enum Accessibilities <<Flags>> <<sealed>>  {
 ![types](/uml/source-generator/0302-005.svg)
 
 
-### Associations
+## 3. Associations
 Associations between one type and another are added beneath each individual type definition. The conditions for creating associations and the types of associations to apply are as follows.
 
-#### Inheritance
+### 3.1 Inheritance
 If a type inherits from another type other than Object, ValueType, or Struct, an `Inheritance (<|--)` association is added.
 ```cs
 public abstract class PlanetBase
@@ -451,7 +561,7 @@ PlanetBase <|-- Earth
 
 ![PlanetBase](/uml/source-generator/0302-006.svg)
 
-#### Interface Implementation
+### 3.2 Interface Implementation
 If a type implements an interface, a `Realization (<|..)` association is added.
 
 
@@ -476,7 +586,7 @@ ILogger <|.. Logger
 
 ![Logger](/uml/source-generator/0302-007.svg)
 
-#### Property or Field Association
+### 3.3 Property or Field Association
 If the type of a property or field is the type being output, an `Aggregation (o--)` or `Composition (*--)` association is added.
 
 The Composition association is applied if:
@@ -513,7 +623,7 @@ Class1 ..> Item
 ![Composition](/uml/source-generator/0302-008.svg)
 
 
-##### For Types Implementing Array Types or `IEnumerable<T>`
+#### For Types Implementing Array Types or `IEnumerable<T>`
 For types implementing array types or `IEnumerable<T>`, the association is made with the element type instead of the property or field type. In this case, a multiplicity of `"*"` is added to the element type.
 
 ```cs
@@ -541,7 +651,7 @@ PlanetBase ..> Moon
 ![PlanetBase_Moon](/uml/source-generator/0302-009.svg)
 
 
-#### Method Parameters
+### 3.4 Method Parameters
 If the type of a method parameter is the type being output, a `Dependency (..>)` association is added.
 
 ```cs
@@ -562,7 +672,7 @@ class ClassA
 ![Parameters](/uml/source-generator/0302-010.svg)
 
 
-#### Nested Types
+### 3.5 Nested Types
 If a member contains a type definition, a `Nested (+--)` association is added. The name of the nested type follows the format `{ParentTypeName}::{TypeName}`.
 
 <details><summary>C#</summary>
@@ -707,7 +817,7 @@ ClassA ..> Parameters
 @enduml
 ```
 
-## Output Example
+# Output Example
 The example below shows the output structure of a single file:
 - `!include` for associated classes
 - Class definitions
@@ -1045,6 +1155,9 @@ class Parameters <<record>>  {
 ![Example2](/uml/source-generator/0302-014.svg)
 
 ## Release Notes
+### [1.0.0]
+- Added `DisableAssociationTypes` property to `PlantUmlDiagramAttribute`.
+- Fixed behavior when setting `IncludeMemberAccessibilities` and `ExcludeMemberAccessibilities` properties of `PlantUmlDiagramAttribute`.
 
 ### [0.6.0-beta]
 - Partially deprecated properties that can be configured in project files (.csproj).   
@@ -1081,13 +1194,6 @@ class Parameters <<record>>  {
 
 ### [0.1.8-alpha]
 - Alpha Test Release
-
-## ToDo
-- [x] Differentiation between Aggregation and Composition. If initialized with new () in constructors or property initializers, is it Composition?
-- [x] Representation of nested classes.
-- [x] Control visibility of members based on access modifiers.
-- [ ] Treatment of type access modifiers. Currently not supported.
-- [ ] Hide automatically implemented methods for record types.
 
 
 ## Feedback
