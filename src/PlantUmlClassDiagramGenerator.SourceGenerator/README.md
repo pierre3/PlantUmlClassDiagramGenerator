@@ -237,6 +237,38 @@ class ClassA
 ```
 ![classA](/uml/source-generator/0302-003.svg)
 
+#### PlantUmlAssociationAttribute
+This attribute is used to annotate members or method parameters to create custom associations. The properties below specify the details of the association to be created. Here, the type to which the attribute is attached is referred to as the "Root Type," and the type associated with it is referred to as the "Leaf Type."
+
+|プロパティ|型|説明|
+|--|--|--|
+|Node|string|Specifies a string corresponding to the type of association (e.g., o--, ..>).|
+|LeafType|System.Type|Specifies the type on the leaf side.|
+|RootLabel|string|Specifies the label to be added on the root side.|
+|NodeLabel|string|Specifies the label to be added on the line connecting the root and leaf.|
+|LeafLabel|string|Specifies the label to be added on the leaf side.|
+
+
+```cs
+internal class SampleModel
+{
+    private readonly ILogger logger;
+
+    [PlantUmlAssociation("*--",
+        LeafType = typeof(Item),
+        RootLabel = "IDictionary<string,Item>",
+        LeafLabel = "*",
+        NodeLabel = nameof(Items))]
+    public IDictionary<string, Item> Items { get; } = new Dictionary<string, Item>();
+
+    public SampleModel([PlantUmlAssociation("..>", NodeLabel = "Injection")] ILogger logger)
+    {
+        this.logger = logger;
+    }
+}
+```
+![classA](/uml/source-generator/0302-003.svg)
+
 ### 3.3 PlantUmlAssociationAttribute
 This attribute is used to annotate members or method parameters to create custom associations. The properties below specify the details of the association to be created. Here, the type to which the attribute is attached is referred to as the "Root Type," and the type associated with it is referred to as the "Leaf Type."
 
@@ -248,6 +280,18 @@ This attribute is used to annotate members or method parameters to create custom
 |NodeLabel|string|Specifies the label to be added on the line connecting the root and leaf.|
 |LeafLabel|string|Specifies the label to be added on the leaf side.|
 
+```
+@startuml SampleModel
+class SampleModel {
+    - <<readonly>> logger : ILogger
+    + <<readonly>> Items : IDictionary<string, Item> <<get>>
+    + SampleModel(logger : ILogger)
+}
+SampleModel o-l- ILogger : logger
+SampleModel "IDictionary<string,Item>" *-- "*" Item : Items
+SampleModel ..> ILogger : Injection
+@enduml
+```
 
 ```cs
 internal class SampleModel
