@@ -66,7 +66,7 @@ class ClassA
 ### Properties
 The following properties can be specified for `PlantUmlDiagramAttribute`.
 
-| Property | Type | Overview |
+| Property | Type | Description |
 | --- | --- | --- |
 | `IncludeMemberAccessibilities` | Accessibilities Enum | Specifies the member accessibilities to include in the class diagram |
 | `ExcludeMemberAccessibilities` | Accessibilities Enum | Specifies the member accessibilities to exclude from the class diagram |
@@ -237,7 +237,7 @@ class ClassA
 #### PlantUmlAssociationAttribute
 This attribute is used to annotate members or method parameters to create custom associations. The properties below specify the details of the association to be created. Here, the type to which the attribute is attached is referred to as the "Root Type," and the type associated with it is referred to as the "Leaf Type."
 
-|プロパティ|型|説明|
+| Property | Type | Description|
 |--|--|--|
 |Node|string|Specifies a string corresponding to the type of association (e.g., o--, ..>).|
 |LeafType|System.Type|Specifies the type on the leaf side.|
@@ -269,7 +269,7 @@ internal class SampleModel
 ### 3.3 PlantUmlAssociationAttribute
 This attribute is used to annotate members or method parameters to create custom associations. The properties below specify the details of the association to be created. Here, the type to which the attribute is attached is referred to as the "Root Type," and the type associated with it is referred to as the "Leaf Type."
 
-|プロパティ|型|説明|
+| Property | Type | Description|
 |--|--|--|
 |Node|string|Specifies a string corresponding to the type of association (e.g., o--, ..>).|
 |LeafType|System.Type|Specifies the type on the leaf side.|
