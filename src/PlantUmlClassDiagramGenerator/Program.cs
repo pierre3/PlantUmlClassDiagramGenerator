@@ -264,11 +264,15 @@ class Program
                     parameters.Add(arg, string.Empty);
                 }
             }
-
-            if(!parameters.TryAdd("in", arg))
+            else
             {
-                parameters.TryAdd("out", arg);
+                if(!parameters.TryAdd("in", arg))
+                {
+                    parameters.TryAdd("out", arg);
+                } 
             }
+
+
         }
         return parameters;
     }
