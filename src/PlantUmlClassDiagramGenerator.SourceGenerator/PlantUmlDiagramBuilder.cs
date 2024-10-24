@@ -62,11 +62,16 @@ internal class PlantUmlDiagramBuilder(
                     }
                     break;
                 case IPropertySymbol propertySymbol:
-                    SetPropertyDeclaration(propertySymbol);
-                    SetPropertyAssociation(propertySymbol, symbols);
+                    // Skip compiler-generated properties.
+                    if (!propertySymbol.IsImplicitlyDeclared)
+                    {
+                        SetPropertyDeclaration(propertySymbol);
+                        SetPropertyAssociation(propertySymbol, symbols);
+                    }
                     break;
                 case IMethodSymbol methodSymbol:
-                    if (methodSymbol.MethodKind is not MethodKind.PropertyGet
+                    if (!methodSymbol.IsSoleRecordConstructor() // Only include constructor when there is more than one.
+                        && methodSymbol.MethodKind is not MethodKind.PropertyGet
                         and not MethodKind.PropertySet
                         and not MethodKind.EventAdd
                         and not MethodKind.EventRemove

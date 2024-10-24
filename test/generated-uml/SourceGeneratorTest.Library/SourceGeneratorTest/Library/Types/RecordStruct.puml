@@ -1,17 +1,7 @@
 @startuml RecordStruct
 struct RecordStruct <<sealed>> <<record>>  {
-    + RecordStruct(X : float, Y : float, Z : float)
     + X : float <<get>> <<set>>
     + Y : float <<get>> <<set>>
     + Z : float <<get>> <<set>>
-    + <<readonly>> <<override>> ToString() : string
-    - <<readonly>> PrintMembers(builder : StringBuilder) : bool
-    + {static} operator !=(left : RecordStruct, right : RecordStruct) : bool
-    + {static} operator ==(left : RecordStruct, right : RecordStruct) : bool
-    + <<readonly>> <<override>> GetHashCode() : int
-    + <<readonly>> <<override>> Equals(obj : object) : bool
-    + <<readonly>> Equals(other : RecordStruct) : bool
-    + <<readonly>> Deconstruct(X : float, Y : float, Z : float) : void
-    + RecordStruct()
 }
 @enduml
