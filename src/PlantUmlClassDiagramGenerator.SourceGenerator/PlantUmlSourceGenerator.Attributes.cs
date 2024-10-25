@@ -11,6 +11,8 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
             context.RegisterPostInitializationOutput(context =>
             {
                 const string source = """
+                    #nullable enable
+
                     namespace PlantUmlClassDiagramGenerator.SourceGenerator.Attributes;
 
                     [global::System.Flags]
@@ -47,7 +49,7 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
                         | global::System.AttributeTargets.Interface
                         | global::System.AttributeTargets.Enum
                         | global::System.AttributeTargets.Struct)]
-                    internal class PlantUmlDiagramAttribute : global::System.Attribute
+                    internal sealed class PlantUmlDiagramAttribute : global::System.Attribute
                     { 
                         public Accessibilities IncludeMemberAccessibilities { get; set; } = Accessibilities.NotSet;
                         public Accessibilities ExcludeMemberAccessibilities { get; set; } = Accessibilities.NotSet;
@@ -65,7 +67,7 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
                         | global::System.AttributeTargets.Event
                         | global::System.AttributeTargets.Interface
                         | global::System.AttributeTargets.Parameter)]
-                    internal class PlantUmlIgnoreAttribute : global::System.Attribute
+                    internal sealed class PlantUmlIgnoreAttribute : global::System.Attribute
                     { }
 
                     [global::System.AttributeUsage(
@@ -79,7 +81,7 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
                         | global::System.AttributeTargets.Event
                         | global::System.AttributeTargets.Interface
                         | global::System.AttributeTargets.Parameter)]
-                    internal class PlantUmlAssociationAttribute(string node) : global::System.Attribute
+                    internal sealed class PlantUmlAssociationAttribute(string node) : global::System.Attribute
                     { 
                         public string Node { get;} = node;
 
@@ -100,7 +102,7 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
                         | global::System.AttributeTargets.Event
                         | global::System.AttributeTargets.Interface
                         | global::System.AttributeTargets.Parameter)]
-                    internal class PlantUmlIgnoreAssociationAttribute : global::System.Attribute
+                    internal sealed class PlantUmlIgnoreAssociationAttribute : global::System.Attribute
                     { }
                     
                     [global::System.AttributeUsage(
@@ -109,12 +111,12 @@ namespace PlantUmlClassDiagramGenerator.SourceGenerator
                         | global::System.AttributeTargets.Interface
                         | global::System.AttributeTargets.Enum
                         | global::System.AttributeTargets.Struct)]
-                    internal class PlantUmlExtraAssociationTargetsAttribute(params global::System.Type[] types ) : global::System.Attribute
+                    internal sealed class PlantUmlExtraAssociationTargetsAttribute(params global::System.Type[] types ) : global::System.Attribute
                     {
                         public global::System.Type[] Types { get; } = types;
                     }
                     """;
-                context.AddSource("Attributes", SourceText.From(source, Encoding.UTF8));
+                context.AddSource("Attributes.g", SourceText.From(source, Encoding.UTF8));
             });
         }
     }
