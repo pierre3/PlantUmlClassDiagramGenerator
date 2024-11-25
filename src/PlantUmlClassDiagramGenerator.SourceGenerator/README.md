@@ -458,6 +458,11 @@ abstract class AbstractClass
     public abstract void MethodB();
 }
 
+interface IInterfaceA  
+{
+    void MethodA();
+}
+
 record RecordA(string Name,int Value);
 
 public struct StructA()
@@ -512,20 +517,12 @@ abstract class AbstractClass  {
     + {abstract} MethodB() : void
     # AbstractClass()
 }
+interface IInterfaceA  {
+    + MethodA() : void
+}
 class RecordA <<record>>  {
-    + RecordA(Name : string, Value : int)
-    # <<readonly>> <<virtual>> EqualityContract : Type <<get>>
     + Name : string <<get>> <<set>>
     + Value : int <<get>> <<set>>
-    + <<override>> ToString() : string
-    # <<virtual>> PrintMembers(builder : StringBuilder) : bool
-    + {static} operator !=(left : RecordA?, right : RecordA?) : bool
-    + {static} operator ==(left : RecordA?, right : RecordA?) : bool
-    + <<override>> GetHashCode() : int
-    + <<override>> Equals(obj : object?) : bool
-    + <<virtual>> Equals(other : RecordA?) : bool
-    # RecordA(original : RecordA)
-    + Deconstruct(Name : string, Value : int) : void
 }
 struct StructA <<sealed>>  {
     + StructA()
@@ -534,19 +531,9 @@ struct StructA <<sealed>>  {
     + Z : float <<get>> <<set>>
 }
 struct RecordStruct <<sealed>> <<record>>  {
-    + RecordStruct(X : float, Y : float, Z : float)
     + X : float <<get>> <<set>>
     + Y : float <<get>> <<set>>
     + Z : float <<get>> <<set>>
-    + <<readonly>> <<override>> ToString() : string
-    - <<readonly>> PrintMembers(builder : StringBuilder) : bool
-    + {static} operator !=(left : RecordStruct, right : RecordStruct) : bool
-    + {static} operator ==(left : RecordStruct, right : RecordStruct) : bool
-    + <<readonly>> <<override>> GetHashCode() : int
-    + <<readonly>> <<override>> Equals(obj : object) : bool
-    + <<readonly>> Equals(other : RecordStruct) : bool
-    + <<readonly>> Deconstruct(X : float, Y : float, Z : float) : void
-    + RecordStruct()
 }
 enum LogLevel <<sealed>>  {
     Trace = 0
@@ -572,7 +559,7 @@ enum Accessibilities <<Flags>> <<sealed>>  {
 
 </details>
 
-![types](/uml/source-generator/0302-005.svg)
+![types](/uml/source-generator/Types.svg)
 
 
 ## 3. Associations
@@ -1142,21 +1129,9 @@ enum LogLevel <<sealed>>  {
 ```
 @startuml Item
 class Item <<record>>  {
-    + Item(Name : string, Value : double)
-    # <<readonly>> <<virtual>> EqualityContract : Type <<get>>
     + Name : string <<get>> <<set>>
     + Value : double <<get>> <<set>>
-    + <<override>> ToString() : string
-    # <<virtual>> PrintMembers(builder : StringBuilder) : bool
-    + {static} operator !=(left : Item?, right : Item?) : bool
-    + {static} operator ==(left : Item?, right : Item?) : bool
-    + <<override>> GetHashCode() : int
-    + <<override>> Equals(obj : object?) : bool
-    + <<virtual>> Equals(other : Item?) : bool
-    # Item(original : Item)
-    + Deconstruct(Name : string, Value : double) : void
 }
-"IEquatable`1" "<Item>" <|.. Item
 @enduml
 ```
 
@@ -1174,28 +1149,24 @@ struct StructA <<sealed>>  {
 ```
 @startuml Parameters
 class Parameters <<record>>  {
-    # <<readonly>> <<virtual>> EqualityContract : Type <<get>>
     + <<readonly>> X : int <<get>>
     + <<readonly>> Y : int <<get>>
     + Parameters(x : int, y : int)
     + Area() : int
-    + <<override>> ToString() : string
-    # <<virtual>> PrintMembers(builder : StringBuilder) : bool
-    + {static} operator !=(left : Parameters?, right : Parameters?) : bool
-    + {static} operator ==(left : Parameters?, right : Parameters?) : bool
-    + <<override>> GetHashCode() : int
-    + <<override>> Equals(obj : object?) : bool
-    + <<virtual>> Equals(other : Parameters?) : bool
     # Parameters(original : Parameters)
 }
-"IEquatable`1" "<Parameters>" <|.. Parameters
 @enduml
 ```
 </details>
 
-![Example2](/uml/source-generator/0302-014.svg)
+![Example2](/uml/source-generator/SampleModel.svg)
 
 ## Release Notes
+
+### [1.1.0]
+- Suppress the compiler-generated members of record types in source generator.
+- Added ".g" to attribute filenames to indicate generated code and resolved code analysis warnings.
+
 ### [1.0.0]
 - Added `DisableAssociationTypes` property to `PlantUmlDiagramAttribute`.
 - Fixed behavior when setting `IncludeMemberAccessibilities` and `ExcludeMemberAccessibilities` properties of `PlantUmlDiagramAttribute`.

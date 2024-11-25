@@ -24,14 +24,15 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>plantuml;SourceGenerator</PackageTags>
-		<PackageReleaseNotes>[1.0.0]
-- Added `DisableAssociationTypes` property to `PlantUmlDiagramAttribute`.
-- Fixed behavior when setting `IncludeMemberAccessibilities` and `ExcludeMemberAccessibilities` properties of `PlantUmlDiagramAttribute`.
+		<PackageReleaseNotes>
+[1.1.0]
+- Suppress the compiler-generated members of record types in source generator.
+- Added ".g" to attribute filenames to indicate generated code and resolved code analysis warnings.
 		</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<AssemblyVersion>1.0.0.0</AssemblyVersion>
-		<FileVersion>1.0.0.0</FileVersion>
-		<Version>1.0.0</Version>
+		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<FileVersion>1.1.0.0</FileVersion>
+		<Version>1.1.0</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
