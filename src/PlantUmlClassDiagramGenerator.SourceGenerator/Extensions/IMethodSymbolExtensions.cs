@@ -17,8 +17,8 @@ public static class IMethodSymbolExtensions
     }
     public static string GetReturnTypeString(this IMethodSymbol symbol)
     {
-        if(symbol.MethodKind is MethodKind.Constructor 
-            or MethodKind.SharedConstructor 
+        if (symbol.MethodKind is MethodKind.Constructor
+            or MethodKind.SharedConstructor
             or MethodKind.StaticConstructor)
         { return ""; }
         return symbol.ReturnsVoid ? " : void" : $" : {symbol.ReturnType.GetTypeName()}";
@@ -29,7 +29,7 @@ public static class IMethodSymbolExtensions
         var modifiers = string.Join(" ",
             new[]
             {
-                symbol.ContainingType.TypeKind is not TypeKind.Interface 
+                symbol.ContainingType.TypeKind is not TypeKind.Interface
                     && symbol.IsAbstract ? "{abstract}" : "",
                 symbol.IsStatic ? "{static}" : "",
                 symbol.IsSealed ? "<<sealed>>" : "",
@@ -48,5 +48,22 @@ public static class IMethodSymbolExtensions
     {
         return string.Join(", ", symbol.Parameters
             .Select(param => $"{param.Name} : {param.Type.GetTypeName()}"));
+    }
+
+    /// <summary>
+    /// Determine if the given method is the sole explicit constructor for a
+    /// record type.
+    /// </summary>
+    /// <param name="method">The method to inspect.</param>
+    /// <returns>True if there are no other explicit constructors in the method's type.</returns>
+    public static bool IsSoleRecordConstructor(this IMethodSymbol method)
+    {
+        var containingType = method.ContainingType;
+        var explicitConstructors = containingType.GetMembers()
+            .OfType<IMethodSymbol>()
+            .Where(m => !m.IsImplicitlyDeclared && m.MethodKind is MethodKind.Constructor or MethodKind.SharedConstructor or MethodKind.StaticConstructor);
+
+        return containingType.IsRecord
+            && explicitConstructors.Count() == 1;
     }
 }

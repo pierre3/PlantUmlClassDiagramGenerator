@@ -1,17 +1,6 @@
 @startuml Item
 class Item <<record>>  {
-    + Item(Name : string, Value : double)
-    # <<readonly>> <<virtual>> EqualityContract : Type <<get>>
     + Name : string <<get>> <<set>>
     + Value : double <<get>> <<set>>
-    + <<override>> ToString() : string
-    # <<virtual>> PrintMembers(builder : StringBuilder) : bool
-    + {static} operator !=(left : Item?, right : Item?) : bool
-    + {static} operator ==(left : Item?, right : Item?) : bool
-    + <<override>> GetHashCode() : int
-    + <<override>> Equals(obj : object?) : bool
-    + <<virtual>> Equals(other : Item?) : bool
-    # Item(original : Item)
-    + Deconstruct(Name : string, Value : double) : void
 }
 @enduml

@@ -1,18 +1,7 @@
 @startuml Parameters
 class Parameters <<record>>  {
-    # <<readonly>> <<virtual>> EqualityContract : Type <<get>>
     + <<readonly>> X : int <<get>>
     + <<readonly>> Y : int <<get>>
-    + Parameters(x : int, y : int)
-    + Area() : int
-    + <<override>> ToString() : string
-    # <<virtual>> PrintMembers(builder : StringBuilder) : bool
-    + {static} operator !=(left : Parameters?, right : Parameters?) : bool
-    + {static} operator ==(left : Parameters?, right : Parameters?) : bool
-    + <<override>> GetHashCode() : int
-    + <<override>> Equals(obj : object?) : bool
-    + <<virtual>> Equals(other : Parameters?) : bool
-    # Parameters(original : Parameters)
 }
 "IEquatable`1" "<Parameters>" <|.. Parameters
 @enduml
