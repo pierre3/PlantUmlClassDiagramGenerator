@@ -7,9 +7,14 @@
 
 **README.md 版本修订历史**
 
-| 版本 | 提交 | 备注 | 
-| --------| ------ |---------|
+| 版本 | 提交 | 备注                                | 
+| --------| ------ |-----------------------------------|
+| 1.1     | [e73b4fe](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/e73b4feed9cd261271eb990a9c859f53536e8d7c) | 新增 "-excludeUmlBeginEndTags" 参数选项 |
 | 1.0     | [70bb820](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/70bb8202f7f489aa2d85ce9c25c58121c8f63aed) | 因为其它语言的README.md不一定同时更新，所以需要一个版本号 |
+
+## Roslyn Source Generator
+类图由 Roslyn 源代码生成器自动生成。详细信息请参见以下链接。
+- [PlantUmlClassDiagramGenerator.SourceGenerator](/src/PlantUmlClassDiagramGenerator.SourceGenerator)
 
 ## Visual Studio Code 扩展
 
@@ -20,7 +25,7 @@
 Nuget Gallery: https://www.nuget.org/packages/PlantUmlClassDiagramGenerator
 
 ### 安装
-下载并安装[.NET 6.0 SDK](https://www.microsoft.com/net/download/windows)或更新的版本。安装后，运行以下命令。
+下载并安装[.NET 8.0 SDK](https://www.microsoft.com/net/download/windows)或更新的版本。安装后，运行以下命令。
 
 ```bat
 dotnet tool install --global PlantUmlClassDiagramGenerator
@@ -39,10 +44,12 @@ puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities]
 - -public: (可选)  如果指定，只输出公共可及性成员。
 - -ignore: (可选) 指定要忽略的成员的可访问性，用逗号分隔的列表。
 - -excludePaths: (可选) 指定排除的文件和目录。  
-  指定来自 "InputPath "的相对路径，用逗号分隔的列表。
+  指定来自 "InputPath "的相对路径，用逗号分隔的列表。 
+要排除包含特定文件夹名称的多个路径，请在名称前加上 "\*\*/"。示例："**/bin"
 - -createAssociation: (可选) 从字段和属性的引用中创建对象关联。
 - -allInOne: (可选) 只有当-dir被设置时：将所有图表的输出复制到文件include.puml（这允许PlanUMLServer渲染）。
 - -attributeRequired: (可选) 当这个开关被启用时，只有类型声明中带有 "PlantUmlDiagramAttribute "的类型会被输出。
+- -excludeUmlBeginEndTags: （可选）当启用此开关时，它将从 puml 文件中排除 \"@startuml\" 和 \"@enduml\"l 标签。
 
 例子：
 ```bat
@@ -66,7 +73,7 @@ puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 |C#               | PlantUML           |
 |:----------------|-------------------:|
 | `class`         | `class`            |
-| `struct`        | `<<struct>> class` |
+| `struct`        | `struct`           |
 | `interface`     | `interface`        |
 | `enum`          | `enum`             |
 | `record`        | `<<record>> class` |
@@ -75,7 +82,7 @@ puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
 
 |C#               | PlantUML           |
 |:----------------|-------------------:|
-| `abstract`       | `abstract`         |
+| `abstract`       | `abstract`        |
 | `static`        | `<<static>>`       |
 | `partial`       | `<<partial>>`      |
 | `sealed`        | `<<sealed>>`       |
@@ -109,7 +116,7 @@ enum EnumType{
 @startuml
 class ClassA {
 }
-class StructA <<struct>> {
+struct StructA {
 }
 interface InterfaceA {
 }
