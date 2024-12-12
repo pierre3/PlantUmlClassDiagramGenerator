@@ -32,7 +32,8 @@ class Program
         ["-allInOne"] = OptionType.Switch,
         ["-attributeRequired"] = OptionType.Switch,
         ["-excludeUmlBeginEndTags"] = OptionType.Switch,
-        ["-addPackageTags"] = OptionType.Switch
+        ["-addPackageTags"] = OptionType.Switch,
+        ["-removeSystemCollectionsAssociations"] = OptionType.Switch
     };
 
     static int Main(string[] args)
