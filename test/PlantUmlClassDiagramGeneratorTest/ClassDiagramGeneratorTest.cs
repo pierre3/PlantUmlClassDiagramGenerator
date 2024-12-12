@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.Text;
 using System.IO;
 using PlantUmlClassDiagramGenerator.Library;
+using PlantUmlClassDiagramGenerator.Library.ClassDiagramGenerator;
 using Xunit;
 using Xunit.Abstractions;
 

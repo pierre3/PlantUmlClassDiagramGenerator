@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.Attributes;
@@ -9,6 +10,14 @@ namespace PlantUmlClassDiagramGenerator.Library;
 public class RelationshipCollection : IEnumerable<Relationship>
 {
     private readonly IList<Relationship> items = new List<Relationship>();
+
+    public void AddAll(RelationshipCollection collection)
+    {
+        foreach (var c in collection)
+        {
+            items.Add(c);
+        }
+    }
 
     public void AddInheritanceFrom(TypeDeclarationSyntax syntax)
     {

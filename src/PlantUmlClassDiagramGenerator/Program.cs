@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using PlantUmlClassDiagramGenerator.Library;
 using System.Runtime.InteropServices;
+using PlantUmlClassDiagramGenerator.Library.ClassDiagramGenerator;
 
 namespace PlantUmlClassDiagramGenerator;
 
@@ -27,7 +28,8 @@ class Program
         ["-createAssociation"] = OptionType.Switch,
         ["-allInOne"] = OptionType.Switch,
         ["-attributeRequired"] = OptionType.Switch,
-        ["-excludeUmlBeginEndTags"] = OptionType.Switch
+        ["-excludeUmlBeginEndTags"] = OptionType.Switch,
+        ["-addPackageTags"] = OptionType.Switch
     };
 
     static int Main(string[] args)
@@ -153,6 +155,7 @@ class Program
 
         var error = false;
         var filesToProcess = ExcludeFileFilter.GetFilesToProcess(files, excludePaths, inputRoot);
+        RelationshipCollection relationships = new();
         foreach (var inputFile in filesToProcess)
         {
             Console.WriteLine($"Processing \"{inputFile}\"...");
@@ -177,8 +180,10 @@ class Program
                         ignoreAcc,
                         parameters.ContainsKey("-createAssociation"),
                         parameters.ContainsKey("-attributeRequired"),
-                        excludeUmlBeginEndTags);
+                        excludeUmlBeginEndTags,
+                        parameters.ContainsKey("-addPackageTags"));
                     gen.Generate(root);
+                    relationships.AddAll(gen.relationships);
                 }
 
                 if (parameters.ContainsKey("-allInOne"))
@@ -205,6 +210,16 @@ class Program
                 error = true;
             }
         }
+
+        if (parameters.ContainsKey("-addPackageTags"))
+        {
+            var lines = ClassDiagramGenerator.GenerateRelationships(relationships);
+            foreach (string line in lines.Distinct())
+            {
+                includeRefs.AppendLine(line);
+            }
+        }
+            
         if (!excludeUmlBeginEndTags) includeRefs.AppendLine("@enduml");
         File.WriteAllText(CombinePath(outputRoot, "include.puml"), includeRefs.ToString());
 

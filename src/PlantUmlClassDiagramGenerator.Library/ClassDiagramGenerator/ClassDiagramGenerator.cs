@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.Attributes;
 
-namespace PlantUmlClassDiagramGenerator.Library;
+namespace PlantUmlClassDiagramGenerator.Library.ClassDiagramGenerator;
 
 public class ClassDiagramGenerator(
     TextWriter writer,
@@ -16,18 +16,20 @@ public class ClassDiagramGenerator(
     Accessibilities ignoreMemberAccessibilities = Accessibilities.None,
     bool createAssociation = true,
     bool attributeRequired = false,
-    bool excludeUmlBeginEndTags = false) : CSharpSyntaxWalker
+    bool excludeUmlBeginEndTags = false,
+    bool addPackageTags = false) : CSharpSyntaxWalker
 {
     private readonly HashSet<string> types = [];
     private readonly List<SyntaxNode> additionalTypeDeclarationNodes = [];
     private readonly Accessibilities ignoreMemberAccessibilities = ignoreMemberAccessibilities;
-    private readonly RelationshipCollection relationships = new();
+    public readonly RelationshipCollection relationships = new();
     private readonly TextWriter writer = writer;
     private readonly string indent = indent;
     private int nestingDepth = 0;
     private readonly bool createAssociation = createAssociation;
     private readonly bool attributeRequired = attributeRequired;
     private readonly bool excludeUmlBeginEndTags = excludeUmlBeginEndTags;
+    private readonly bool addPackageTags = addPackageTags;
     private readonly Dictionary<string, string> escapeDictionary = new()
     {
         {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
@@ -45,7 +47,24 @@ public class ClassDiagramGenerator(
     {
         Visit(root);
         GenerateAdditionalTypeDeclarations();
-        GenerateRelationships();
+        if (!this.addPackageTags)
+            GenerateRelationships();
+    }
+
+    public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax node)
+    {
+        if (this.addPackageTags)
+            VisitFileScopedNamespaceDeclaration(node, () => base.VisitFileScopedNamespaceDeclaration(node));
+        else
+            base.VisitFileScopedNamespaceDeclaration(node);
+    }
+    
+    public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+    {
+        if (this.addPackageTags)
+            VisitNamespaceDeclaration(node, () => base.VisitNamespaceDeclaration(node));
+        else
+            base.VisitNamespaceDeclaration(node);
     }
 
     public override void VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
@@ -371,7 +390,7 @@ public class ClassDiagramGenerator(
     private bool SkipInnerTypeDeclaration(SyntaxNode node)
     {
         if (nestingDepth <= 0) return false;
-
+        if (nestingDepth == 1 && addPackageTags) return false;
         additionalTypeDeclarationNodes.Add(node);
         return true;
     }
@@ -410,6 +429,47 @@ public class ClassDiagramGenerator(
         {
             WriteLine(relationship.ToString());
         }
+    }
+    
+    public static string[] GenerateRelationships(RelationshipCollection relationshipCollection)
+    {
+        List<string> strings = new List<string>();
+        foreach (var relationship in relationshipCollection)
+        {
+            strings.AddRange(relationshipCollection.Select(r => r.ToString()));
+        }
+
+        return strings.ToArray();
+    }
+    
+    private void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax node, Action visitBase)
+    {
+        if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (SkipInnerTypeDeclaration(node)) { return; }
+
+        var typeName = NamespaceNameText.From(node);
+
+        WriteLine($"package \"{typeName.Identifier}\" {{");
+        nestingDepth++;
+        visitBase();
+        nestingDepth--;
+        WriteLine("}");
+    }
+    
+    private void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node, Action visitBase)
+    {
+        if (attributeRequired && !node.AttributeLists.HasDiagramAttribute()) { return; }
+        if (node.AttributeLists.HasIgnoreAttribute()) { return; }
+        if (SkipInnerTypeDeclaration(node)) { return; }
+
+        var typeName = NamespaceNameText.From(node);
+
+        WriteLine($"package \"{typeName.Identifier}\"{{");
+        nestingDepth++;
+        visitBase();
+        nestingDepth--;
+        WriteLine("}");
     }
 
     private void VisitTypeDeclaration(TypeDeclarationSyntax node, Action visitBase)
