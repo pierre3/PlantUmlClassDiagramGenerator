@@ -16,6 +16,7 @@ public enum SystemCollectionsTypes
     SortedList,
     Stack,
     StructuralComparisons,
+    List, // Actually not SystemCollections but... meh
     
     // structs
     DictionaryEntry,

@@ -142,12 +142,16 @@ public class RelationshipCollection : IEnumerable<Relationship>
     private void AddeRationship(PlantUmlAssociationAttribute attribute, TypeNameText leafName, TypeNameText rootName)
     {
         var symbol = string.IsNullOrEmpty(attribute.Association) ? "--" : attribute.Association;
-        items.Add(new Relationship(rootName, leafName, symbol, attribute.RootLabel, attribute.LeafLabel, attribute.Label));
+        var relationship = new Relationship(rootName, leafName, symbol, attribute.RootLabel, attribute.LeafLabel, attribute.Label);
+        if (!items.Contains(relationship))
+            items.Add(relationship);
     }
 
     private void AddRelationship(TypeNameText leafName, TypeNameText rootName, string symbol, string nodeIdentifier)
     {
-        items.Add(new Relationship(rootName, leafName, symbol, "", nodeIdentifier + leafName.TypeArguments));
+        var relationship = new Relationship(rootName, leafName, symbol, "", nodeIdentifier + leafName.TypeArguments);
+        if (!items.Contains(relationship))
+            items.Add(relationship);
     }
 
     public IEnumerator<Relationship> GetEnumerator()
