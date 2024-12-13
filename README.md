@@ -9,9 +9,10 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 
 **README.md Version revision history**
 
-| Version | Commit                                                       | Comment                                                      |
-| ------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1.1     | [e73b4fe](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/e73b4feed9cd261271eb990a9c859f53536e8d7c) | Add "-excludeUmlBeginEndTags" option |
+| Version | Commit                                                       | Comment                                                                                                      |
+|---------| ------------------------------------------------------------ |--------------------------------------------------------------------------------------------------------------|
+| 1.2     | [df40b74](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/df40b748875c36c22e0f1267ddf4c93cd928b6b9) | Add "-addPackageTags" option                                                                                 |
+| 1.1     | [e73b4fe](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/e73b4feed9cd261271eb990a9c859f53536e8d7c) | Add "-excludeUmlBeginEndTags" option                                                                         |
 | 1.0     | [70bb820](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/70bb8202f7f489aa2d85ce9c25c58121c8f63aed) | Because the README.md for other languages is not always updated at the same time, a version number is needed |
 
 ## Roslyn Source Generator
@@ -39,13 +40,14 @@ dotnet tool install --global PlantUmlClassDiagramGenerator
 Run the "puml-gen" command.
 
 ```bat
-puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList] [-createAssociation]
+puml-gen InputPath [OutputPath] [-dir] [-addPackageTags] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList] [-createAssociation]
 ```
 
 - InputPath: (Required) Sets a input source file or directory name.
 - OutputPath: (Optional) Sets a output file or directory name.  
   If you omit this option, plantuml files are outputted to same directory as the input files.
 - -dir: (Optional) Specify when InputPath and OutputPath are directory names.
+- -addPackageTags: (Optional) If there is "-dir" tag, then program adds "package" tags and puts all relations in the end of include.puml
 - -public: (Optional) If specified, only public accessibility members are output. 
 - -ignore: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
 - -excludePaths: (Optional) Specify the exclude file and directory.   
