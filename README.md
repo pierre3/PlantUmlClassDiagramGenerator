@@ -11,7 +11,7 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 
 | Version | Commit                                                                                                              | Comment                                                                                                      |
 |---------|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| 1.4     | [d97e179](https://github.com/AnastasiaKallisto/PlantUmlClassDiagramGenerator/commit/d97e17911111f27906d2a5a3eeb3f8137ebdb979) | Add "-noGetSetForProperties" option                                                                          |
+| 1.4     | [ebc52e8](https://github.com/AnastasiaKallisto/PlantUmlClassDiagramGenerator/commit/ebc52e88f4719d28948f881de67796fc71c88cbd) | Add "-noGetSetForProperties" option                                                                          |
 | 1.3     | [d97e179](https://github.com/AnastasiaKallisto/PlantUmlClassDiagramGenerator/commit/d97e17911111f27906d2a5a3eeb3f8137ebdb979) | Add "-removeSystemCollectionsAssociations" option                                                            |
 | 1.2     | [cd9eed2](https://github.com/AnastasiaKallisto/PlantUmlClassDiagramGenerator/commit/cd9eed2539f9bac73410e6b6f1566ce979429f6f) | Add "-addPackageTags" option                                                                                 |
 | 1.1     | [e73b4fe](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/e73b4feed9cd261271eb990a9c859f53536e8d7c) | Add "-excludeUmlBeginEndTags" option                                                                         |
@@ -51,6 +51,7 @@ puml-gen InputPath [OutputPath] [-dir] [-addPackageTags] [-public | -ignore Igno
 - **-dir**: (Optional) Specify when InputPath and OutputPath are directory names.
 - **-addPackageTags:** (Optional) If there is "-dir" tag, then program adds "package" tags and puts all relations in the end of include.puml. Relations will not be shown in other files
 - **-removeSystemCollectionsAssociations**: (Optional) If there are properties or fields like "IList<T>" and other SystemCollections, there will be no relation with IList, but  relation with T will be shown, if it isn't base type (string, int ...)
+- **-noGetSetForProperties**: (Optional) Remover <\<get>> and <\<set>> for properties in classes
 - **-public:** (Optional) If specified, only public accessibility members are output. 
 - **-ignore:** (Optional) Specify the accessibility of members to ignore, with a comma separated list.
 - **-excludePaths:** (Optional) Specify the exclude file and directory.   
