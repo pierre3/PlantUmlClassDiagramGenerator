@@ -1,4 +1,4 @@
-namespace PlantUmlClassDiagramGenerator.Library;
+namespace PlantUmlClassDiagramGenerator.Library.Enums;
 
 public enum SystemCollectionsTypes
 {

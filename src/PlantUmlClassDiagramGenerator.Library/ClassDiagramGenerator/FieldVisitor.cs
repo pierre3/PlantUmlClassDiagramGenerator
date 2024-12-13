@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PlantUmlClassDiagramGenerator.Attributes;
+using PlantUmlClassDiagramGenerator.Library.Enums;
 
 namespace PlantUmlClassDiagramGenerator.Library.ClassDiagramGenerator;
 
@@ -37,21 +39,60 @@ public partial class ClassDiagramGenerator
                 || fieldType == typeof(NullableTypeSyntax)
                 || isTypeParameterField)
             {
-                var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
-                var initValue = useLiteralInit
-                    ? (" = " + escapeDictionary.Aggregate(field.Initializer.Value.ToString(),
-                        (f, e) => Regex.Replace(f, e.Key, e.Value)))
-                    : "";
-                WriteLine($"{modifiers}{field.Identifier} : {type}{initValue}");
+                FillAssociatedField(field, modifiers, type);
             }
             else
             {
-                if (fieldType == typeof(GenericNameSyntax))
-                {
-                    additionalTypeDeclarationNodes.Add(type);
-                }
-                relationships.AddAssociationFrom(node, field);
+                if (type.GetType() == typeof(GenericNameSyntax))
+                    ProcessGenericType(node, type, field, modifiers);
+                else
+                    relationships.AddAssociationFrom(node, field);
             }
+        }
+    }
+
+    private void FillAssociatedField(VariableDeclaratorSyntax field, string modifiers, TypeSyntax type)
+    {
+        var useLiteralInit = field.Initializer?.Value?.Kind().ToString().EndsWith("LiteralExpression") ?? false;
+        var initValue = useLiteralInit
+            ? (" = " + escapeDictionary.Aggregate(field.Initializer.Value.ToString(),
+                (f, e) => Regex.Replace(f, e.Key, e.Value)))
+            : "";
+        WriteLine($"{modifiers}{field.Identifier} : {type}{initValue}");
+    }
+    
+    private void ProcessGenericType(FieldDeclarationSyntax node, TypeSyntax type, VariableDeclaratorSyntax field, string modifiers)
+    {
+        if (this.removeSystemCollectionsAssociations)
+        {
+            ProcessWithoutSystemCollections(node, type, field, modifiers);
+        }
+        else
+        {
+            additionalTypeDeclarationNodes.Add(type);
+            relationships.AddAssociationFrom(node, field);
+        }
+    }
+
+    private void ProcessWithoutSystemCollections(FieldDeclarationSyntax node, TypeSyntax type, VariableDeclaratorSyntax field, string modifiers)
+    {
+        var t = type.ToString().Split('<')[0];
+        if (!Enum.TryParse(t, out SystemCollectionsTypes _))
+        {
+            additionalTypeDeclarationNodes.Add(type);
+            relationships.AddAssociationFrom(node, field);
+        }
+        else
+        {
+            FillAssociatedField(field, modifiers, type);
+            var s = type.ToString().Split('<')[1];
+            s = s.Remove(s.Length - 1);
+            if (!Enum.TryParse(CapitalizeFirstLetter(s), out BaseTypes _))
+                relationships.AddAssociationFrom(node, new PlantUmlAssociationAttribute()
+                {
+                    Association = "o--",
+                    Name = s
+                });
         }
     }
 }

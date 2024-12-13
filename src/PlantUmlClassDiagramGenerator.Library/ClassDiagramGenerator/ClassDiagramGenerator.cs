@@ -193,4 +193,14 @@ public partial class ClassDiagramGenerator(
             || token.IsKind(SyntaxKind.ProtectedKeyword)
             || token.IsKind(SyntaxKind.InternalKeyword));
     }
+
+    private static string CapitalizeFirstLetter(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+        if (input.Length == 1)
+            return char.ToUpper(input[0]) + "";
+
+        return char.ToUpper(input[0]) + input.Substring(1);
+    }
 }

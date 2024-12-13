@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PlantUmlClassDiagramGenerator.Attributes;
+using PlantUmlClassDiagramGenerator.Library.Enums;
 
 namespace PlantUmlClassDiagramGenerator.Library.ClassDiagramGenerator;
 
@@ -39,30 +40,44 @@ public partial class ClassDiagramGenerator
         else
         {
             if (type.GetType() == typeof(GenericNameSyntax))
-            {
-                if (this.removeSystemCollectionsAssociations)
-                {
-                    var t = node.Type.ToString().Split('<')[0];
-                    if (!Enum.TryParse(t, out SystemCollectionsTypes _))
-                        additionalTypeDeclarationNodes.Add(type);
-                    else
-                    {
-                        FillAssociatedProperty(node, type);
-                        var s = node.Type.ToString();
-                        relationships.AddAssociationFrom(node, new PlantUmlAssociationAttribute()
-                        {
-                            Association = "o--",
-                            Name = s.Substring(s.IndexOf('<') + 1,s.LastIndexOf('>') - s.IndexOf('<') - 1)
-                        });
-                    }
-                }
-                else
-                {
-                    additionalTypeDeclarationNodes.Add(type);
-                    relationships.AddAssociationFrom(node, typeIgnoringNullable);
-                }
-            } else 
+                ProcessGenericType(node, type, typeIgnoringNullable);
+            else
                 relationships.AddAssociationFrom(node, typeIgnoringNullable);
+        }
+    }
+
+    private void ProcessGenericType(PropertyDeclarationSyntax node, TypeSyntax type, TypeSyntax typeIgnoringNullable)
+    {
+        if (this.removeSystemCollectionsAssociations)
+        {
+            ProcessWithoutSystemCollections(node, type, typeIgnoringNullable);
+        }
+        else
+        {
+            additionalTypeDeclarationNodes.Add(type);
+            relationships.AddAssociationFrom(node, typeIgnoringNullable);
+        }
+    }
+
+    private void ProcessWithoutSystemCollections(PropertyDeclarationSyntax node, TypeSyntax type, TypeSyntax typeIgnoringNullable)
+    {
+        var t = node.Type.ToString().Split('<')[0];
+        if (!Enum.TryParse(t, out SystemCollectionsTypes _))
+        {
+            additionalTypeDeclarationNodes.Add(type);
+            relationships.AddAssociationFrom(node, typeIgnoringNullable);
+        }
+        else
+        {
+            FillAssociatedProperty(node, type);
+            var s = node.Type.ToString();
+            s = s.Substring(s.IndexOf('<') + 1, s.LastIndexOf('>') - s.IndexOf('<') - 1);
+            if (!Enum.TryParse(CapitalizeFirstLetter(s), out BaseTypes _))
+                relationships.AddAssociationFrom(node, new PlantUmlAssociationAttribute()
+                {
+                    Association = "o--",
+                    Name = s
+                });
         }
     }
 
