@@ -16,7 +16,8 @@ public partial class ClassDiagramGenerator(
     bool attributeRequired = false,
     bool excludeUmlBeginEndTags = false,
     bool addPackageTags = false,
-    bool removeSystemCollectionsAssociations = false) : CSharpSyntaxWalker
+    bool removeSystemCollectionsAssociations = false,
+    bool noGetSetForProperties = false) : CSharpSyntaxWalker
 {
     private readonly HashSet<string> types = [];
     private readonly List<SyntaxNode> additionalTypeDeclarationNodes = [];
@@ -30,6 +31,7 @@ public partial class ClassDiagramGenerator(
     private readonly bool excludeUmlBeginEndTags = excludeUmlBeginEndTags;
     private readonly bool addPackageTags = addPackageTags;
     private readonly bool removeSystemCollectionsAssociations = removeSystemCollectionsAssociations;
+    private readonly bool noGetSetForProperties = noGetSetForProperties;
     private readonly Dictionary<string, string> escapeDictionary = new()
     {
         {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},

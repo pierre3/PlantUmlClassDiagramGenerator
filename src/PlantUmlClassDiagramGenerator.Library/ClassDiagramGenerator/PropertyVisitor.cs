@@ -102,6 +102,9 @@ public partial class ClassDiagramGenerator
                 (n, e) => Regex.Replace(n, e.Key, e.Value)))
             : "";
 
-        WriteLine($"{modifiers}{name} : {type} {accessorStr}{initValue}");
+        if (noGetSetForProperties)
+            WriteLine($"{modifiers}{name} : {type} {initValue}");
+        else
+            WriteLine($"{modifiers}{name} : {type} {accessorStr}{initValue}");
     }
 }
