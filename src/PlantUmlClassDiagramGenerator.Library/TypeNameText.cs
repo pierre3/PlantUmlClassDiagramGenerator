@@ -72,4 +72,25 @@ public class TypeNameText
             TypeArguments = typeArgs
         };
     }
+
+    private bool Equals(TypeNameText other)
+    {
+        return Identifier == other.Identifier && TypeArguments == other.TypeArguments;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((TypeNameText)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            return ((Identifier != null ? Identifier.GetHashCode() : 0) * 397) ^ (TypeArguments != null ? TypeArguments.GetHashCode() : 0);
+        }
+    }
 }
