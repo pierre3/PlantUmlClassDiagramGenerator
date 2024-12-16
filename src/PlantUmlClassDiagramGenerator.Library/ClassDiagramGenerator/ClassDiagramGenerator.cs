@@ -17,7 +17,8 @@ public partial class ClassDiagramGenerator(
     bool excludeUmlBeginEndTags = false,
     bool addPackageTags = false,
     bool removeSystemCollectionsAssociations = false,
-    bool noGetSetForProperties = false) : CSharpSyntaxWalker
+    bool noGetSetForProperties = false,
+    bool saveFields = false) : CSharpSyntaxWalker
 {
     private readonly HashSet<string> types = [];
     private readonly List<SyntaxNode> additionalTypeDeclarationNodes = [];
@@ -32,6 +33,7 @@ public partial class ClassDiagramGenerator(
     private readonly bool addPackageTags = addPackageTags;
     private readonly bool removeSystemCollectionsAssociations = removeSystemCollectionsAssociations;
     private readonly bool noGetSetForProperties = noGetSetForProperties;
+    private readonly bool saveFields = saveFields;
     private readonly Dictionary<string, string> escapeDictionary = new()
     {
         {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
@@ -59,7 +61,7 @@ public partial class ClassDiagramGenerator(
         {
             Name = arg.NameEquals.Name.ToString(),
             Value = arg.Expression.GetLastToken().ValueText
-        });
+        }).ToList();
         return new PlantUmlAssociationAttribute()
         {
             Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,

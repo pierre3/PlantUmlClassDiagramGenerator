@@ -41,7 +41,11 @@ public partial class ClassDiagramGenerator
         {
             if (type.GetType() == typeof(GenericNameSyntax))
                 ProcessGenericType(node, type, typeIgnoringNullable);
-            else
+            else if (this.saveFields)
+            {
+                FillAssociatedProperty(node, type);
+                relationships.AddAssociationFromWithNoLabel(node, typeIgnoringNullable);
+            } else
                 relationships.AddAssociationFrom(node, typeIgnoringNullable);
         }
     }

@@ -37,6 +37,7 @@ public class Relationship(TypeNameText baseTypeName, TypeNameText subTypeName, s
             var hashCode = (baseTypeName != null ? baseTypeName.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (subTypeName != null ? subTypeName.GetHashCode() : 0);
             hashCode = (hashCode * 397) ^ (baseLabel != null ? baseLabel.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (subLabel != null ? subLabel.GetHashCode() : 0);
             return hashCode;
         }
     }
