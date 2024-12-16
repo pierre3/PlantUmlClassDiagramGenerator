@@ -9,9 +9,12 @@ This is a generator to create a class-diagram of PlantUML from the C# source cod
 
 **README.md Version revision history**
 
-| Version | Commit                                                       | Comment                                                      |
-| ------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1.1     | [e73b4fe](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/e73b4feed9cd261271eb990a9c859f53536e8d7c) | Add "-excludeUmlBeginEndTags" option |
+| Version | Commit                                                                                                              | Comment                                                                                                      |
+|---------|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| 1.4     | [ebc52e8](https://github.com/AnastasiaKallisto/PlantUmlClassDiagramGenerator/commit/ebc52e88f4719d28948f881de67796fc71c88cbd) | Add "-noGetSetForProperties" option                                                                          |
+| 1.3     | [d97e179](https://github.com/AnastasiaKallisto/PlantUmlClassDiagramGenerator/commit/d97e17911111f27906d2a5a3eeb3f8137ebdb979) | Add "-removeSystemCollectionsAssociations" option                                                            |
+| 1.2     | [cd9eed2](https://github.com/AnastasiaKallisto/PlantUmlClassDiagramGenerator/commit/cd9eed2539f9bac73410e6b6f1566ce979429f6f) | Add "-addPackageTags" option                                                                                 |
+| 1.1     | [e73b4fe](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/e73b4feed9cd261271eb990a9c859f53536e8d7c) | Add "-excludeUmlBeginEndTags" option                                                                         |
 | 1.0     | [70bb820](https://github.com/pierre3/PlantUmlClassDiagramGenerator/commit/70bb8202f7f489aa2d85ce9c25c58121c8f63aed) | Because the README.md for other languages is not always updated at the same time, a version number is needed |
 
 ## Roslyn Source Generator
@@ -39,22 +42,25 @@ dotnet tool install --global PlantUmlClassDiagramGenerator
 Run the "puml-gen" command.
 
 ```bat
-puml-gen InputPath [OutputPath] [-dir] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList] [-createAssociation]
+puml-gen InputPath [OutputPath] [-dir] [-addPackageTags] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList] [-createAssociation]
 ```
 
-- InputPath: (Required) Sets a input source file or directory name.
-- OutputPath: (Optional) Sets a output file or directory name.  
+- **InputPath:** (Required) Sets a input source file or directory name.
+- **OutputPath:** (Optional) Sets a output file or directory name.  
   If you omit this option, plantuml files are outputted to same directory as the input files.
-- -dir: (Optional) Specify when InputPath and OutputPath are directory names.
-- -public: (Optional) If specified, only public accessibility members are output. 
-- -ignore: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
-- -excludePaths: (Optional) Specify the exclude file and directory.   
+- **-dir**: (Optional) Specify when InputPath and OutputPath are directory names.
+- **-addPackageTags:** (Optional) If there is "-dir" tag, then program adds "package" tags and puts all relations in the end of include.puml. Relations will not be shown in other files
+- **-removeSystemCollectionsAssociations**: (Optional) If there are properties or fields like "IList<T>" and other SystemCollections, there will be no relation with IList, but  relation with T will be shown, if it isn't base type (string, int ...)
+- **-noGetSetForProperties**: (Optional) Remover <\<get>> and <\<set>> for properties in classes
+- **-public:** (Optional) If specified, only public accessibility members are output. 
+- **-ignore:** (Optional) Specify the accessibility of members to ignore, with a comma separated list.
+- **-excludePaths:** (Optional) Specify the exclude file and directory.   
   Specifies a relative path from the "InputPath", with a comma separated list.
   To exclude multiple paths, which contain a specific folder name, preceed the name by "\*\*/". Example: "**/bin"
-- -createAssociation: (Optional) Create object associations from references of fields and properites.
-- -allInOne: (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
-- -attributeRequired: (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
-- -excludeUmlBeginEndTags: (Optional) When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file.
+- **-createAssociation:** (Optional) Create object associations from references of fields and properites.
+- **-allInOne:** (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
+- **-attributeRequired:** (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
+- **-excludeUmlBeginEndTags:** (Optional) When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file.
 
 examples
 ```bat

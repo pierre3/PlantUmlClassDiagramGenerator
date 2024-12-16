@@ -13,4 +13,31 @@ public class Relationship(TypeNameText baseTypeName, TypeNameText subTypeName, s
     {
         return $"{baseTypeName.Identifier}{baseLabel} {symbol}{subLabel} {subTypeName.Identifier}{centerLabel}";
     }
+
+    private bool Equals(Relationship other)
+    {
+        return Equals(baseTypeName, other.baseTypeName) 
+               && Equals(subTypeName, other.subTypeName) 
+               && Equals(baseLabel, other.baseLabel)
+               && Equals(subLabel, other.subLabel);
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((Relationship)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hashCode = (baseTypeName != null ? baseTypeName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (subTypeName != null ? subTypeName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (baseLabel != null ? baseLabel.GetHashCode() : 0);
+            return hashCode;
+        }
+    }
 }
