@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -106,8 +106,9 @@ public class PlantUmlFromDirGenerator: IPlantUmlGenerator
                 }
                 else
                 {
-                    var newRoot = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @".\" : @".";
-                    includeRefs.AppendLine("!include " + outputFile.Replace(outputRoot, newRoot));
+                    //var newRoot = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @".\" : @".";
+                    var root = outputRoot.EndsWith(Path.DirectorySeparatorChar) ? outputRoot.TrimEnd(Path.DirectorySeparatorChar) : outputRoot;
+                    includeRefs.AppendLine("!include " + outputFile.Replace(root, "."));
                 }
             }
             catch (Exception e)
