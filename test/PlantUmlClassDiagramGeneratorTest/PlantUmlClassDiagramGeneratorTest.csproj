@@ -40,9 +40,13 @@
 
 	<ItemGroup>
 	  <Compile Remove="uml\20250517_151031\**" />
+	  <Compile Remove="uml\20250517_165357\**" />
 	  <Content Remove="uml\20250517_151031\**" />
+	  <Content Remove="uml\20250517_165357\**" />
 	  <EmbeddedResource Remove="uml\20250517_151031\**" />
+	  <EmbeddedResource Remove="uml\20250517_165357\**" />
 	  <None Remove="uml\20250517_151031\**" />
+	  <None Remove="uml\20250517_165357\**" />
 	</ItemGroup>
 
 	<ItemGroup>

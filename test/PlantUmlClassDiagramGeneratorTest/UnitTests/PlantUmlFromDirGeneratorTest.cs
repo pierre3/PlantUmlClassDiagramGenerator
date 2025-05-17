@@ -52,10 +52,10 @@ public partial class PlantUmlFromDirGeneratorTest : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(outputDir))
-        {
-            Directory.Delete(outputDir, true);
-        }
+        //if (Directory.Exists(outputDir))
+        //{
+        //    Directory.Delete(outputDir, true);
+        //}
     }
 
 
