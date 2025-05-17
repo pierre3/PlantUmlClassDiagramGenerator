@@ -15,6 +15,7 @@ public partial class ClassDiagramGeneratorTest
     public ClassDiagramGeneratorTest(ITestOutputHelper outputHelper)
     {
         this.outputHelper = outputHelper;
+        
     }
 
     [Theory]
@@ -43,18 +44,10 @@ public partial class ClassDiagramGeneratorTest
             gen.Generate(root);
         }
 
-        var expected = ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", outpulPumlFile)), Environment.NewLine);
+        var expected = TestHelper.ConvertNewLineCode(File.ReadAllText(Path.Combine("uml", outpulPumlFile)), Environment.NewLine);
         var actual = output.ToString();
         outputHelper.WriteLine(actual);
         Assert.Equal(expected, actual);
     }
 
-    private static string ConvertNewLineCode(string text, string newline)
-    {
-        var reg = EndLineRegex();
-        return reg.Replace(text, newline);
-    }
-
-    [System.Text.RegularExpressions.GeneratedRegex("\r\n|\r|\n")]
-    private static partial System.Text.RegularExpressions.Regex EndLineRegex();
 }

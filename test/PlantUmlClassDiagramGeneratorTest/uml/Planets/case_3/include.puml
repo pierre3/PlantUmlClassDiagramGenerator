@@ -1,0 +1,6 @@
+@startuml
+!include .\\Earth.puml
+!include .\\Moon.puml
+!include .\\BaseTypes\PlanetBase.puml
+PlanetBase <|-- Earth
+@enduml

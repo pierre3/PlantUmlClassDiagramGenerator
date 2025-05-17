@@ -1,0 +1,9 @@
+@startuml
+package "Planets" {
+    class Earth {
+        + Earth()
+        + <<override>> <<async>> Orbit() : Task
+        + <<override>> <<async>> Rotate() : Task
+    }
+}
+@enduml

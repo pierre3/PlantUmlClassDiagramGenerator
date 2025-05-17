@@ -39,6 +39,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="uml\20250517_151031\**" />
+	  <Content Remove="uml\20250517_151031\**" />
+	  <EmbeddedResource Remove="uml\20250517_151031\**" />
+	  <None Remove="uml\20250517_151031\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Remove="testData\AttributeRequired.cs" />
 	  <Compile Remove="testData\Attributes.cs" />
 	  <Compile Remove="testData\CurlyBrackets.cs" />
@@ -47,6 +54,9 @@
 	  <Compile Remove="testData\InputClasses.cs" />
 	  <Compile Remove="testData\NullableRelationship.cs" />
 	  <Compile Remove="testData\NullableType.cs" />
+	  <Compile Remove="testData\Planets\BaseTypes\PlanetBase.cs" />
+	  <Compile Remove="testData\Planets\Earth.cs" />
+	  <Compile Remove="testData\Planets\Moon.cs" />
 	  <Compile Remove="testData\RecordType.cs" />
 	</ItemGroup>
 
@@ -74,6 +84,15 @@
 	  </None>
 	  <None Include="testData\NullableType.cs">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Include="testData\Planets\BaseTypes\PlanetBase.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Include="testData\Planets\Earth.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Include="testData\Planets\Moon.cs">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	  <None Include="testData\RecordType.cs">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

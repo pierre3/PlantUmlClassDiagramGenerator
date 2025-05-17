@@ -1,0 +1,7 @@
+@startuml
+!include .\\Earth.puml
+!include .\\Moon.puml
+!include .\\BaseTypes\PlanetBase.puml
+PlanetBase <|-- Earth
+PlanetBase o-> "Moons<Moon>" "IList`1"
+@enduml

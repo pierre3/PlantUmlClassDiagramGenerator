@@ -1,0 +1,26 @@
+@startuml
+class Earth {
+    + Earth()
+    + <<override>> <<async>> Orbit() : Task
+    + <<override>> <<async>> Rotate() : Task
+}
+PlanetBase <|-- Earth
+class Moon <<sealed>> {
+    + Name : string <<get>>
+    + Diameter : double <<get>>
+    + Mass : double <<get>>
+    + DistanceFromPlanet : double <<get>>
+}
+abstract class PlanetBase {
+    + Name : string <<get>> <<set>>
+    + Diameter : double <<get>> <<protected set>>
+    + Mass : double <<get>> <<protected set>>
+    + DistanceFromSun : double <<get>> <<protected set>>
+    + OrbitalPeriod : double <<get>> <<protected set>>
+    + SurfaceTemperature : double <<get>> <<protected set>>
+    + Moons : IList<Moon> <<get>>
+    # AddMoon(moon:Moon) : void
+    + {abstract} Orbit() : Task
+    + {abstract} Rotate() : Task
+}
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+package "Planets" {
+    class Moon <<sealed>> {
+        + Name : string <<get>>
+        + Diameter : double <<get>>
+        + Mass : double <<get>>
+        + DistanceFromPlanet : double <<get>>
+    }
+}
+@enduml
