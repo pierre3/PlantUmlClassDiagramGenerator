@@ -106,9 +106,10 @@ public class PlantUmlFromDirGenerator: IPlantUmlGenerator
                 }
                 else
                 {
-                    //var newRoot = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @".\" : @".";
                     var root = outputRoot.EndsWith(Path.DirectorySeparatorChar) ? outputRoot.TrimEnd(Path.DirectorySeparatorChar) : outputRoot;
-                    includeRefs.AppendLine("!include " + outputFile.Replace(root, "."));
+                    var relativePath = outputFile.Replace(root, ".");
+                    // PlantUMLの!includeではスラッシュを使用（クロスプラットフォーム対応）
+                    includeRefs.AppendLine("!include " + relativePath.Replace('\\', '/'));
                 }
             }
             catch (Exception e)
