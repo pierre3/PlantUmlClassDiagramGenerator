@@ -108,8 +108,8 @@ public class PlantUmlFromDirGenerator: IPlantUmlGenerator
                 {
                     var root = outputRoot.EndsWith(Path.DirectorySeparatorChar) ? outputRoot.TrimEnd(Path.DirectorySeparatorChar) : outputRoot;
                     var relativePath = outputFile.Replace(root, ".");
-                    // Normalize to backslash for consistency across platforms (PlantUML accepts both)
-                    includeRefs.AppendLine("!include " + relativePath.Replace('/', '\\'));
+                    // PlantUML's !include directive requires forward slashes for cross-platform compatibility
+                    includeRefs.AppendLine("!include " + relativePath.Replace('\\', '/'));
                 }
             }
             catch (Exception e)
