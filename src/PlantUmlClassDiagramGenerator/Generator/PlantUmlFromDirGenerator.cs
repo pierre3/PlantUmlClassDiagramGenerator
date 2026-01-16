@@ -108,7 +108,7 @@ public class PlantUmlFromDirGenerator: IPlantUmlGenerator
                 {
                     var root = outputRoot.EndsWith(Path.DirectorySeparatorChar) ? outputRoot.TrimEnd(Path.DirectorySeparatorChar) : outputRoot;
                     var relativePath = outputFile.Replace(root, ".");
-                    // PlantUMLの!includeではスラッシュを使用（クロスプラットフォーム対応）
+                    // PlantUML's !include directive requires forward slashes for cross-platform compatibility
                     includeRefs.AppendLine("!include " + relativePath.Replace('\\', '/'));
                 }
             }
