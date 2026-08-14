@@ -53,7 +53,10 @@ public class PlantUmlFromFileGenerator : IPlantUmlGenerator
                 ignoreAcc,
                 parameters.ContainsKey("-createAssociation"),
                 parameters.ContainsKey("-attributeRequired"),
-                parameters.ContainsKey("-excludeUmlBeginEndTags"));
+                parameters.ContainsKey("-excludeUmlBeginEndTags"),
+                false,
+                parameters.ContainsKey("-removeSystemCollectionsAssociations"),
+                parameters.ContainsKey("-noGetSetForProperties"));
             gen.Generate(root);
         }
         catch (Exception e)

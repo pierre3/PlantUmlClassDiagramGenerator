@@ -19,6 +19,6 @@ public partial class ClassDiagramGenerator
         List<string> strings = new List<string>();
         strings.AddRange(relationshipCollection.Select(r => r.ToString()));
 
-        return strings.ToArray();
+        return strings.Distinct().ToArray();
     }
 }
