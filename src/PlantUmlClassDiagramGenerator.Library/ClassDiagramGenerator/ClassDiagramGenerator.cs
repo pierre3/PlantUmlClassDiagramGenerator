@@ -15,7 +15,10 @@ public partial class ClassDiagramGenerator(
     bool createAssociation = true,
     bool attributeRequired = false,
     bool excludeUmlBeginEndTags = false,
-    bool addPackageTags = false) : CSharpSyntaxWalker
+    bool addPackageTags = false,
+    bool removeSystemCollectionsAssociations = false,
+    bool noGetSetForProperties = false,
+    bool saveFields = false) : CSharpSyntaxWalker
 {
     private readonly HashSet<string> types = [];
     private readonly List<SyntaxNode> additionalTypeDeclarationNodes = [];
@@ -28,6 +31,9 @@ public partial class ClassDiagramGenerator(
     private readonly bool attributeRequired = attributeRequired;
     private readonly bool excludeUmlBeginEndTags = excludeUmlBeginEndTags;
     private readonly bool addPackageTags = addPackageTags;
+    private readonly bool removeSystemCollectionsAssociations = removeSystemCollectionsAssociations;
+    private readonly bool noGetSetForProperties = noGetSetForProperties;
+    private readonly bool saveFields = saveFields;
     private readonly Dictionary<string, string> escapeDictionary = new()
     {
         {@"(?<before>[^{]){(?<after>{[^{])", "${before}&#123;${after}"},
@@ -55,7 +61,7 @@ public partial class ClassDiagramGenerator(
         {
             Name = arg.NameEquals.Name.ToString(),
             Value = arg.Expression.GetLastToken().ValueText
-        });
+        }).ToList();
         return new PlantUmlAssociationAttribute()
         {
             Association = attributeProps.FirstOrDefault(prop => prop.Name == nameof(PlantUmlAssociationAttribute.Association))?.Value,
@@ -190,5 +196,15 @@ public partial class ClassDiagramGenerator(
             || token.IsKind(SyntaxKind.PrivateKeyword)
             || token.IsKind(SyntaxKind.ProtectedKeyword)
             || token.IsKind(SyntaxKind.InternalKeyword));
+    }
+
+    private static string CapitalizeFirstLetter(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+        if (input.Length == 1)
+            return char.ToUpper(input[0]) + "";
+
+        return char.ToUpper(input[0]) + input.Substring(1);
     }
 }
