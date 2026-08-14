@@ -12,20 +12,21 @@
 		<RepositoryType></RepositoryType>
 		<PackageTags>plantuml</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.4.0</Version>
+		<Version>1.5.0</Version>
 		<Authors>pierre3</Authors>
 		<Company />
 		<Product />
 		<PackageReleaseNotes>
-			[V1.4.0]
-			- Updated the target framework to .NET 8.0.
-			- Fixed an issue where Nullable types were not being output with the createAssociation option.
+			[V1.5.0]
+			- Replaced hand-rolled argument parser with System.CommandLine for proper --help, --version, and flag handling.
+			- Added multi-directory mode (Label=Path;Label=Path;...) for combined package diagrams.
 		</PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\PlantUmlClassDiagramGenerator.Library\PlantUmlClassDiagramGenerator.Library.csproj" />
+		<PackageReference Include="System.CommandLine" Version="2.0.0-*" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

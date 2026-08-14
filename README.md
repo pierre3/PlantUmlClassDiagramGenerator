@@ -39,35 +39,35 @@ dotnet tool install --global PlantUmlClassDiagramGenerator
 Run the "puml-gen" command.
 
 ```bat
-puml-gen InputPath [OutputPath] [-dir] [-addPackageTags] [-public | -ignore IgnoreAccessibilities] [-excludePaths ExcludePathList] [-createAssociation]
+puml-gen <input> [output] [--dir] [--add-package-tags] [--public | --ignore <accessibilities>] [--exclude-paths <paths>] [--create-association]
 ```
 
-- InputPath: (Required) Sets a input source file or directory name.
-- OutputPath: (Optional) Sets a output file or directory name.  
+- input: (Required) Sets a input source file or directory name.
+- output: (Optional) Sets a output file or directory name.  
   If you omit this option, plantuml files are outputted to same directory as the input files.
-- -dir: (Optional) Specify when InputPath and OutputPath are directory names.
-- -addPackageTags: (Optional) If there is "-dir" tag, then program adds "package" tags and puts all relations in the end of include.puml
-- -public: (Optional) If specified, only public accessibility members are output. 
-- -ignore: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
-- -excludePaths: (Optional) Specify the exclude file and directory.   
-  Specifies a relative path from the "InputPath", with a comma separated list.
+- --dir, -d: (Optional) Specify when input and output are directory names.
+- --add-package-tags: (Optional) If --dir is set, adds "package" tags and puts all relations in the end of include.puml
+- --public, -p: (Optional) If specified, only public accessibility members are output. 
+- --ignore, -i: (Optional) Specify the accessibility of members to ignore, with a comma separated list.
+- --exclude-paths, -e: (Optional) Specify the exclude file and directory.   
+  Specifies a relative path from the input, with a comma separated list.
   To exclude multiple paths, which contain a specific folder name, preceed the name by "\*\*/". Example: "**/bin"
-- -createAssociation: (Optional) Create object associations from references of fields and properites.
-- -allInOne: (Optional) Only if -dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
-- -attributeRequired: (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
-- -excludeUmlBeginEndTags: (Optional) When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file.
+- --create-association, -a: (Optional) Create object associations from references of fields and properites.
+- --all-in-one: (Optional) Only if --dir is set: copy the output of all diagrams to file include.puml (this allows a PlanUMLServer to render it).
+- --attribute-required: (Optional) When this switch is enabled, only types with "PlantUmlDiagramAttribute" in the type declaration will be output.
+- --exclude-uml-tags: (Optional) When this switch is enabled, it will exclude the \"@startuml\" and \"@enduml\" tags from the puml file.
 
 examples
 ```bat
-puml-gen C:\Source\App1\ClassA.cs -public
+puml-gen C:\Source\App1\ClassA.cs --public
 ```
 
 ```bat
-puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -ignore Private,Protected -createAssociation -allInOne
+puml-gen C:\Source\App1 C:\PlantUml\App1 --dir --ignore Private,Protected --create-association --all-in-one
 ```
 
 ```bat
-puml-gen C:\Source\App1 C:\PlantUml\App1 -dir -excludePaths bin,obj,Properties
+puml-gen C:\Source\App1 C:\PlantUml\App1 --dir --exclude-paths bin,obj,Properties
 ```
 
 ## Specification for conversion to PlantUML
@@ -466,7 +466,7 @@ You can add the package [PlantUmlClassDiagramGenerator.Attributes](https://www.n
 
 ### PlantUmlDiagramAttribute
 Only types to which PlantUmlDiagramAttribute has been added will be output.
-This attribute is enabled if the -attributeRequired switch is added to the command line argument.
+This attribute is enabled if the --attribute-required switch is added to the command line argument.
 
 This attribute can be added only to type declalerations.
 - class
