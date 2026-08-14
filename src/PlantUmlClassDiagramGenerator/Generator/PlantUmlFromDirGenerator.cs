@@ -87,7 +87,8 @@ public class PlantUmlFromDirGenerator: IPlantUmlGenerator
                         parameters.ContainsKey("-createAssociation"),
                         parameters.ContainsKey("-attributeRequired"),
                         excludeUmlBeginEndTags,
-                        parameters.ContainsKey("-addPackageTags"));
+                        parameters.ContainsKey("-addPackageTags"),
+                        parameters.ContainsKey("-removeSystemCollectionsAssociations"));
                     gen.Generate(root);
                     relationships.AddAll(gen.relationships);
                 }
