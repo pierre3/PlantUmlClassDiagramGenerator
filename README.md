@@ -1,7 +1,12 @@
+> [!IMPORTANT]
+> **This repository is no longer actively maintained** and is preserved here as a public archive.
+>
+> 🚀 For ongoing work, please see **[line-openapi-dotnet](https://github.com/pierre3/line-openapi-dotnet)**, a project for generating client code from **LINE's official OpenAPI specifications**.
+
+
 <div align="center">
 <strong><a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a></strong>
 </div>
-
 
 # PlantUmlClassDiagramGenerator
 
